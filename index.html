@@ -1157,38 +1157,33 @@
     // --- ADMIN ACTIONS ---
     async function handleCreatePlayer(e) {
       e.preventDefault();
-      const newP = {
-        id: Date.now(),
-        gamertag: document.getElementById('newGamertag').value.trim(),
-        efootballId: document.getElementById('newEFId').value.trim(),
-        division: document.getElementById('newDivision').value,
-        playstyle: document.getElementById('newPlaystyle').value,
-        device: document.getElementById('newDevice').value.trim(),
-        winRate: `${parseFloat(document.getElementById('newWinRate').value).toFixed(1)}%`,
-        matchesPlayed: 120,
-        formation: document.getElementById('newFormation').value.trim() || '4-2-2-2',
-        role: document.getElementById('newRole').value
+      
+      const newPlayer = {
+        name: document.getElementById('newGamertag').value.trim(), // Server expects "name"
+        teamName: document.getElementById('newDivision')?.value || "Free Agent",
+        marketValue: 15,
+        bdrPoints: 50
       };
 
-      ALL_PLAYERS.unshift(newP);
-      localStorage.setItem('TRS_PLAYERS_CACHE', JSON.stringify(ALL_PLAYERS));
+      try {
+        const res = await fetch(`${RENDER_API}/players`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newPlayer)
+        });
 
-      if (BACKEND_API_BASE) {
-        try {
-          await fetch(`${BACKEND_API_BASE}/players`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newP)
-          });
-        } catch(err) {
-          console.warn('Backend sync failed, saved locally.');
+        if (res.ok) {
+          alert(`Player "${newPlayer.name}" successfully saved in MongoDB!`);
+          e.target.reset();
+          await loadPlayers(); // Instantly refresh the list from the database
+          switchTab('players');
+        } else {
+          alert("Error adding player to database.");
         }
+      } catch (err) {
+        console.error(err);
+        alert("Server communication error.");
       }
-
-      alert(`Player ${newP.gamertag} saved to MongoDB Roster!`);
-      e.target.reset();
-      applyFilters();
-      switchTab('players');
     }
 
     function saveAndTestBackendConnection() {
