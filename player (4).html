@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Profile | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg: #030712;
+            --card-bg: #0f172a;
+            --border: #1e293b;
+            --accent: #10b981;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --win: #10b981;
+            --loss: #ef4444;
+            --draw: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .top-nav { display: flex; align-items: center; padding: 10px 0 20px; }
+        .back-link { color: var(--text-dim); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+
+        /* Card System */
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Profile Header */
+        .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .p-avatar { 
+            width: 70px; height: 70px; border-radius: 16px; 
+            background: #1e293b; border: 1.5px solid var(--border);
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .p-name-area h1 { margin: 0; font-size: 1.5rem; }
+        .p-name-area p { margin: 4px 0 0; color: var(--text-dim); font-size: 0.9rem; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .stat-box { background: #020617; border: 1px solid var(--border); padding: 12px 5px; border-radius: 12px; text-align: center; }
+        .stat-box span { display: block; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-box b { font-size: 1.2rem; }
+
+        /* Match History Row */
+        .section-title { font-size: 1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .match-row { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e293b; }
+        .m-date { font-size: 0.75rem; color: var(--text-dim); width: 45px; }
+        .m-opp { flex: 1; font-size: 0.9rem; }
+        .m-score { background: #1e293b; padding: 3px 8px; border-radius: 6px; margin: 0 10px; font-weight: bold; }
+
+        /* Badges */
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 900; width: 45px; text-align: center; }
+        .win { color: var(--win); border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
+        .loss { color: var(--loss); border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); }
+        .draw { color: var(--draw); border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.1); }
+
+        /* Squad Section */
+        .squad-img { width: 100%; border-radius: 12px; border: 1.5px solid var(--border); margin-top: 10px; }
+
+        /* Season Summary */
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 0.9rem; }
+        .summary-row span:last-child { font-weight: bold; }
+
+        /* Trophy Grid */
+        .trophy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .trophy-item { background: #020617; border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 12px; }
+        .trophy-icon { font-size: 1.5rem; color: #f59e0b; }
+        .trophy-count { font-size: 1.2rem; font-weight: 900; }
+        .trophy-label { font-size: 0.7rem; color: var(--text-dim); display: block; }
+
+        /* H2H Select */
+        .h2h-select { width: 100%; padding: 14px; background: #020617; color: white; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 15px; }
+
+        #loading { text-align: center; color: var(--text-dim); padding-top: 100px; }
+        /* --- FIXED RECENT FORM DESIGN --- */
+
+/* --- FIXED RECENT FORM DESIGN --- */
+/* --- FIXED RECENT FORM: ONLY COLORED LETTERS --- */
+.form-dots-wrapper {
+    display: flex;
+    gap: 15px; /* Spacing between letters */
+    margin-top: 10px;
+    align-items: center;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dot-letter {
+    font-size: 1.2rem; /* Size of the W, L, D */
+    font-weight: 900;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Colors for the letters */
+.f-win .dot-letter { color: #10b981; }   /* Green W */
+.f-loss .dot-letter { color: #ef4444; }  /* Red L */
+.f-draw .dot-letter { color: #ffffff; }  /* White D */
+        .captain-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(245, 158, 11, 0.15); /* Light gold transparent */
+    color: #f59e0b; /* Bright gold */
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.captain-badge i { font-size: 0.8rem; }
+        .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.modal-content {
+    background: #111827; width: 90%; max-width: 400px; border-radius: 20px;
+    padding: 24px; border: 1px solid #1f2937;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.close-x { background: transparent; border: none; color: #9ca3af; font-size: 24px; }
+
+.section-label { font-size: 0.7rem; color: #6b7280; font-weight: 800; letter-spacing: 1px; margin-bottom: 12px; }
+
+.upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+.upload-box {
+    border: 2px dashed #374151; border-radius: 15px; height: 120px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 0.8rem; cursor: pointer; transition: 0.3s;
+}
+.upload-box:hover { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.05); }
+.upload-box i { font-size: 1.5rem; margin-bottom: 10px; }
+
+.character-grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+.char-item {
+    min-width: 80px; height: 80px; border-radius: 12px; border: 2px solid transparent;
+    cursor: pointer; position: relative; overflow: hidden; background: #1f2937;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.char-item img { width: 100%; height: 100%; object-fit: cover; }
+.char-item.active { border-color: #10b981; }
+.char-item.active::after {
+    content: "\f058"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+    position: absolute; top: 5px; right: 5px; color: #10b981; background: #111827; border-radius: 50%;
+}
+
+.modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
+.btn-cancel { background: transparent; border: none; color: #9ca3af; font-weight: bold; }
+.btn-save { background: #10b981; color: #000; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        /* H2H Stat Boxes */
+.h2h-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.h2h-stat-box { 
+    padding: 20px; border-radius: 15px; text-align: center; 
+    border: 1px solid rgba(255,255,255,0.05); 
+}
+.h2h-stat-box.win { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.h2h-stat-box.draw { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.h2h-stat-box.loss { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.h2h-val { display: block; font-size: 1.8rem; font-weight: 800; }
+.h2h-lab { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; opacity: 0.8; }
+
+/* Squad Upload Area */
+.squad-upload-container {
+    width: 100%; min-height: 200px; border: 2px dashed #1e293b;
+    border-radius: 20px; cursor: pointer; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.3s; position: relative;
+}
+.squad-upload-container:hover { border-color: #10b981; background: rgba(16,185,129,0.02); }
+.upload-placeholder { text-align: center; color: #94a3b8; }
+.icon-circle { 
+    width: 60px; height: 60px; background: rgba(16,185,129,0.1); 
+    color: #10b981; border-radius: 18px; line-height: 60px; 
+    font-size: 1.5rem; font-weight: bold; margin: 0 auto 15px;
+    border: 2px solid #10b981;
+}
+.upload-hint { font-size: 0.7rem; color: #10b981; font-weight: bold; }
+#squadDisplay img { width: 100%; height: auto; display: block; }
+        /* New Premium Trophy Grid */
+.trophy-new-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 columns like Image 2 */
+    gap: 12px;
+}
+
+.trophy-card {
+    background: rgba(2, 6, 23, 0.5); /* Deep dark background */
+    border: 1px solid #1e293b;
+    border-radius: 16px;
+    padding: 15px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.2s;
+}
+
+.trophy-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.trophy-img-large {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.2));
+}
+
+.trophy-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.trophy-info b {
+    font-size: 1.4rem;
+    color: white;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.trophy-info span {
+    font-size: 0.7rem;
+    color: #94a3b8; /* Dim text color */
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* Mobile Tweak */
+@media (max-width: 380px) {
+    .trophy-info b { font-size: 1.1rem; }
+    .trophy-img-large { width: 35px; height: 35px; }
+}
+        
+
+/* --- CLEANED THEME CSS --- */
+.glass-card-themed {
+    position: relative;
+    width: 100%;
+    min-height: 150px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    padding: 20px 20px 15px 20px; /* Reduced padding to fit mobile better */
+    margin-bottom: 20px;
+    background-color: #0f172a;
+    background-size: cover;
+    background-position: center;
+    box-sizing: border-box; /* Prevents layout bleed */
+}
+
+/* Dimmer overlay to make text pop */
+.card-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(6, 11, 19, 0.4) 0%, rgba(6, 11, 19, 0.9) 100%);
+    z-index: 1;
+}
+
+/* Content MUST have z-index 2 to stay above the dim background */
+.card-content-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.p-avatar-square {
+    width: 80px;
+    height: 80px;
+    border-radius: 18px;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    background: #1e293b;
+    overflow: hidden;
+}
+
+.p-main-info {
+    flex: 1;
+}
+
+.p-main-info h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+}
+
+/* Team Pill Style */
+.team-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #10b981;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+.stats-grid-glass {
+    position: relative;
+    z-index: 2; /* Crucial: stays above overlay */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: auto; 
+    padding-bottom: 5px;
+}
+
+.stat-glass-box {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 12px 5px;
+    text-align: center;
+}
+
+.stat-glass-box span { display: block; font-size: 0.6rem; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; }
+.stat-glass-box b { font-size: 1.1rem; color: white; }
+
+/* FIX: Ensure Squad Section isn't broken */
+.squad-upload-container {
+    width: 100%;
+    min-height: 200px;
+    border: 2px dashed var(--border);
+    border-radius: 20px;
+    background: var(--card-bg);
+}
+        .tactical-analysis-card {
+    padding: 25px;
+    margin-top: 20px;
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.03) 0%, transparent 100%);
+}
+
+.chart-container-radar {
+    width: 100%;
+    max-width: 320px; /* Perfect size for mobile */
+    margin: 0 auto;
+    padding: 10px;
+}
+
+#radarChart {
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
+}
+
+.attribute-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.6rem;
+    color: #475569;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+        .scout-card { border-left: 4px solid var(--accent); position: relative; }
+.scout-content { font-size: 0.85rem; line-height: 1.6; color: #cbd5e1; font-style: italic; }
+.dossier-line { width: 30px; height: 2px; background: var(--accent); margin-top: 15px; }
+        .synapse-card {
+    text-align: center;
+    padding: 30px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.synapse-visual-wrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 25px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#synapseCanvas {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.4));
+}
+
+/* Moving scan effect */
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.3;
+    animation: scanMove 4s linear infinite;
+}
+
+@keyframes scanMove {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+.signature-id-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 10px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.id-label { font-size: 0.55rem; color: #475569; display: block; letter-spacing: 2px; margin-bottom: 5px; }
+.id-value { font-size: 1rem; color: var(--accent); font-weight: 900; letter-spacing: 3px; }
+
+.biometric-footer {
+    margin-top: 15px;
+    font-size: 0.6rem;
+    color: #475569;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+        .captain-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), transparent);
+    color: var(--gold);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+.captain-badge i { font-size: 0.8rem; text-shadow: 0 0 10px var(--gold); }
+        /* --- NEXUS LEGENDS CUSTOM LOADER --- */
+#nl-loader-wrapper {
+    position: fixed;
+    inset: 0;
+    background: #020617; /* Ultra Dark Blue */
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nl-loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nl-logo-container {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+}
+
+.nl-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.nl-svg path {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
+}
+
+.letter-n {
+    stroke: #00e5ff; /* Cyan */
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: drawLetter 2s ease-in-out infinite;
+}
+
+.letter-l {
+    stroke: #10b981; /* Emerald */
+    stroke-dasharray: 150;
+    stroke-dashoffset: 150;
+    animation: drawLetter 2s ease-in-out infinite 0.3s;
+}
+
+.nexus-point {
+    fill: white;
+    box-shadow: 0 0 15px #fff;
+    animation: pointPulse 1s ease-in-out infinite;
+}
+
+@keyframes drawLetter {
+    0% { stroke-dashoffset: 200; opacity: 0; }
+    30% { opacity: 1; }
+    50% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -200; opacity: 0; }
+}
+
+@keyframes pointPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.5); opacity: 1; }
+}
+
+.nl-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 5px;
+    font-weight: 900;
+    margin-top: 10px;
+}
+
+.n-text { color: #00e5ff; margin-right: 8px; }
+.l-text { color: #10b981; }
+
+.nl-progress-mini {
+    width: 100px;
+    height: 2px;
+    background: rgba(255,255,255,0.05);
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.nl-bar {
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(90deg, #00e5ff, #10b981);
+    animation: barMove 1.5s infinite linear;
+}
+
+@keyframes barMove {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+}
+
+/* Page exit animation */
+.loader-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+        /* --- IMAGE 1: PERCENTILE RANKING STYLES --- */
+.percentile-card { padding: 25px; }
+.overall-rating-area { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
+.rating-square {
+    width: 85px; height: 85px; border-radius: 20px;
+    background: rgba(16, 185, 129, 0.1); border: 2.5px solid var(--accent);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+.rating-square b { font-size: 2.2rem; line-height: 1; color: white; font-family: 'Orbitron'; }
+.rating-square span { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; margin-top: 5px; font-weight: 800; }
+
+.percentile-row { margin-bottom: 20px; }
+.p-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.p-label-row label { font-size: 0.9rem; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 10px; }
+.p-label-row label i { color: var(--accent); font-size: 0.8rem; }
+.top-badge { 
+    background: rgba(16, 185, 129, 0.2); color: var(--accent); 
+    padding: 3px 10px; border-radius: 50px; font-size: 0.65rem; font-weight: 900; 
+}
+.p-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 10px; overflow: hidden; }
+.p-bar-fill { height: 100%; border-radius: 10px; transition: 1.5s ease-out; }
+
+/* --- IMAGE 2: SEASON PERFORMANCE STYLES --- */
+.perf-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+.perf-stats-mini { font-size: 0.8rem; font-weight: bold; }
+.perf-stats-mini span { margin-right: 8px; }
+
+.perf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+.perf-box { 
+    background: #020617; border: 1px solid var(--border); border-radius: 15px; 
+    padding: 15px 5px; text-align: center; display: flex; flex-direction: column; gap: 5px;
+}
+.perf-box.high { border-color: var(--accent); color: var(--accent); }
+.perf-box.low { border-color: var(--loss); color: var(--loss); }
+.perf-box label { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; opacity: 0.6; }
+.perf-box b { font-size: 1.4rem; font-family: 'Orbitron'; }
+
+.chart-container-line { width: 100%; height: 200px; margin-top: 10px; }
+        .badge-gold { background: rgba(245, 158, 11, 0.2) !important; color: #f59e0b !important; }
+.badge-blue { background: rgba(59, 130, 246, 0.2) !important; color: #3b82f6 !important; }
+.badge-red { background: rgba(239, 68, 68, 0.2) !important; color: #ef4444 !important; }
+        /* --- MATCH ACTIVITY CALENDAR STYLES --- */
+.activity-card {
+    padding: 22px 18px;
+    background: #0b1322;
+    border: 1px solid #162438;
+}
+
+.activity-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.activity-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.activity-title i {
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+.activity-legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.legend-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+}
+
+.legend-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.win-pill .dot { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+.draw-pill .dot { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+.loss-pill .dot { background: #f43f5e; box-shadow: 0 0 6px rgba(244, 63, 94, 0.4); }
+
+/* Month Navigation */
+.cal-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding: 0 5px;
+}
+
+.cal-nav-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.cal-nav-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cal-month-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+/* Weekday Headers */
+.cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* Calendar Days Grid */
+.cal-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.cal-day-cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    position: relative;
+    user-select: none;
+}
+
+/* Inactive / Rest Days */
+.day-empty {
+    visibility: hidden;
+}
+
+.day-no-match {
+    background: #101b2b;
+    color: #3b4e68;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+/* Match Days */
+.day-match {
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+.day-num {
+    line-height: 1;
+    font-size: 0.88rem;
+    font-weight: 800;
+}
+
+.day-sub {
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+}
+
+/* Color Themes based on results */
+.match-win {
+    background: #10b981;
+}
+
+.match-draw {
+    background: #f59e0b;
+}
+
+.match-loss {
+    background: #f43f5e;
+}
+
+/* Footer Summary */
+.cal-footer-text {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+        /* --- TOURNAMENT HISTORY STYLES --- */
+.tour-history-card {
+    background: #0a1222;
+    border: 1px solid #162338;
+    border-radius: 20px;
+    padding: 22px 20px;
+    margin-bottom: 20px;
+}
+
+.tour-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tour-history-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.tour-history-title i {
+    color: #f59e0b; /* Gold Trophy */
+    font-size: 1.15rem;
+}
+
+/* Styled Dropdown */
+.tour-select-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+#tourHistoryFilter {
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 32px 8px 16px;
+    cursor: pointer;
+    outline: none;
+    transition: 0.2s;
+}
+
+#tourHistoryFilter:focus {
+    border-color: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.select-chevron {
+    position: absolute;
+    right: 12px;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+/* Category Subtitle */
+.tour-history-subtitle {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #475569;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 20px 0 14px;
+}
+
+/* Stages List */
+.tour-stage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tour-stage-row {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.tour-stage-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.stage-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+
+.stage-count {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+}
+
+.stage-count span {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-right: 4px;
+    font-weight: 700;
+}
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <a href="index.html" class="back-link"><i class="fa-solid fa-chevron-left"></i> Back</a>
+    </nav>
+
+    <div id="nl-loader-wrapper">
+    <div class="nl-loader-content">
+        <div class="nl-logo-container">
+            <svg viewBox="0 0 100 100" class="nl-svg">
+                <!-- The "N" Path -->
+                <path class="letter-n" d="M20,70 L20,30 L50,70 L50,30" />
+                <!-- The "L" Path -->
+                <path class="letter-l" d="M60,30 L60,70 L85,70" />
+                
+                <!-- Intersecting Glow Point -->
+                <circle class="nexus-point" cx="50" cy="70" r="3" />
+            </svg>
+        </div>
+        <div class="nl-text">
+            <span class="n-text">Loading</span><span class="l-text">Profile...</span>
+        </div>
+        <div class="nl-progress-mini">
+            <div class="nl-bar"></div>
+        </div>
+    </div>
+    </div>
+
+    <div id="playerContent" style="display: none;">
+        <div id="profileCard" class="glass-card-themed">
+    <div class="card-overlay"></div>
+        
+        <!-- HEADER STATS -->
+        <div class="card-content-top">
+        <div id="avatar" class="p-avatar-square"></div>
+        <div class="p-main-info">
+            <div id="captainBadge" class="captain-badge" style="display: none;">
+    <i class="fa-solid fa-crown"></i> OFFICIAL TEAM CAPTAIN
+            </div>
+                    <h1 id="pName">Name</h1>
+            <div id="teamPill" class="team-pill">Loading...</div>
+                    <p id="pNick">"Nickname"</p>
+                </div>
+            </div>
+            <div id="capBadgeContainer" style="display: none;">
+    <div class="captain-badge">
+        <i class="fa-solid fa-crown"></i> Team Captain
+    </div>
+            </div>
+            <div class="stats-grid-glass">
+        <div class="stat-glass-box">
+            <span>Auction Price</span>
+            <b id="pAuction">0</b>
+        </div>
+        <div class="stat-glass-box">
+            <span>Market Value</span>
+            <b id="pMarket" style="color:#10b981;">0</b>
+        </div>
+        <div class="stat-glass-box">
+            <span>BDR Points</span>
+            <b id="pBDR">0</b>
+        </div>
+            </div>
+        </div>
+        <!-- Recent Form Display -->
+<div class="glass-card">
+    <span class="form-label">Recent Form</span>
+    <div id="recentFormDots" class="form-dots-wrapper">
+        <!-- Dots will be injected here -->
+    </div>
+</div>
+
+        <!-- MATCH HISTORY -->
+        <div class="glass-card">
+            <div class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Match history</div>
+            <div id="historyList"></div>
+        </div>
+        
+
+        <!-- HEAD TO HEAD SECTION -->
+<div class="glass-card">
+    <div class="section-title">
+        <i class="fa-solid fa-swords"></i> Head-to-head record
+    </div>
+    
+    <!-- Styled Selector -->
+    <select id="h2hSelector" class="h2h-select" onchange="calculateH2H()">
+        <option value="">Select opponent...</option>
+    </select>
+
+    <!-- H2H Stats Area (Hidden until an opponent is picked) -->
+    <div id="h2hResultArea" style="display:none; margin-top:20px;">
+        <div class="h2h-summary-grid">
+            <div class="h2h-stat-box win">
+                <span class="h2h-val" id="h2hWins">0</span>
+                <span class="h2h-lab">Wins</span>
+            </div>
+            <div class="h2h-stat-box draw">
+                <span class="h2h-val" id="h2hDraws">0</span>
+                <span class="h2h-lab">Draws</span>
+            </div>
+            <div class="h2h-stat-box loss">
+                <span class="h2h-val" id="h2hLosses">0</span>
+                <span class="h2h-lab">Losses</span>
+            </div>
+        </div>
+        
+        <!-- List of matches against that specific opponent -->
+        <div id="h2hMatchList"></div>
+    </div>
+</div>
+        
+
+<!-- Player Squad Section -->
+<div class="card">
+    <div class="card-header">
+        <i class="fa-regular fa-image"></i>
+        <h3>Player squad</h3>
+    </div>
+    <div class="squad-upload-container" onclick="document.getElementById('squadInput').click()">
+        <div id="squadDisplay">
+            <div class="upload-placeholder">
+                <div class="icon-circle">A</div>
+                <p>No squad image uploaded</p>
+                <span class="upload-hint">Click to upload squad</span>
+            </div>
+        </div>
+        <input type="file" id="squadInput" hidden onchange="handleSquadUpload(this)">
+    </div>
+</div>
+
+        <!-- SEASON SUMMARY -->
+        <div class="glass-card">
+            <div class="section-title"><i class="fa-solid fa-chart-simple"></i> Season summary</div>
+            <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="stat-box"><span>Wins</span><b id="sWins" style="color:var(--win)">0</b></div>
+                <div class="stat-box"><span>Draws</span><b id="sDraws" style="color:var(--draw)">0</b></div>
+                <div class="stat-box"><span>Losses</span><b id="sLoss" style="color:var(--loss)">0</b></div>
+            </div>
+            <div class="summary-row"><span>Games played</span><span id="sPlayed">0</span></div>
+            <div class="summary-row"><span>Win rate</span><span id="sWinRate">0%</span></div>
+            <div class="summary-row"><span>Goals scored</span><span id="sGoals">0</span></div>
+            <div class="summary-row"><span>Goals per match</span><span id="sGPM">0.0</span></div>
+        </div>
+
+        <!-- UPDATED TROPHIES SECTION -->
+<div class="glass-card">
+    <div class="section-title"><i class="fa-solid fa-trophy"></i> Trophies</div>
+        <div class="trophy-new-grid" id="coreTrophyGrid">
+        <!-- Ballon d'Or -->
+        <div class="trophy-card">
+            <img src="https://i.postimg.cc/vH0Rd0Sj/232666-removebg-preview.png" class="trophy-img-large">
+            <div class="trophy-info">
+                <b id="tBallon">0</b>
+                <span>Ballon d'Or</span>
+            </div>
+        </div>
+        <!-- Team League -->
+        <div class="trophy-card">
+            <img src="https://i.postimg.cc/15phyzFD/259302-removebg-preview.png" class="trophy-img-large">
+            <div class="trophy-info">
+                <b id="tLeague">0</b>
+                <span>QUICK TOUR CHAMPION</span>
+            </div>
+        </div>
+        <!-- UCL -->
+        <div class="trophy-card">
+            <img src="https://i.postimg.cc/QdC2NcRm/232668-removebg-preview.png" class="trophy-img-large">
+            <div class="trophy-info">
+                <b id="tUCL">0</b>
+                <span>Solo Golden Boot</span>
+            </div>
+        </div>
+        <!-- Weekly -->
+        <div class="trophy-card">
+            <img src="https://i.postimg.cc/qvqPB29Q/232667-removebg-preview.png" class="trophy-img-large">
+            <div class="trophy-info">
+                <b id="tWeekly">0</b>
+                <span>Auction Golden Boot</span>
+            </div>
+        </div>
+        
+    </div>
+    <div id="customTrophyContainer" class="trophy-new-grid" style="margin-top:12px;">
+    </div>
+</div>
+        <!-- MATCH ACTIVITY CALENDAR SYSTEM -->
+<div class="glass-card activity-card">
+    <div class="activity-top-row">
+        <div class="activity-title">
+            <i class="fa-regular fa-calendar"></i> Match Activity
+        </div>
+        <div class="activity-legend">
+            <span class="legend-pill win-pill"><span class="dot"></span> <b id="calWinCount">0W</b></span>
+            <span class="legend-pill draw-pill"><span class="dot"></span> <b id="calDrawCount">0D</b></span>
+            <span class="legend-pill loss-pill"><span class="dot"></span> <b id="calLossCount">0L</b></span>
+        </div>
+    </div>
+
+    <!-- Month Navigator -->
+    <div class="cal-nav">
+        <button type="button" class="cal-nav-btn" onclick="changeCalendarMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <span class="cal-month-title" id="calMonthDisplay">Month 2026</span>
+        <button type="button" class="cal-nav-btn" onclick="changeCalendarMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <!-- Weekday Labels (Mon - Sun) -->
+    <div class="cal-weekdays">
+        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="cal-days-grid" id="calDaysGrid">
+        <!-- Injected dynamically by JS -->
+    </div>
+
+    <!-- Footer Summary -->
+    <div class="cal-footer-text" id="calFooterSummary">
+        0 matches in this month
+    </div>
+</div>
+        <!-- IMAGE 1: FULL PERCENTILE RANKINGS (8 FACTORS) -->
+<div class="glass-card percentile-card">
+    <div class="section-title">
+        <i class="fa-solid fa-chart-simple"></i> Percentile Rankings
+    </div>
+    
+    <div class="overall-rating-area">
+        <div class="rating-square">
+            <b id="ovrRating">--</b>
+            <span>Overall</span>
+        </div>
+        <div>
+            <p id="analysisText" style="font-size: 0.85rem; color: var(--text-dim); margin: 0; line-height: 1.4;">
+                Calculating neural performance data...
+            </p>
+        </div>
+    </div>
+
+    <!-- 1. Win Rate -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-arrow-trend-up"></i> Win Rate</label>
+            <span class="top-badge" id="winPercBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="winBar" class="p-bar-fill" style="background: var(--accent); width: 0%;"></div></div>
+    </div>
+
+    <!-- 2. Current Form -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-bolt"></i> Current Form</label>
+            <span class="top-badge badge-blue" id="formBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="formBar" class="p-bar-fill" style="background: #3b82f6; width: 0%;"></div></div>
+    </div>
+
+    <!-- 3. Clutch -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-crosshairs"></i> Clutch</label>
+            <span class="top-badge badge-gold" id="clutchBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="clutchBar" class="p-bar-fill" style="background: #f59e0b; width: 0%;"></div></div>
+    </div>
+
+    <!-- 4. Giant Killing -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-fire"></i> Giant Killing</label>
+            <span class="top-badge badge-gold" id="gkBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="gkBar" class="p-bar-fill" style="background: #f59e0b; width: 0%;"></div></div>
+    </div>
+
+    <!-- 5. Consistency -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-shield-heart"></i> Consistency</label>
+            <span class="top-badge badge-red" id="consistBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="consistBar" class="p-bar-fill" style="background: #ef4444; width: 0%;"></div></div>
+    </div>
+
+    <!-- 6. Loss Avoidance -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-shield"></i> Loss Avoidance</label>
+            <span class="top-badge badge-blue" id="laBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="laBar" class="p-bar-fill" style="background: #3b82f6; width: 0%;"></div></div>
+    </div>
+
+    <!-- 7. Trophy Haul -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-trophy"></i> Trophy Haul</label>
+            <span class="top-badge badge-blue" id="trophyBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="trophyBar" class="p-bar-fill" style="background: #3b82f6; width: 0%;"></div></div>
+    </div>
+
+    <!-- 8. Value Growth -->
+    <div class="percentile-row">
+        <div class="p-label-row">
+            <label><i class="fa-solid fa-chart-line"></i> Value Growth</label>
+            <span class="top-badge badge-gold" id="growthBadge">Top --%</span>
+        </div>
+        <div class="p-bar-bg"><div id="growthBar" class="p-bar-fill" style="background: #f59e0b; width: 0%;"></div></div>
+    </div>
+</div>
+        <!-- TOURNAMENT & KNOCKOUT HISTORY CARD -->
+<div class="glass-card tour-history-card">
+    <!-- Header -->
+    <div class="tour-history-header">
+        <div class="tour-history-title">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Tournament History</span>
+        </div>
+
+        <!-- Upper Right Dynamic Tour Dropdown -->
+        <div class="tour-select-wrapper">
+            <select id="tourHistoryFilter" onchange="renderTournamentHistory()">
+                <option value="overall">Overall</option>
+            </select>
+            <i class="fa-solid fa-chevron-down select-chevron"></i>
+        </div>
+    </div>
+
+    <!-- Subtitle Category -->
+    <div class="tour-history-subtitle" id="tourHistorySubtitle">
+        OVERALL KNOCKOUT HISTORY
+    </div>
+
+    <!-- Stage Items Container -->
+    <div id="tourStageList" class="tour-stage-list">
+        <!-- Stages injected by JS -->
+    </div>
+</div>
+
+<!-- NEW: IMAGE 2 - SEASON PERFORMANCE -->
+<div class="glass-card">
+    <div class="section-title"><i class="fa-solid fa-chart-line"></i> Season Performance</div>
+    
+    <div class="perf-header">
+        <div class="perf-stats-mini">
+            <span style="color:var(--accent)" id="perfW">0W</span>
+            <span style="color:var(--text-dim)" id="perfD">0D</span>
+            <span style="color:var(--loss)" id="perfL">0L</span>
+        </div>
+        <select class="h2h-select" style="width:auto; padding:5px 15px; margin:0; font-size:0.7rem;">
+            <option>Current Season</option>
+        </select>
+    </div>
+
+    <div class="perf-grid">
+        <div class="perf-box high">
+            <label>High</label>
+            <b id="perfHigh">+0</b>
+        </div>
+        <div class="perf-box">
+            <label>Current</label>
+            <b id="perfCurr">0</b>
+        </div>
+        <div class="perf-box low">
+            <label>Low</label>
+            <b id="perfLow">0</b>
+        </div>
+    </div>
+
+    <div class="chart-container-line">
+        <canvas id="performanceChart"></canvas>
+    </div>
+</div>
+        <!-- AI SCOUTING DOSSIER -->
+<div class="glass-card scout-card">
+    <div class="section-title">
+        <i class="fa-solid fa-user-secret"></i> AI Tactical Scout Report
+    </div>
+    <div id="aiScoutText" class="scout-content">
+        <i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing tactical data...
+    </div>
+    <div class="dossier-line"></div>
+</div>
+
+    <script>
+    const API = "https://pes-park-backend.onrender.com";
+    const API_V2 = "https://nexus-database-v2.onrender.com";
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerId = urlParams.get('id');
+
+    let playerMatches = [];
+    let myName = "";
+    let selectedAvatarUrl = "";
+    let selectedBgUrl = "";
+    const IMGBB_API_KEY = "f7efe3b052585cd233d08aa371c043bc";
+
+    async function loadProfile() {
+        try {
+            const res = await fetch(`${API}/api/players/profile/${playerId}`);
+            const data = await res.json();
+            const p = data.player;
+            fetch(`${API_V2}/api/players/${playerId}/view`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => console.log("👀 [View Tracker]:", data))
+            .catch(err => console.error("❌ [View Tracker Error]:", err));
+            selectedAvatarUrl = p.image || "";
+            selectedBgUrl = p.backgroundImage || "";
+            playerMatches = data.matches;
+            myName = p.name;
+            const profileCard = document.getElementById('profileCard');
+const teamPill = document.getElementById('teamPill');
+            const attributes = p.attributes || { consistency: 50, bigMatch: 50, scoring: 50, playmaking: 50, defense: 50, mental: 50 };
+initMatchActivityCalendar(playerMatches);
+            if (p.isCaptain) {
+    document.getElementById('captainBadge').style.display = 'inline-flex';
+} else {
+    document.getElementById('captainBadge').style.display = 'none';
+            }
+            
+            
+
+            // 1. Info & Trophies
+            document.getElementById('pName').innerText = p.name;
+            document.getElementById('pNick').innerText = p.nickname ? `"${p.nickname}"` : "";
+            document.getElementById('pAuction').innerText = (p.auctionPrice || 0) + "M";
+            document.getElementById('pMarket').innerText = (p.marketValue || 0) + "M";
+            document.getElementById('pBDR').innerText = p.bdrPoints || 0;
+            const squadDiv = document.getElementById('squadDisplay');
+        if (squadDiv && p.squadImage) {
+            squadDiv.innerHTML = `<img src="${p.squadImage}" style="width:100%; height:100%; object-fit:cover; border-radius:15px;">`;
+        }
+
+        // --- BACKGROUND IMAGE ---
+        if (p.backgroundImage && profileCard) {
+                profileCard.style.backgroundImage = `url("${p.backgroundImage}")`;
+            }
+
+            if (teamPill) {
+                teamPill.innerText = p.teamName || "FREE AGENT";
+        }
+            renderRadarChart(p.attributes || {});
+            generateScoutReport(p);
+            calculateAdvancedStats(p, playerMatches);
+            initTournamentHistoryDropdown();
+            
+            // --- UPDATE THIS PART IN loadProfile() ---
+const avatarBox = document.getElementById('avatar');
+
+// Add this line to make the box clickable
+avatarBox.onclick = () => {
+    document.getElementById('avatarModal').style.display = 'flex';
+};
+
+if (p.image && p.image !== "") {
+    // If image exists, show it as a centered background or an img tag
+    avatarBox.innerHTML = `<img src="${p.image}" style="width:100%; height:100%; object-fit:cover; border-radius:15px;">`;
+    avatarBox.style.background = "transparent"; // Remove the default grey background
+} else {
+    // Fallback if no image is set
+    avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size:2rem; color:#374151;"></i>`;
+}
+            // --- 1. CORE TROPHY COUNTS (BALLON, BOOT, ETC) ---
+        const tr = p.trophies || {};
+        
+        // Maps database numbers to the IDs in your HTML grid
+        if(document.getElementById('tBallon')) document.getElementById('tBallon').innerText = tr.ballonDor || 0;
+        if(document.getElementById('tLeague')) document.getElementById('tLeague').innerText = tr.quickTour || 0;
+        if(document.getElementById('tUCL')) document.getElementById('tUCL').innerText = tr.soloBoot || 0;
+        if(document.getElementById('tWeekly')) document.getElementById('tWeekly').innerText = tr.auctionBoot || 0;
+
+        // --- 2. CUSTOM TROPHIES (DYNAMIC LIST) ---
+        const customContainer = document.getElementById('customTrophyContainer');
+        
+        if (customContainer) {
+            if (p.customTrophies && p.customTrophies.length > 0) {
+                // Generates a new card for every extra trophy awarded via Dashboard
+                customContainer.innerHTML = p.customTrophies.map(t => `
+                    <div class="trophy-card">
+                        <img src="${t.image}" class="trophy-img-large" onerror="this.src='https://i.ibb.co/0fM0Z4M/league-trophy.png'">
+                        <div class="trophy-info">
+                            <b style="color:var(--accent)">Awarded</b>
+                            <span>${t.name}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                customContainer.innerHTML = ""; // Keep empty if no custom trophies
+            }
+        }
+
+            // 2. Automated Season Summary
+            let w = 0, d = 0, l = 0, g = 0;
+            playerMatches.forEach(m => {
+                const isA = m.playerA === myName;
+                const myS = isA ? m.scoreA : m.scoreB;
+                const oppS = isA ? m.scoreB : m.scoreA;
+                g += myS;
+                if (myS > oppS) w++; else if (myS === oppS) d++; else l++;
+            });
+
+            document.getElementById('sWins').innerText = w;
+            document.getElementById('sDraws').innerText = d;
+            document.getElementById('sLoss').innerText = l;
+            document.getElementById('sPlayed').innerText = playerMatches.length;
+            document.getElementById('sGoals').innerText = g;
+            document.getElementById('sWinRate').innerText = playerMatches.length > 0 ? Math.round((w / playerMatches.length) * 100) + "%" : "0%";
+            document.getElementById('sGPM').innerText = playerMatches.length > 0 ? (g / playerMatches.length).toFixed(1) : "0.0";
+
+            // 3. Recent Form (Last 5)
+            // --- EXACT JS FIX FOR RECENT FORM ---
+const recentMatches = playerMatches.slice(0, 5).reverse();
+const formContainer = document.getElementById('recentFormDots');
+
+if (playerMatches.length > 0) {
+    formContainer.innerHTML = recentMatches.map(m => {
+        const isA = m.playerA === myName;
+        const myS = isA ? m.scoreA : m.scoreB;
+        const oppS = isA ? m.scoreB : m.scoreA;
+
+        let resClass = '';
+        let char = '';
+
+        if (myS > oppS) { 
+            resClass = 'f-win'; 
+            char = 'W'; 
+        } else if (myS < oppS) { 
+            resClass = 'f-loss'; 
+            char = 'L'; 
+        } else { 
+            resClass = 'f-draw'; 
+            char = 'D'; 
+        }
+
+        return `
+            <div class="form-item ${resClass}">
+                <span class="dot-letter">${char}</span>
+            </div>
+        `;
+    }).join('');
+} else {
+    formContainer.innerHTML = '<span style="color:var(--text-dim); font-size:0.7rem;">No matches played</span>';
+}
+
+            // 4. Match History & H2H Dropdown
+            document.getElementById('historyList').innerHTML = playerMatches.slice(0, 10).map(m => {
+                const isA = m.playerA === myName;
+                const res = (isA ? m.scoreA : m.scoreB) > (isA ? m.scoreB : m.scoreA) ? 'WIN' : (m.scoreA === m.scoreB ? 'DRAW' : 'LOSS');
+                return `<div class="match-row"><div class="m-date">${new Date(m.createdAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}</div><div class="m-opp">vs ${isA?m.playerB:m.playerA}</div><div class="m-score">${isA?m.scoreA:m.scoreB}-${isA?m.scoreB:m.scoreA}</div><div class="badge ${res.toLowerCase()}">${res}</div></div>`;
+            }).join('') || 'No records found';
+
+            // --- NEW: FETCH ALL PLAYERS FROM DATABASE ---
+            const allPlayersRes = await fetch(`${API}/api/players`);
+            const allPlayers = await allPlayersRes.json();
+            
+            // Show everyone except the current player
+            const otherPlayers = allPlayers.filter(p => p.name !== myName);
+
+            document.getElementById('h2hSelector').innerHTML = '<option value="">Select opponent...</option>' + 
+                otherPlayers.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+            document.getElementById('nl-loader-wrapper').style.display = 'none';
+            document.getElementById('playerContent').style.display = 'block';
+        } catch (e) { console.error(e); }
+    }
+
+    // 1. Calculate H2H when opponent is selected
+function calculateH2H() {
+    const oppName = document.getElementById('h2hSelector').value;
+    const resultArea = document.getElementById('h2hResultArea');
+    const matchList = document.getElementById('h2hMatchList');
+
+    if (!oppName) {
+        resultArea.style.display = 'none';
+        return;
+    }
+
+    // Filter matches played against this opponent
+    const filtered = playerMatches.filter(m => m.playerA === oppName || m.playerB === oppName);
+
+    let w = 0, d = 0, l = 0;
+    let listHtml = '';
+
+    filtered.forEach(m => {
+        const isA = m.playerA === myName;
+        const myS = isA ? m.scoreA : m.scoreB;
+        const oppS = isA ? m.scoreB : m.scoreA;
+
+        let resText = 'DRAW', resClass = 'f-draw';
+        if (myS > oppS) { w++; resText = 'WIN'; resClass = 'f-win'; }
+        else if (myS < oppS) { l++; resText = 'LOSS'; resClass = 'f-loss'; }
+        else { d++; }
+
+        listHtml += `
+            <div class="match-row">
+                <span class="m-date">${new Date(m.createdAt).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}</span>
+                <span class="res-badge ${resClass}">${resText}</span>
+                <span class="m-score">${myS} - ${oppS}</span>
+            </div>`;
+    });
+
+    document.getElementById('h2hWins').innerText = w;
+    document.getElementById('h2hDraws').innerText = d;
+    document.getElementById('h2hLosses').innerText = l;
+    matchList.innerHTML = listHtml;
+    resultArea.style.display = 'block';
+}
+
+// 2. Add this inside your loadProfile() function where the dropdown was being populated
+// Find the line that creates the 'opps' set and replace it with:
+
+
+async function handleFileUpload(input, type) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Show loading state on button
+    const btn = document.getElementById('saveAvatarBtn');
+    btn.innerText = "Uploading...";
+    btn.disabled = true;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+        const data = await res.json();
+        
+        if (type === 'avatar') {
+            selectedAvatarUrl = data.data.url;
+            alert("Avatar Uploaded!");
+        } else {
+            selectedBgUrl = data.data.url;
+            alert("Background Uploaded!");
+        }
+    } catch (err) {
+        alert("Upload failed. Check API Key.");
+    } finally {
+        btn.innerText = "Save";
+        btn.disabled = false;
+    }
+}
+
+function selectChar(el, url) {
+    // UI selection feedback
+    document.querySelectorAll('.char-item').forEach(item => item.classList.remove('active'));
+    el.classList.add('active');
+    selectedAvatarUrl = (url === 'none') ? "" : url;
+}
+        async function saveImages() {
+    const btn = document.getElementById('saveAvatarBtn');
+    btn.innerText = "Saving...";
+
+    try {
+        const response = await fetch(`${API}/api/players/${playerId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image: selectedAvatarUrl, // This now contains the ImgBB link or the selected character
+                backgroundImage: selectedBgUrl
+            })
+        });
+        if (response.ok) {
+            closeModal();
+            location.reload(); // This triggers loadProfile() again to show the new image
+        }
+    } catch (err) {
+        alert("Error saving profile");
+    }
+        }
+        function closeModal() {
+    document.getElementById('avatarModal').style.display = 'none';
+        }
+        // Function to handle Squad Image Upload to ImgBB
+async function handleSquadUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const squadDisplay = document.getElementById('squadDisplay');
+    squadDisplay.innerHTML = `<p style="color:#10b981; font-weight:bold;">Uploading Squad...</p>`;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+        // 1. Upload to ImgBB
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+            method: "POST",
+            body: formData
+        });
+        const data = await res.json();
+        const imageUrl = data.data.url;
+
+        // 2. Save URL to Backend
+        const saveRes = await fetch(`${API}/api/players/${playerId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ squadImage: imageUrl })
+        });
+
+        if (saveRes.ok) {
+            squadDisplay.innerHTML = `<img src="${imageUrl}" style="width:100%; border-radius:15px;">`;
+            alert("Squad Image Updated!");
+        }
+    } catch (err) {
+        alert("Upload Failed!");
+        console.error(err);
+    }
+}
+        function renderRadarChart(attr) {
+    const canvas = document.getElementById('radarChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    // Set global Chart.js styles to match Nexus Branding
+    Chart.defaults.color = '#94a3b8'; // Dim text color
+    Chart.defaults.font.family = 'Inter';
+
+    // If a chart already exists, destroy it before creating a new one (prevents flickering)
+    if (window.myRadarChart) {
+        window.myRadarChart.destroy();
+    }
+
+    window.myRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['CONSISTENCY', 'BIG MATCH', 'SCORING', 'PLAYMAKING', 'DEFENSE', 'MENTAL'],
+            datasets: [{
+                data: [
+                    attr.consistency || 50, 
+                    attr.bigMatch || 50, 
+                    attr.scoring || 50, 
+                    attr.playmaking || 50, 
+                    attr.defense || 50, 
+                    attr.mental || 50
+                ],
+                backgroundColor: 'rgba(16, 185, 129, 0.2)', // Emerald glow fill
+                borderColor: '#10b981', // Solid Emerald line
+                borderWidth: 2,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    pointLabels: {
+                        font: { size: 10, weight: '800' },
+                        color: '#64748b'
+                    },
+                    ticks: { display: false, stepSize: 20 },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: {
+                legend: { display: false } // We don't need a legend for a single player
+            }
+        }
+    });
+        }
+        // Inside loadProfile() after fetching data 'p'
+async function generateScoutReport(player) {
+    const scoutBox = document.getElementById('aiScoutText');
+    if (!scoutBox) return;
+
+    // Show professional scanning state
+    scoutBox.innerHTML = `<i class="fa-solid fa-dna fa-spin" style="color:var(--accent)"></i> Analyzing Neural DNA...`;
+
+    try {
+        const res = await fetch(`${API_V2}/api/bot/scout-player`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: player.name,
+                marketValue: player.marketValue || 0,
+                bdrPoints: player.bdrPoints || 0,
+                attributes: player.attributes || { consistency: 50, bigMatch: 50, scoring: 50, playmaking: 50, defense: 50, mental: 50 }
+            })
+        });
+        
+        const data = await res.json();
+        
+        // Apply text with a slight fade-in effect
+        scoutBox.style.opacity = 0;
+        setTimeout(() => {
+            scoutBox.innerText = data.report || "Dossier unavailable.";
+            scoutBox.style.transition = "0.5s";
+            scoutBox.style.opacity = 1;
+        }, 100);
+
+    } catch (e) {
+        scoutBox.innerText = "Connection to Nexus AI Link failed.";
+    }
+}
+        // --- Inside loadProfile() ---
+
+// --- NEW LOGIC FOR IMAGE 1 & 2 ---
+
+function calculateAdvancedStats(p, matches) {
+    const totalMatches = matches.length;
+    if (totalMatches === 0) return;
+
+    // 1. Win Rate
+    const wins = matches.filter(m => (m.playerA === myName ? m.scoreA : m.scoreB) > (m.playerA === myName ? m.scoreB : m.scoreA)).length;
+    const winRate = (wins / totalMatches) * 100;
+
+    // 2. Current Form (Last 5 matches weighted)
+    const last5 = matches.slice(0, 5);
+    let formScore = 0;
+    last5.forEach(m => {
+        const isA = m.playerA === myName;
+        if ((isA ? m.scoreA : m.scoreB) > (isA ? m.scoreB : m.scoreA)) formScore += 20;
+        else if (m.scoreA === m.scoreB) formScore += 10;
+    });
+
+    // 3. Clutch (Performance in Close Games)
+    const clutchMatches = matches.filter(m => Math.abs(m.scoreA - m.scoreB) <= 1);
+    const clutchWins = clutchMatches.filter(m => (m.playerA === myName ? m.scoreA : m.scoreB) > (m.playerA === myName ? m.scoreB : m.scoreA)).length;
+    const clutchScore = clutchMatches.length > 0 ? (clutchWins / clutchMatches.length) * 100 : 50;
+
+    // 4. Giant Killing (Wins against players with high scores - Simulated logic)
+    const gkScore = Math.min(100, (wins * 5) + (p.bdrPoints / 20));
+
+    // 5. Consistency (How many matches are not losses)
+    const consistency = 100 - ((matches.filter(m => (m.playerA === myName ? m.scoreA : m.scoreB) < (m.playerA === myName ? m.scoreB : m.scoreA)).length / totalMatches) * 100);
+
+    // 6. Loss Avoidance
+    const laScore = Math.min(100, winRate + 10);
+
+    // 7. Trophy Haul
+    const t = p.trophies || {};
+    const totalTrophies = (t.ballonDor || 0) + (t.ucl || 0) + (t.league || 0) + (t.weekly || 0) + (t.goldenBoot || 0);
+    const trophyScore = Math.min(100, totalTrophies * 20);
+
+    // 8. Value Growth
+    const buyPrice = p.auctionPrice || 1;
+    const currentVal = p.marketValue || 0;
+    const growth = ((currentVal - buyPrice) / buyPrice) * 100;
+    const growthScore = Math.min(100, Math.max(0, growth / 2));
+
+    // Update UI Function
+    const updateFactor = (id, score) => {
+        const bar = document.getElementById(id + 'Bar');
+        const badge = document.getElementById(id + 'Badge');
+        if(bar) bar.style.width = score + "%";
+        if(badge) badge.innerText = `Top ${Math.max(1, 100 - Math.round(score))}%`;
+    };
+
+    updateFactor('win', winRate);
+    updateFactor('form', formScore);
+    updateFactor('clutch', clutchScore);
+    updateFactor('gk', gkScore);
+    updateFactor('consist', consistency);
+    updateFactor('la', laScore);
+    updateFactor('trophy', trophyScore);
+    updateFactor('growth', growthScore);
+
+    // Overall Rating (Average of all 8)
+    const ovr = Math.round((winRate + formScore + clutchScore + gkScore + consistency + laScore + trophyScore + growthScore) / 8);
+    document.getElementById('ovrRating').innerText = ovr;
+    
+    document.getElementById('analysisText').innerHTML = 
+        ovr > 80 ? `A legendary force — dominant across <span style="color:var(--accent)">all 8 categories</span>.` :
+        ovr > 60 ? `An all-round powerhouse — dominant across <span style="color:var(--accent)">5 categories</span>.` :
+        `Developing talent — showing strength in <span style="color:var(--accent)">3 categories</span>.`;
+
+    // Trigger Season Performance (Image 2 Logic)
+    renderSeasonAnalytics(p, matches);
+}
+
+function renderSeasonAnalytics(p, matches) {
+    let currentBDR = p.bdrPoints || 0;
+    let pointHistory = [];
+    let tempBdr = currentBDR;
+    
+    const history = [...matches].reverse();
+    history.forEach(m => {
+        const isA = m.playerA === myName;
+        const won = (isA ? m.scoreA : m.scoreB) > (isA ? m.scoreB : m.scoreA);
+        tempBdr += won ? 5 : -3; 
+        pointHistory.push(tempBdr);
+    });
+
+    if(pointHistory.length === 0) pointHistory = [0];
+
+    document.getElementById('perfHigh').innerText = "+" + Math.max(...pointHistory);
+    document.getElementById('perfCurr').innerText = currentBDR;
+    document.getElementById('perfLow').innerText = Math.min(...pointHistory);
+    
+    renderLineChart(pointHistory);
+}
+function renderLineChart(dataPoints) {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    
+    if (window.perfChart) window.perfChart.destroy();
+
+    window.perfChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dataPoints.map((_, i) => `M${i+1}`),
+            datasets: [{
+                data: dataPoints,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: (context) => {
+                    const index = context.dataIndex;
+                    if (index === 0) return '#10b981';
+                    return dataPoints[index] >= dataPoints[index-1] ? '#10b981' : '#ef4444';
+                }
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#475569', font: { size: 10 } } },
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#475569' } }
+            }
+        }
+    });
+}
+// --- MATCH ACTIVITY CALENDAR LOGIC ---
+let activeCalDate = new Date();
+let cachedPlayerMatches = [];
+
+function initMatchActivityCalendar(matches) {
+    cachedPlayerMatches = matches || [];
+
+    // If player has matches, default to the month of their latest match
+    if (cachedPlayerMatches.length > 0) {
+        const latestDate = new Date(cachedPlayerMatches[0].createdAt || cachedPlayerMatches[0].date);
+        if (!isNaN(latestDate)) {
+            activeCalDate = new Date(latestDate.getFullYear(), latestDate.getMonth(), 1);
+        }
+    }
+
+    renderMatchActivity();
+}
+
+function changeCalendarMonth(offset) {
+    activeCalDate.setMonth(activeCalDate.getMonth() + offset);
+    renderMatchActivity();
+}
+
+function renderMatchActivity() {
+    const year = activeCalDate.getFullYear();
+    const month = activeCalDate.getMonth();
+
+    // 1. Set Month Header
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    document.getElementById('calMonthDisplay').innerText = `${monthNames[month]} ${year}`;
+
+    // 2. Filter matches belonging to this month
+    const monthMatches = cachedPlayerMatches.filter(m => {
+        const mDate = new Date(m.createdAt || m.date);
+        return mDate.getFullYear() === year && mDate.getMonth() === month;
+    });
+
+    // 3. Map matches by Day of Month
+    const dayData = {};
+    let totalWins = 0, totalDraws = 0, totalLosses = 0;
+
+    monthMatches.forEach(m => {
+        const mDate = new Date(m.createdAt || m.date);
+        const day = mDate.getDate();
+
+        const isA = m.playerA === myName;
+        const myS = Number(isA ? m.scoreA : m.scoreB) || 0;
+        const oppS = Number(isA ? m.scoreB : m.scoreA) || 0;
+
+        let result = 'D';
+        if (myS > oppS) { result = 'W'; totalWins++; }
+        else if (myS < oppS) { result = 'L'; totalLosses++; }
+        else { totalDraws++; }
+
+        if (!dayData[day]) {
+            dayData[day] = { matches: [], wins: 0, draws: 0, losses: 0 };
+        }
+        dayData[day].matches.push(result);
+        if (result === 'W') dayData[day].wins++;
+        else if (result === 'L') dayData[day].losses++;
+        else dayData[day].draws++;
+    });
+
+    // 4. Update Top Legend Counters
+    document.getElementById('calWinCount').innerText = `${totalWins}W`;
+    document.getElementById('calDrawCount').innerText = `${totalDraws}D`;
+    document.getElementById('calLossCount').innerText = `${totalLosses}L`;
+
+    // 5. Update Footer Text
+    document.getElementById('calFooterSummary').innerText = 
+        `${monthMatches.length} ${monthMatches.length === 1 ? 'match' : 'matches'} in ${monthNames[month]}`;
+
+    // 6. Generate Days Grid
+    const grid = document.getElementById('calDaysGrid');
+    grid.innerHTML = '';
+
+    // Monday-based week offset (0 = Mon ... 6 = Sun)
+    const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Empty cells for offset
+    for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'cal-day-cell day-empty';
+        grid.appendChild(emptyCell);
+    }
+
+    // Days 1 to 31
+    for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        const data = dayData[day];
+
+        if (data) {
+            // Day with Matches
+            const matchCount = data.matches.length;
+            let themeClass = 'match-draw';
+            let label = 'D';
+
+            if (data.wins > data.losses) {
+                themeClass = 'match-win';
+                label = matchCount === 1 ? 'W' : `${matchCount}m`;
+            } else if (data.losses > data.wins) {
+                themeClass = 'match-loss';
+                label = matchCount === 1 ? 'L' : `${matchCount}m`;
+            } else {
+                themeClass = 'match-draw';
+                label = matchCount === 1 ? 'D' : `${matchCount}m`;
+            }
+
+            cell.className = `cal-day-cell day-match ${themeClass}`;
+            cell.innerHTML = `
+                <span class="day-num">${day}</span>
+                <span class="day-sub">${label}</span>
+            `;
+        } else {
+            // Inactive day (no matches played)
+            cell.className = 'cal-day-cell day-no-match';
+            cell.innerHTML = `<span class="day-num">${day}</span>`;
+        }
+
+        grid.appendChild(cell);
+    }
+}
+        // --- TOURNAMENT & KNOCKOUT HISTORY ENGINE ---
+let cachedAllTournaments = [];
+
+// 1. Initialize Dropdown with all current DB tournaments
+async function initTournamentHistoryDropdown() {
+    try {
+        const res = await fetch(`${API}/api/smart/tournaments`);
+        const tours = await res.json();
+        cachedAllTournaments = Array.isArray(tours) ? tours : [];
+
+        const select = document.getElementById('tourHistoryFilter');
+        if (!select) return;
+
+        // Keep "Overall" first, then add every tournament in the database
+        select.innerHTML = '<option value="overall">Overall</option>' + 
+            cachedAllTournaments.map(t => `<option value="${t._id}">${t.name}</option>`).join('');
+
+        // Initial render for Overall
+        renderTournamentHistory();
+    } catch (e) {
+        console.warn("Could not load tournament list:", e);
+        renderTournamentHistory();
+    }
+}
+
+// 2. Stage Name Normalizer (groups variants like QF, Semi-Final into standard names)
+function normalizeStageName(stage, isFinalWon) {
+    if (!stage) return null;
+    const s = stage.toLowerCase().trim();
+
+    if (s.includes("final") || s.includes("grand final")) {
+        return isFinalWon ? "Champions / Winners" : "Finals";
+    }
+    if (s.includes("semi")) return "Semi Finals";
+    if (s.includes("quarter") || s.includes("qf")) return "Quarter Finals";
+    if (s.includes("16") || s.includes("octavo")) return "Round of 16";
+    if (s.includes("32")) return "Round of 32";
+    if (s.includes("eliminator")) return "Eliminators";
+    if (s.includes("qualifier")) return "Qualifiers";
+    if (s.includes("knockout")) return "Knockout Round";
+
+    // If custom named, return as capitalized words
+    return stage;
+}
+
+// 3. Render Stages & Counts
+function renderTournamentHistory() {
+    const filterVal = document.getElementById('tourHistoryFilter')?.value || "overall";
+    const subtitle = document.getElementById('tourHistorySubtitle');
+    const container = document.getElementById('tourStageList');
+
+    if (!container) return;
+
+    // Filter matches based on the selected dropdown
+    let targetMatches = [];
+    if (filterVal === "overall") {
+        subtitle.innerText = "OVERALL KNOCKOUT HISTORY";
+        targetMatches = playerMatches || [];
+    } else {
+        const selectedTour = cachedAllTournaments.find(t => String(t._id) === String(filterVal));
+        const tourName = selectedTour ? selectedTour.name.toUpperCase() : "TOURNAMENT";
+        subtitle.innerText = `${tourName} HISTORY`;
+
+        targetMatches = (playerMatches || []).filter(m => {
+            const matchTourId = m.tourId?._id || m.tourId;
+            return String(matchTourId) === String(filterVal);
+        });
+    }
+
+    // Count how many times each stage was reached
+    const stageCounts = {};
+
+    targetMatches.forEach(m => {
+        // Only count if a stage was assigned to the fixture
+        if (m.stage && m.stage.toLowerCase() !== "group stage" && m.stage.toLowerCase() !== "league") {
+            const isA = m.playerA === myName;
+            const myScore = Number(isA ? m.scoreA : m.scoreB) || 0;
+            const oppScore = Number(isA ? m.scoreB : m.scoreA) || 0;
+            const wonMatch = myScore > oppScore;
+
+            const normalized = normalizeStageName(m.stage, wonMatch);
+            if (normalized) {
+                stageCounts[normalized] = (stageCounts[normalized] || 0) + 1;
+            }
+        }
+    });
+
+    const entries = Object.entries(stageCounts);
+
+    // Order priority: Champion -> Finals -> Semi Finals -> Quarter Finals -> etc.
+    const priority = [
+        "Champions / Winners",
+        "Finals",
+        "Semi Finals",
+        "Quarter Finals",
+        "Eliminators",
+        "Qualifiers",
+        "Round of 16",
+        "Round of 32",
+        "Knockout Round"
+    ];
+
+    entries.sort((a, b) => {
+        const idxA = priority.indexOf(a[0]);
+        const idxB = priority.indexOf(b[0]);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return b[1] - a[1];
+    });
+
+    if (entries.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding: 25px 15px; color: #64748b; font-size: 0.85rem;">
+                No knockout stages recorded for this selection.
+            </div>`;
+        return;
+    }
+
+    // Render the stage rows (e.g. Quarter Finals × 3)
+    container.innerHTML = entries.map(([stageName, count]) => `
+        <div class="tour-stage-row">
+            <span class="stage-name">${stageName}</span>
+            <span class="stage-count"><span>×</span>${count}</span>
+        </div>
+    `).join('');
+        }
+
+// Call it
+
+        window.onload = loadProfile;
+
+// Inside your loadProfile(), make sure to display the existing squad image:
+
+    </script>
+    <!-- Modal Overlay -->
+<div id="avatarModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Choose an avatar</h3>
+            <button onclick="closeModal()" class="close-x">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <p class="section-label">UPLOAD YOUR OWN</p>
+            <div class="upload-grid">
+                <div class="upload-box" onclick="document.getElementById('avatarInput').click()">
+                    <i class="fa-solid fa-upload"></i>
+                    <span>Avatar image</span>
+                    <input type="file" id="avatarInput" hidden onchange="handleFileUpload(this, 'avatar')">
+                </div>
+                <div class="upload-box" onclick="document.getElementById('bgInput').click()">
+                    <i class="fa-regular fa-image"></i>
+                    <span>Background image</span>
+                    <input type="file" id="bgInput" hidden onchange="handleFileUpload(this, 'bg')">
+                </div>
+            </div>
+
+            <p class="section-label">OR PICK A CHARACTER</p>
+            <div class="character-grid" id="charGrid">
+                <div class="char-item active" onclick="selectChar(this, 'none')">
+                    <div class="char-circle"><i class="fa-solid fa-ban"></i></div>
+                    <span>None</span>
+                </div>
+                <!-- Predefined characters -->
+                <div class="char-item" onclick="selectChar(this, 'https://i.postimg.cc/TYwbPSh8/file-0000000094a082079d65b1aa08615bd5.png')">
+                    <img src="https://i.postimg.cc/TYwbPSh8/file-0000000094a082079d65b1aa08615bd5.png">
+                </div>
+                <div class="char-item" onclick="selectChar(this, 'https://i.postimg.cc/Yq9FSV0Z/file-00000000989482079d0d325365308169.png')">
+                    <img src="https://i.postimg.cc/Yq9FSV0Z/file-00000000989482079d0d325365308169.png">
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save" id="saveAvatarBtn" onclick="saveImages()">Save</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
