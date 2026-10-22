@@ -315,37 +315,44 @@
 
     </div>
 
-    <!-- ================= PAGE 2: PLAYER DIRECTORY (200+ PLAYERS) ================= -->
-    <div id="view-players" class="space-y-4 hidden">
+    <!-- ================= PAGE 2: PLAYER DIRECTORY ================= -->
+    <div id="view-players" class="space-y-4 hidden max-w-xl mx-auto w-full">
       
-      <div class="space-y-2">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h1 class="text-2xl sm:text-3xl font-display font-black text-white flex items-center gap-2">
-              <span>PLAYER ROSTER</span>
-              <span class="text-xs font-esports bg-brand-neon/15 border border-brand-neon/40 text-brand-neon px-2.5 py-0.5 rounded-full" id="rosterCountBadge">
-                200+ Players
-              </span>
-            </h1>
-            <p class="text-xs text-slate-400 font-medium">Browse verified eFootball mobile captains, Division 1 aces, and tactical specialists.</p>
-          </div>
+      <!-- Top Header & Filter Dropdown (From Image) -->
+      <div class="flex items-center justify-between pt-1 pb-1">
+        <h2 class="font-display font-bold text-sm tracking-wider text-slate-300 uppercase">
+          DASHBOARD VIEW
+        </h2>
+        <div class="px-3 py-1 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 font-esports">
+          Total players: <span id="rosterCountBadge" class="text-brand-neon font-bold">0</span>
         </div>
+      </div>
 
-        <!-- Search & Filter Controls -->
-        <div class="space-y-2.5 pt-2">
-          <div class="relative">
-            <i data-lucide="search" class="w-4 h-4 text-brand-neon absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-            <input 
-              type="text" 
-              id="playerSearchInput" 
-              placeholder="Search by Gamertag, In-game ID, or Device..." 
-              class="w-full pl-10 pr-10 py-3 rounded-xl bg-brand-card/90 border border-brand-neon/30 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-brand-neon focus:ring-1 focus:ring-brand-neon transition-all"
-              oninput="handleSearch()"
-            />
-            <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-          </div>
+      <!-- Search Input (Matching "Q Roh" in screenshot) -->
+      <div class="relative">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input 
+          type="text" 
+          id="playerSearchInput" 
+          placeholder="Search player name or club..." 
+          class="w-full pl-11 pr-10 py-3 rounded-2xl bg-[#0b1324] border border-slate-800 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-neon transition-all"
+          oninput="handleSearch()"
+        />
+        <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- PLAYERS LIST CONTAINER (Matching screenshot list rows) -->
+      <div id="playersList" class="space-y-2 pt-1">
+        <!-- Live Database Players Rendered Here -->
+        <div class="text-center py-12 text-slate-500 font-esports">
+          <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2 text-brand-neon"></i>
+          Connecting to Render MongoDB...
+        </div>
+      </div>
+
+    </div>
 
           <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 text-xs font-esports">
             <button onclick="setPlaystyleFilter('ALL')" class="filter-chip px-3 py-1.5 rounded-lg border border-brand-neon bg-brand-neon text-brand-black font-bold whitespace-nowrap" data-style="ALL">
@@ -757,7 +764,7 @@
   <!-- ================= CLIENT JAVASCRIPT ================= -->
   <script>
     // --- STATE ---
-    let BACKEND_API_BASE = localStorage.getItem('https://trs-backend-qumj.onrender.com') || '';
+    const RENDER_API = "https://trs-backend-qumj.onrender.com/api";
     let CLAN_STATS = {
       winRate: '82.4%',
       matches: 450,
@@ -860,31 +867,30 @@
 
     // --- FETCH PLAYERS ---
     async function loadPlayers() {
-      const stored = localStorage.getItem('TRS_PLAYERS_CACHE');
-      if (BACKEND_API_BASE) {
-        try {
-          const res = await fetch(`${BACKEND_API_BASE}/players`);
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
-              ALL_PLAYERS = data;
-              localStorage.setItem('TRS_PLAYERS_CACHE', JSON.stringify(ALL_PLAYERS));
-              return;
-            }
-          }
-        } catch (e) {
-          console.warn('Fallback to local player storage');
+      const container = document.getElementById('playersList');
+      try {
+        const res = await fetch(`${RENDER_API}/players`);
+        if (!res.ok) throw new Error("Server error");
+        
+        const data = await res.json();
+        // ONLY assign data received from MongoDB — NO mock seed fallback!
+        ALL_PLAYERS = Array.isArray(data) ? data : [];
+        
+        // Update total counter
+        const countBadge = document.getElementById('rosterCountBadge');
+        if (countBadge) countBadge.innerText = ALL_PLAYERS.length;
+        applyFilters();
+      } catch (err) {
+        console.error("Failed to load players:", err);
+        if (container) {
+          container.innerHTML = `
+            <div class="text-center py-12 text-slate-400 text-xs">
+              <p class="text-rose-400 font-bold mb-1">Could not connect to database</p>
+              <p class="text-slate-500">If Render is waking up, please wait 30 seconds and refresh.</p>
+            </div>
+          `;
         }
       }
-
-      if (stored) {
-        try { ALL_PLAYERS = JSON.parse(stored); } catch(e) { ALL_PLAYERS = generateSeedPlayers(); }
-      } else {
-        ALL_PLAYERS = generateSeedPlayers();
-        localStorage.setItem('TRS_PLAYERS_CACHE', JSON.stringify(ALL_PLAYERS));
-      }
-
-      document.getElementById('rosterCountBadge').innerText = ALL_PLAYERS.length + " Players";
     }
 
     function updateConnectionStatus(text) {
@@ -1040,16 +1046,29 @@
     }
 
     function handleSearch() {
-      CURRENT_PAGE = 1;
-      const q = document.getElementById('playerSearchInput').value.trim();
-      document.getElementById('clearSearchBtn').classList.toggle('hidden', q.length === 0);
-      applyFilters();
+      const q = (document.getElementById('playerSearchInput')?.value || '').toLowerCase().trim();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) clearBtn.classList.toggle('hidden', q.length === 0);
+
+      FILTERED_PLAYERS = ALL_PLAYERS.filter(p => {
+        const name = (p.name || p.gamertag || '').toLowerCase();
+        const team = (p.teamName || '').toLowerCase();
+        return name.includes(q) || team.includes(q);
+      });
+
+      renderPlayerList();
     }
 
     function clearSearch() {
-      document.getElementById('playerSearchInput').value = '';
-      document.getElementById('clearSearchBtn').classList.add('hidden');
+      const input = document.getElementById('playerSearchInput');
+      if (input) input.value = '';
+      document.getElementById('clearSearchBtn')?.classList.add('hidden');
       applyFilters();
+    }
+
+    function applyFilters() {
+      FILTERED_PLAYERS = [...ALL_PLAYERS];
+      renderPlayerList();
     }
 
     function setPlaystyleFilter(style) {
@@ -1068,23 +1087,6 @@
       document.getElementById('deviceFilterLabel').innerText = `DEVICE: ${DEVICE_MODES[DEVICE_FILTER_INDEX].toUpperCase()}`;
       CURRENT_PAGE = 1;
       applyFilters();
-    }
-
-    function applyFilters() {
-      const q = (document.getElementById('playerSearchInput')?.value || '').toLowerCase();
-      const dev = DEVICE_MODES[DEVICE_FILTER_INDEX];
-
-      FILTERED_PLAYERS = ALL_PLAYERS.filter(p => {
-        const matchesQ = p.gamertag.toLowerCase().includes(q) || p.efootballId.includes(q) || p.device.toLowerCase().includes(q);
-        const matchesS = ACTIVE_STYLE === 'ALL' || p.playstyle.toLowerCase() === ACTIVE_STYLE.toLowerCase();
-        let matchesD = true;
-        if (dev === 'Android Only') matchesD = !p.device.includes('iPhone') && !p.device.includes('iPad');
-        if (dev === 'iOS Only') matchesD = p.device.includes('iPhone') || p.device.includes('iPad');
-        return matchesQ && matchesS && matchesD;
-      });
-
-      document.getElementById('filteredCount').innerText = FILTERED_PLAYERS.length;
-      renderDirectoryGrid();
     }
 
     function renderDirectoryGrid() {
@@ -1223,6 +1225,69 @@
         applyFilters();
         renderFeaturedPlayers();
       }
+    }
+    function renderPlayerList() {
+      const container = document.getElementById('playersList');
+      if (!container) return;
+
+      if (FILTERED_PLAYERS.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-slate-500 text-xs">
+            <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 opacity-30"></i>
+            No players found in database. Add players from Admin.
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+      container.innerHTML = FILTERED_PLAYERS.map(p => {
+        const playerName = (p.name || p.gamertag || 'UNKNOWN').toUpperCase();
+        const pId = p._id || p.id;
+        
+        // Club Logo or Dash "—"
+        const teamLogoHtml = p.teamLogo && p.teamLogo.trim() !== ''
+          ? `<img src="${p.teamLogo}" alt="team" class="w-6 h-6 object-contain" />`
+          : `<span class="text-slate-600 text-xs font-bold">—</span>`;
+
+        // Avatar Image or Placeholder Box
+        const avatarHtml = p.image && p.image.trim() !== ''
+          ? `<img src="${p.image}" class="w-full h-full object-cover" />`
+          : `<span class="text-[10px] text-slate-500 font-bold">40x40</span>`;
+        // Direct link to player (4).html passing the unique MongoDB ID
+        return `
+          <div 
+            onclick="openPlayerProfile('${pId}')"
+            class="flex items-center justify-between p-3 rounded-2xl bg-[#090f1d] hover:bg-[#0d162b] border border-slate-800/80 hover:border-slate-700 cursor-pointer transition-all active:scale-[0.99] group"
+          >
+            <!-- Left: Avatar + Name -->
+            <div class="flex items-center space-x-3.5 min-w-0">
+              <div class="w-11 h-11 rounded-xl bg-[#141d30] border border-slate-700/60 overflow-hidden flex items-center justify-center flex-shrink-0">
+                ${avatarHtml}
+              </div>
+              <span class="font-bold text-sm tracking-wide text-white group-hover:text-brand-neon transition-colors truncate">
+                ${playerName}
+              </span>
+            </div>
+
+            <!-- Right: Team Logo + Chevron -->
+            <div class="flex items-center space-x-3 flex-shrink-0">
+              <div class="w-7 flex justify-center items-center">
+                ${teamLogoHtml}
+              </div>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-600 group-hover:text-slate-300 transition-colors"></i>
+            </div>
+          </div>
+        `;
+        }).join('');
+
+      lucide.createIcons();
+    }
+
+    // --- 5. REDIRECT VISITOR TO INDIVIDUAL PROFILE ---
+    function openPlayerProfile(id) {
+      if (!id) return;
+      // Opens your player profile file passing the player MongoDB ID
+      window.location.href = `player.html?id=${id}`;
     }
   </script>
 </body>
