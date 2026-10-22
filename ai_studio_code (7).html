@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE RISING STARS | Official eFootball Mobile Clan</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Google Fonts for Cyber/eSports Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+    (function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('debug') === 'true') {
+            const script = document.createElement('script');
+            script.src = "https://cdn.jsdelivr.net/npm/eruda";
+            document.head.appendChild(script);
+            script.onload = function () {
+                eruda.init();
+                console.log("Eruda initialized for Debugging");
+            };
+        }
+    })();
+    </script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#040711">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #040711;
+            --card-bg: #070d1d;
+            --item-bg: #0a1226;
+            --accent: #00f3ff;
+            --accent-green: #10b981;
+            --text-dim: #94a3b8;
+            --border: #131e36;
+            --border-neon: rgba(0, 243, 255, 0.28);
+            --gold: #fbbf24;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.1) 0%, transparent 55%),
+                radial-gradient(circle at 100% 40%, rgba(0, 119, 254, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 0% 80%, rgba(0, 243, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 14px 110px;
+        }
+
+        /* The main wrapper that forces vertical stacking */
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* HEADER SECTION */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .logo-group { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+
+        .hamburger-btn {
+            background: transparent; 
+            border: none; 
+            color: white;
+            font-size: 1.25rem; 
+            cursor: pointer; 
+            padding: 4px;
+        }
+
+        .logo h2 { 
+            margin: 0; 
+            color: white; 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem; 
+            font-weight: 800;
+            white-space: nowrap; 
+            letter-spacing: 1px;
+        }
+
+        .logo h2 b { 
+            color: var(--accent); 
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+
+        .logo span { 
+            color: var(--accent); 
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.65rem; 
+            display: flex; 
+            align-items: center;
+            gap: 6px;
+            font-weight: 700; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+            display: inline-block;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .top-nav { 
+            display: flex; 
+            align-items: center;
+            gap: 6px; 
+        }
+
+        .nav-item { 
+            color: var(--text-dim); 
+            text-decoration: none; 
+            width: 34px; 
+            height: 34px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 10px; 
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.2s;
+        }
+
+        .nav-item.active { 
+            background: rgba(0, 243, 255, 0.12); 
+            color: var(--accent); 
+            border: 1px solid rgba(0, 243, 255, 0.4); 
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        /* ========================================================= */
+        /* ATTACHMENT 1 FEATURE: CLAN STATS & WAR METRICS COMBAT CARD */
+        /* ========================================================= */
+        .combat-stats-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .combat-card-main {
+            background: #050a18;
+            border: 1.5px solid var(--border-neon);
+            border-radius: 26px;
+            padding: 20px 18px 18px;
+            box-shadow: 0 8px 30px rgba(0, 243, 255, 0.09), inset 0 0 25px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .combat-grid-top {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .combat-stat-box {
+            background: #071022;
+            border: 1px solid rgba(0, 243, 255, 0.22);
+            border-radius: 16px;
+            padding: 12px 6px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .combat-stat-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .combat-stat-val-neon {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #00f3ff;
+            margin-top: 4px;
+            text-shadow: 0 0 14px rgba(0, 243, 255, 0.65);
+            display: block;
+        }
+
+        .combat-stat-val-white {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .combat-stat-val-gold {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: #fbbf24;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .combat-buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-join-roster {
+            background: linear-gradient(90deg, #00d2ff 0%, #00f3ff 50%, #0077fe 100%);
+            color: #040711;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 10px;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.65), 0 0 50px rgba(0, 119, 254, 0.35);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-join-roster:active {
+            transform: scale(0.97);
+            filter: brightness(1.1);
+        }
+
+        .btn-war-logs {
+            background: #091124;
+            color: #00f3ff;
+            border: 1px solid rgba(0, 243, 255, 0.45);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 16px;
+            padding: 14px 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.05);
+        }
+
+        .btn-war-logs:active {
+            transform: scale(0.97);
+            background: rgba(0, 243, 255, 0.1);
+            color: #ffffff;
+        }
+
+        /* Bottom pill */
+        .combat-pill-bottom {
+            background: #050a18;
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            border-radius: 18px;
+            padding: 13px 8px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .combat-pill-col {
+            border-right: 1px solid rgba(0, 243, 255, 0.15);
+            padding: 0 4px;
+        }
+
+        .combat-pill-col:last-child {
+            border-right: none;
+        }
+
+        .combat-pill-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .combat-pill-val-cyan {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #00f3ff;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .combat-pill-val-white {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .combat-pill-val-rose {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #f87171;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .combat-pill-val-yellow {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 900;
+            color: #fbbf24;
+            margin-top: 5px;
+            white-space: nowrap;
+            display: block;
+        }
+
+        /* DASHBOARD SECTION */
+        .dashboard-section { width: 100%; }
+        
+        .section-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title-row h3 { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem; 
+            color: var(--text-dim); 
+            letter-spacing: 1px; 
+            margin: 0; 
+        }
+
+        select { 
+            background: #0f172a; 
+            color: white; 
+            border: 1px solid var(--border); 
+            padding: 8px 12px; 
+            border-radius: 10px; 
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .players-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 20px 14px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .player-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 10px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            transition: all 0.2s ease;
+        }
+        
+        .player-row:hover {
+            background: rgba(0, 243, 255, 0.04);
+            border-radius: 12px;
+        }
+
+        .p-details { display: flex; align-items: center; gap: 12px; }
+        .p-img { width: 42px; height: 42px; border-radius: 10px; background: #0f172a; object-fit: cover; }
+        .p-name { display: block; font-size: 0.95rem; font-weight: 700; color: #f8fafc; text-transform: uppercase; }
+        .p-nick { font-size: 0.72rem; color: var(--text-dim); font-style: italic; }
+
+        .t-details { display: flex; align-items: center; gap: 8px; }
+        .t-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: contain; }
+
+        /* SIDE NAVIGATION */
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #070d1d;
+            z-index: 99999;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+            padding: 25px;
+            visibility: hidden;
+            overflow-y: auto;
+            padding-bottom: 90px;
+            scrollbar-width: none;
+        }
+
+        .side-nav::-webkit-scrollbar { display: none; }
+
+        .side-nav.active {
+            left: 0;
+            visibility: visible;
+        }
+
+        .side-nav-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 15px; 
+        }
+
+        .close-btn { 
+            background: transparent; 
+            border: none; 
+            color: #94a3b8; 
+            font-size: 1.5rem; 
+            cursor: pointer;
+        }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li {
+            padding: 13px 12px; 
+            color: #f8fafc; 
+            font-size: 0.95rem;
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            cursor: pointer;
+            border-radius: 12px; 
+            margin-bottom: 6px; 
+            transition: 0.2s;
+        }
+        
+        .nav-links li i { width: 20px; color: var(--accent); }
+        .nav-links li:hover { background: #0f1a30; color: var(--accent); }
+
+        #menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            z-index: 99998;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ANNOUNCEMENT BOX */
+        .announcement-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            width: 34px; 
+            height: 34px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            border-radius: 10px; 
+            border: 1px solid var(--border);
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+        .announcement-wrapper:hover { border-color: var(--accent); color: var(--accent); }
+
+        .ann-badge {
+            position: absolute; 
+            top: -4px; 
+            right: -4px;
+            background: #ef4444; 
+            color: white; 
+            font-size: 0.65rem;
+            font-weight: 900; 
+            padding: 1px 5px; 
+            border-radius: 20px;
+            border: 2px solid var(--bg);
+        }
+
+        .ann-box {
+            position: fixed; 
+            top: 75px; 
+            right: 20px;
+            width: 310px; 
+            max-height: 400px;
+            background: var(--card-bg); 
+            border: 1px solid var(--border-neon);
+            border-radius: 20px; 
+            z-index: 11000; 
+            display: none;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            overflow: hidden; 
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .ann-header { 
+            padding: 14px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .ann-header h4 { margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-family: 'Orbitron'; }
+        .ann-header button { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; }
+
+        .ann-list { padding: 10px; overflow-y: auto; max-height: 320px; }
+        .ann-item { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .ann-item:last-child { border-bottom: none; }
+        .ann-item p { margin: 0; font-size: 0.82rem; color: #e2e8f0; line-height: 1.4; }
+        .ann-item span { font-size: 0.65rem; color: var(--text-dim); margin-top: 4px; display: block; }
+
+        /* TABLES & RANKINGS */
+        .ranking-table { width: 100%; border-collapse: collapse; }
+        .ranking-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: #64748b;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 10px 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+        }
+        .ranking-table td {
+            padding: 10px 6px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .rank-col { width: 35px; font-weight: 800; color: var(--accent); text-align: center; }
+
+        .pts-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 12px;
+        }
+
+        .pts-table {
+            width: 100%;
+            min-width: 500px;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+        .pts-table th {
+            background: rgba(255,255,255,0.03);
+            color: var(--text-dim);
+            padding: 10px 6px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .pts-table td {
+            padding: 10px 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+        .col-team-name { text-align: left !important; font-weight: 700; color: white; }
+        .col-pts-bold { font-weight: 800; color: var(--gold) !important; }
+
+        .btn-icon {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 7px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        /* --- BOTTOM NAVIGATION BAR --- */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            max-width: 440px;
+            margin: 0 auto;
+            background: rgba(4, 7, 17, 0.95);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 20px;
+            z-index: 99999;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .bottom-nav-inner {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 8px;
+        }
+
+        .b-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 6px 4px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .b-nav-item i { font-size: 1.1rem; margin-bottom: 3px; }
+        .b-nav-item span {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: capitalize;
+        }
+
+        .b-nav-item.active {
+            color: var(--accent);
+            background: rgba(0, 243, 255, 0.08);
+        }
+        .b-nav-item.active i {
+            color: var(--accent);
+            filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.6));
+            transform: translateY(-2px);
+        }
+
+        /* MODALS (MODMAIL & POPUPS) */
+        .modmail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modmail-box {
+            background: #070d1d;
+            border: 1px solid var(--border-neon);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+        }
+
+        .modmail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .close-modmail {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.6rem;
+            cursor: pointer;
+        }
+
+        .modmail-body input, .modmail-body select, .modmail-body textarea {
+            width: 100%;
+            padding: 12px;
+            background: #040711;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .modmail-body input:focus, .modmail-body textarea:focus, .modmail-body select:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-send-modmail {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #040711;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-send-modmail:hover {
+            background: #10b981;
+        }
+
+        /* FOOTER */
+        .main-footer {
+            width: 100%;
+            text-align: center;
+            padding: 30px 20px 10px;
+            background: transparent;
+        }
+
+        .footer-line {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            margin: 0 auto 16px;
+            border-radius: 10px;
+            opacity: 0.5;
+        }
+
+        .main-footer p {
+            font-size: 0.72rem;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        /* INITIAL LOADER */
+        #nl-loader-wrapper {
+            position: fixed;
+            inset: 0;
+            background: #020617;
+            z-index: 100000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease;
+        }
+        .nl-loader-content { text-align: center; }
+        .nl-logo-container { width: 100px; height: 100px; margin: 0 auto 15px; }
+        .nl-svg { width: 100%; height: 100%; }
+        .letter-n { stroke: #00f3ff; stroke-width: 8; fill: none; stroke-linecap: round; }
+        .letter-l { stroke: #0077fe; stroke-width: 8; fill: none; stroke-linecap: round; }
+        .loader-hidden { opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <!-- ORIGINAL CYBER LOADER -->
+    <div id="nl-loader-wrapper">
+        <div class="nl-loader-content">
+            <div class="nl-logo-container">
+                <svg viewBox="0 0 100 100" class="nl-svg">
+                    <path class="letter-n" d="M20,70 L20,30 L50,70 L50,30" />
+                    <path class="letter-l" d="M60,30 L60,70 L85,70" />
+                    <circle cx="50" cy="70" r="3" fill="#00f3ff" />
+                </svg>
+            </div>
+            <div style="font-family:'Orbitron'; font-size:1.1rem; letter-spacing:4px; font-weight:900;">
+                <span style="color:#00f3ff">THE RISING</span> <span style="color:#ffffff">STARS</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR MENU -->
+    <div id="side-menu" class="side-nav">
+        <div class="side-nav-header">
+            <h3 style="margin:0; font-size:1rem; color:var(--accent); font-family:'Orbitron';">CLAN MENU</h3>
+            <button onclick="toggleMenu()" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <ul class="nav-links">
+            <li onclick="switchView('total')"><i class="fa-solid fa-users"></i> Total Players (200+)</li>
+            <li onclick="switchView('teams')"><i class="fa-solid fa-shield-halved"></i> Total Teams</li>
+            <li onclick="window.location.href='versus.html'"><i class="fa-solid fa-code-compare"></i> Players Compare</li>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+            <li onclick="switchView('soloTour')"><i class="fa-solid fa-user"></i> Solo Challenge</li>
+            <li onclick="switchView('auction')"><i class="fa-solid fa-gavel"></i> Auction Tournament</li>
+            <li onclick="switchView('duoTour')"><i class="fa-solid fa-user-group" style="color: #00f3ff;"></i> Duo Challenge (2v2)</li>
+            <li onclick="switchView('quickTour')" style="border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05);">
+                <i class="fa-solid fa-bolt" style="color: #ef4444;"></i> Quick Tour <span style="font-size: 0.6rem; background: #ef4444; color: white; padding: 2px 5px; border-radius: 4px; margin-left: 5px;">LIVE</span>
+            </li>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+            <li onclick="switchView('bdr')"><i class="fa-solid fa-trophy"></i> BDR Rankings</li>
+            <li onclick="switchView('market')"><i class="fa-solid fa-chart-line"></i> Market Value</li>
+            <li onclick="switchView('teamBDR')"><i class="fa-solid fa-award"></i> Club Championship</li>
+            <li onclick="switchView('trophies')"><i class="fa-solid fa-trophy"></i> Trophies</li>
+            <li onclick="switchView('uptime')"><i class="fa-solid fa-signal"></i> Operational Status</li>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+            <li id="installBtn" style="display:none; cursor:pointer; color:var(--accent); font-weight:bold;">
+                <i class="fa-solid fa-download"></i> Install App
+            </li>
+        </ul>
+    </div>
+    <div id="menu-overlay" onclick="toggleMenu()"></div>
+
+    <div class="main-container">
+        
+        <!-- HEADER (UPDATED WITH "THE RISING STARS" & STATUS PILL) -->
+        <header>
+            <div class="logo-group">
+                <button class="hamburger-btn" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="logo">
+                    <h2>THE RISING <b>STARS</b></h2>
+                    <span><span class="pulse-dot"></span> OFFICIAL EFOOTBALL MOBILE CLAN</span>
+                </div>
+            </div>
+            
+            <nav class="top-nav">
+                <!-- Announcement Bell Trigger -->
+                <div class="announcement-wrapper" id="annTrigger" onclick="toggleAnnouncements()">
+                    <i class="fa-solid fa-bell" style="font-size:0.85rem;"></i>
+                    <span id="ann-badge" class="ann-badge" style="display:none;">0</span>
+                </div>
+                <a href="#" class="nav-item active"><i class="fa-solid fa-chart-simple"></i></a>
+                <a href="halloffame.html" class="nav-item"><i class="fa-solid fa-trophy"></i></a>
+                <a href="https://nexus-acl-auction.vercel.app/auction.html" class="nav-item" target="_blank"><i class="fa-solid fa-gavel"></i></a>
+                <a href="login.html" class="nav-item"><i class="fa-solid fa-right-to-bracket"></i></a>
+            </nav>
+        </header>
+
+        <!-- FLOATING ANNOUNCEMENT BOX -->
+        <div id="ann-box" class="ann-box">
+            <div class="ann-header">
+                <h4><i class="fa-solid fa-bullhorn" style="color:var(--accent)"></i> Community News</h4>
+                <button onclick="toggleAnnouncements()">&times;</button>
+            </div>
+            <div id="ann-list" class="ann-list">
+                <!-- Dynamic Announcements -->
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- REPLACED 1st SECTION: ATTACHMENT 1 CLAN COMBAT STATS CARD -->
+        <!-- ======================================================== -->
+        <section class="combat-stats-section">
+            
+            <!-- TOP MAIN CONTAINER -->
+            <div class="combat-card-main">
+                
+                <!-- 3 Top Stat Blocks: Win Rate, Matches, Trophies -->
+                <div class="combat-grid-top">
+                    
+                    <!-- Box 1: Win Rate -->
+                    <div class="combat-stat-box">
+                        <span class="combat-stat-label">WIN RATE</span>
+                        <span class="combat-stat-val-neon" id="hud-winrate">82.4%</span>
+                    </div>
+
+                    <!-- Box 2: Matches -->
+                    <div class="combat-stat-box">
+                        <span class="combat-stat-label">MATCHES</span>
+                        <span class="combat-stat-val-white" id="hud-matches">450</span>
+                    </div>
+
+                    <!-- Box 3: Trophies -->
+                    <div class="combat-stat-box">
+                        <span class="combat-stat-label">TROPHIES</span>
+                        <div class="combat-stat-val-gold">
+                            <span id="hud-trophies">18</span>
+                            <span style="font-size:1.1rem;">🏆</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons: JOIN ROSTER & WAR LOGS -->
+                <div class="combat-buttons-row">
+                    <button type="button" class="btn-join-roster" onclick="openJoinRosterModal()">
+                        JOIN ROSTER
+                    </button>
+                    <button type="button" class="btn-war-logs" onclick="openWarLogsModal()">
+                        WAR LOGS
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- BOTTOM EXTENDED STATS PILL (WINS, DRAWS, LOSSES, RANK TIER) -->
+            <div class="combat-pill-bottom">
+                <div class="combat-pill-col">
+                    <span class="combat-pill-label">WINS</span>
+                    <span class="combat-pill-val-cyan" id="hud-wins">371</span>
+                </div>
+                <div class="combat-pill-col">
+                    <span class="combat-pill-label">DRAWS</span>
+                    <span class="combat-pill-val-white" id="hud-draws">34</span>
+                </div>
+                <div class="combat-pill-col">
+                    <span class="combat-pill-label">LOSSES</span>
+                    <span class="combat-pill-val-rose" id="hud-losses">45</span>
+                </div>
+                <div class="combat-pill-col">
+                    <span class="combat-pill-label">RANK TIER</span>
+                    <span class="combat-pill-val-yellow" id="hud-ranktier">TOP 10</span>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <div id="main-content-area" style="display: none; width: 100%; max-width: 500px; margin-top: 15px;">
+        
+        <!-- DASHBOARD VIEW -->
+        <section class="dashboard-section">
+            <div class="section-title-row">
+                <h3>EXPLORE CLAN HUB</h3>
+                <select id="viewSelector" onchange="toggleView()">
+                    <option value="" selected>Select View...</option>
+                    <option value="total">Total players</option>
+                    <option value="teams">Total teams</option>
+                </select>
+            </div>
+
+            <div class="players-card">
+                <!-- Search box was removed here as circled in Attachment 5 -->
+                <div id="dynamicContent">
+                    <!-- Dynamic view renders here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="main-footer">
+            <div class="footer-line"></div>
+            <p>© 2026-27 <span style="color:var(--accent); font-weight:800;">THE RISING STARS</span> | eFootball Clan Roster</p>
+        </footer>
+    </div>
+
+    <!-- BOTTOM OPTION BAR -->
+    <nav class="bottom-nav-bar">
+        <div class="bottom-nav-inner">
+            <button class="b-nav-item" id="bNavPlayers" onclick="handleBottomNav('players', this)">
+                <i class="fa-solid fa-users"></i>
+                <span>Players</span>
+            </button>
+            <button class="b-nav-item" id="bNavTeams" onclick="handleBottomNav('teams', this)">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Teams</span>
+            </button>
+            <button class="b-nav-item" id="bNavSupport" onclick="handleBottomNav('support', this)">
+                <i class="fa-solid fa-headset"></i>
+                <span>Support</span>
+            </button>
+            <button class="b-nav-item" id="bNavProfile" onclick="handleBottomNav('profile', this)">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MODAL: JOIN ROSTER APPLICATION -->
+    <div id="joinRosterModal" class="modmail-overlay" style="display:none;" onclick="closeJoinRosterModal(event)">
+        <div class="modmail-box" onclick="event.stopPropagation()">
+            <div class="modmail-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-shield-halved" style="color:#00f3ff; font-size:1.3rem;"></i>
+                    <div>
+                        <h3 style="margin:0; font-family:'Orbitron'; font-size:1rem; color:#fff;">JOIN CLAN ROSTER</h3>
+                        <span style="font-size:0.65rem; color:#64748b; letter-spacing:1px; font-weight:700;">OFFICIAL RECRUITMENT APPLICATION</span>
+                    </div>
+                </div>
+                <button type="button" class="close-modmail" onclick="closeJoinRosterModal()">&times;</button>
+            </div>
+            <form onsubmit="handleJoinRosterSubmit(event)" class="modmail-body">
+                <input type="text" id="appGamertag" placeholder="Player Gamertag (e.g. TRS_Striker)" required>
+                <input type="text" id="appEfId" placeholder="eFootball Username / User ID" required>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <select id="appDivision">
+                        <option value="Division 1">Division 1 Elite</option>
+                        <option value="Division 2">Division 2</option>
+                        <option value="Division 3">Division 3</option>
+                    </select>
+                    <input type="text" id="appWinRate" placeholder="Win Rate (e.g. 80%)" required>
+                </div>
+                <input type="text" id="appDevice" placeholder="Device / Phone (e.g. Samsung S24 Ultra)" required>
+                <input type="text" id="appContact" placeholder="WhatsApp / Discord Contact" required>
+                <button type="submit" class="btn-send-modmail" style="background: linear-gradient(90deg, #00d2ff, #0077fe); color:#000;">
+                    <i class="fa-solid fa-paper-plane"></i> TRANSMIT APPLICATION
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: WAR LOGS (MATCH RESULTS) -->
+    <div id="warLogsModal" class="modmail-overlay" style="display:none;" onclick="closeWarLogsModal(event)">
+        <div class="modmail-box" style="max-width: 460px;" onclick="event.stopPropagation()">
+            <div class="modmail-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-swords" style="color:#00f3ff; font-size:1.2rem;"></i>
+                    <div>
+                        <h3 style="margin:0; font-family:'Orbitron'; font-size:1rem; color:#fff;">CLAN WAR LOGS</h3>
+                        <span style="font-size:0.65rem; color:#10b981; letter-spacing:1px; font-weight:800;">🔥 9 WINS STREAK • UNBEATEN</span>
+                    </div>
+                </div>
+                <button type="button" class="close-modmail" onclick="closeWarLogsModal()">&times;</button>
+            </div>
+            
+            <div id="warLogsList" style="max-height:320px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                <!-- War logs rendered here -->
+            </div>
+
+            <button type="button" onclick="closeWarLogsModal(); switchView('auction');" class="btn-send-modmail" style="margin-top:14px; background:rgba(0, 243, 255, 0.15); color:#00f3ff; border:1px solid rgba(0, 243, 255, 0.4);">
+                <i class="fa-solid fa-trophy"></i> VIEW ALL TOURNAMENTS
+            </button>
+        </div>
+    </div>
+
+    <!-- MODMAIL SUPPORT MODAL -->
+    <div id="modmailModal" class="modmail-overlay" style="display:none;" onclick="closeModmail(event)">
+        <div class="modmail-box" onclick="event.stopPropagation()">
+            <div class="modmail-header">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-envelope-open-text" style="color:#00f3ff; font-size:1.3rem;"></i>
+                    <div>
+                        <h3 style="margin:0; font-family:'Orbitron'; font-size:1rem; color:#fff;">ADMIN MODMAIL</h3>
+                        <span style="font-size:0.65rem; color:#64748b; letter-spacing:1px; font-weight:700;">DIRECT ADMIN PROTOCOL</span>
+                    </div>
+                </div>
+                <button type="button" class="close-modmail" onclick="closeModmail()">&times;</button>
+            </div>
+
+            <div class="modmail-body">
+                <input type="text" id="mmSenderName" placeholder="Your Gamertag" required>
+                <input type="text" id="mmContact" placeholder="WhatsApp / Discord Contact" required>
+                <select id="mmCategory">
+                    <option value="General Support">General Support</option>
+                    <option value="Clan Match Dispute">Match Dispute / Score Verification</option>
+                    <option value="Roster / Transfer">Roster Inquiry</option>
+                    <option value="Account / Profile">Account Verification</option>
+                </select>
+                <textarea id="mmMessage" placeholder="Type your message to the Clan Administration..." rows="4" required></textarea>
+
+                <button type="button" class="btn-send-modmail" onclick="submitModmailTicket()">
+                    <i class="fa-solid fa-paper-plane"></i> DISPATCH TICKET
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API = "https://pes-park-backend.onrender.com";
+    const API_V2 = "https://nexus-database-v2.onrender.com";
+    let allPlayers = [];
+
+    // CLAN COMBAT METRICS (MATCHING ATTACHMENT 1)
+    let CLAN_STATS = {
+        winRate: '82.4%',
+        matches: 450,
+        trophies: 18,
+        wins: 371,
+        draws: 34,
+        losses: 45,
+        rankTier: 'TOP 10'
+    };
+
+    const CLAN_WAR_MATCHES = [
+        { opponent: 'CYBER TITANS', trsScore: 4, oppScore: 1, mvp: 'TRS_Apex', tourney: 'Asian Clan Masters' },
+        { opponent: 'TOKYO SAMURAI EF', trsScore: 3, oppScore: 2, mvp: 'TRS_Kaiser', tourney: 'Pro League Cup' },
+        { opponent: 'SEOUL STRIKERS', trsScore: 2, oppScore: 0, mvp: 'TRS_Phantom', tourney: 'eFootball Global 2v2' },
+        { opponent: 'BALI ESPORTS', trsScore: 5, oppScore: 1, mvp: 'TRS_NeoNeymar', tourney: 'Championship Series' }
+    ];
+
+    // 1. Initial Loader
+    async function manageLoader() {
+        const overlay = document.getElementById('nl-loader-wrapper');
+        const hasSeenLoader = sessionStorage.getItem('hasSeenLoader');
+
+        if (hasSeenLoader === 'true') {
+            if (overlay) overlay.style.display = 'none';
+            initPage();
+        } else {
+            setTimeout(() => {
+                if (overlay) {
+                    overlay.classList.add('loader-hidden');
+                    initPage();
+                    setTimeout(() => overlay.style.display = 'none', 600);
+                }
+            }, 1800);
+            sessionStorage.setItem('hasSeenLoader', 'true');
+        }
+    }
+
+    // 2. Fetch Data and Setup UI
+    async function initPage() {
+        const content = document.getElementById('main-content-area');
+
+        try {
+            const [playerRes] = await Promise.all([
+                fetch(`${API}/api/players`).catch(e => null)
+            ]);
+
+            if (playerRes && playerRes.ok) {
+                allPlayers = await playerRes.json();
+            }
+        } catch (error) {
+            console.error("Critical Load Error:", error);
+        } finally {
+            if (content) content.style.display = 'block';
+
+            // Check Deep Links
+            const urlParams = new URLSearchParams(window.location.search);
+            const linkedView = urlParams.get('view');
+            const linkedTourId = urlParams.get('tourId');
+
+            if (linkedTourId) {
+                try {
+                    const res = await fetch(`${API}/api/smart/tournament-details/${linkedTourId}`);
+                    const tour = await res.json();
+                    if (tour && !tour.error) {
+                        switchView((tour.type === 'solo') ? 'soloTour' : 'auction');
+                        setTimeout(() => {
+                            const selector = document.getElementById('tourNameSelector');
+                            if (selector) {
+                                selector.value = linkedTourId;
+                                switchTourTab(tour.type);
+                            }
+                        }, 500);
+                    }
+                } catch (e) { switchView('total'); }
+            } else if (linkedView) {
+                switchView(linkedView);
+            } else {
+                renderDefaultHub();
+            }
+        }
+    }
+
+    function renderDefaultHub() {
+        const container = document.getElementById('dynamicContent');
+        const title = document.querySelector('.section-title-row h3');
+        if (title) title.innerText = "EXPLORE CLAN HUB";
+
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align:center; padding: 10px 5px 20px;">
+                    <i class="fa-solid fa-shield-halved fa-bounce" style="font-size: 1.5rem; color: #00f3ff; margin-bottom: 8px; display:block;"></i>
+                    <p style="font-size: 0.95rem; font-weight: 900; color: #f8fafc; margin: 0 0 3px; font-family:'Orbitron'; letter-spacing:1px;">THE RISING STARS</p>
+                    <span style="font-size: 0.72rem; color: #64748b;">Select an option from the menu or bottom bar to begin exploring.</span>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 18px; text-align: left;">
+                        <div onclick="switchView('total')" style="background: rgba(0, 243, 255, 0.04); border: 1px solid rgba(0, 243, 255, 0.2); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor:pointer;">
+                            <div style="width: 34px; height: 34px; border-radius: 9px; background: rgba(0, 243, 255, 0.15); color: #00f3ff; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink:0;">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.8rem; color: #00f3ff; font-family:'Orbitron';">Players Roster (200+)</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 1px;">Inspect division aces, win rates, devices, and OVR ratings.</div>
+                            </div>
+                        </div>
+
+                        <div onclick="switchView('teams')" style="background: rgba(16, 185, 129, 0.04); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor:pointer;">
+                            <div style="width: 34px; height: 34px; border-radius: 9px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink:0;">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.8rem; color: #10b981; font-family:'Orbitron';">Clubs & Squads</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 1px;">Explore official clubs, captain credentials, and team totals.</div>
+                            </div>
+                        </div>
+
+                        <div onclick="switchView('auction')" style="background: rgba(245, 158, 11, 0.04); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor:pointer;">
+                            <div style="width: 34px; height: 34px; border-radius: 9px; background: rgba(245, 158, 11, 0.15); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink:0;">
+                                <i class="fa-solid fa-trophy"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 800; font-size: 0.8rem; color: #f59e0b; font-family:'Orbitron';">Tournaments & Cups</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 1px;">Track live fixtures, points tables, Swiss brackets, and Golden Boot.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // 3. View Toggler
+    function toggleView() {
+        const view = document.getElementById('viewSelector').value;
+        const container = document.getElementById('dynamicContent');
+        if (view === "teams") {
+            renderTotalTeams(container);
+        } else if (view === "total") {
+            renderTotalPlayers(container);
+        }
+    }
+
+    function renderTotalPlayers(container) {
+        if (!allPlayers.length) {
+            container.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim);">No players loaded.</p>';
+            return;
+        }
+        container.innerHTML = allPlayers.map(p => `
+            <div class="player-row">
+                <div class="p-details" onclick="window.location.href='player.html?id=${p._id}'" style="cursor:pointer; flex: 1;">
+                    <img src="${p.image || 'https://via.placeholder.com/40'}" class="p-img" onerror="this.src='https://via.placeholder.com/40'">
+                    <div>
+                        <span class="p-name">${p.name}</span>
+                        ${p.nickname ? '<span class="p-nick">"' + p.nickname + '"</span>' : ''}
+                    </div>
+                </div>
+                <div class="t-details" onclick="${p.teamName ? "window.location.href='team.html?id=" + encodeURIComponent(p.teamName) + "'" : ""}" style="cursor:pointer;">
+                    ${p.teamName ? `
+                        <img src="${p.teamLogo || ''}" class="t-logo" onerror="this.style.display='none'">
+                        <span style="font-size:0.65rem; color:var(--text-dim); font-weight:800; text-transform:uppercase;">${p.teamName}</span>
+                    ` : '<span style="color:rgba(255,255,255,0.15);">—</span>'}
+                    <i class="fa-solid fa-chevron-right" style="font-size: 8px; color: rgba(255,255,255,0.3); margin-left:4px;"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function renderTotalTeams(container) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Teams...</p>';
+        try {
+            const res = await fetch(`${API}/api/teams/all`);
+            const teams = await res.json();
+            if (!teams || teams.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-dim); padding:20px;">No teams registered yet.</p>';
+                return;
+            }
+            container.innerHTML = teams.map(t => `
+                <div class="player-row" onclick="window.location.href='team.html?id=${t._id}'" style="cursor:pointer;">
+                    <div class="p-details">
+                        <img src="${t.logo || 'https://via.placeholder.com/40'}" class="p-img" style="object-fit: contain; background: transparent;">
+                        <div>
+                            <span class="p-name">${t.name}</span>
+                            <span class="p-nick" style="color:var(--accent)">Official Clan Club</span>
+                        </div>
+                    </div>
+                    <div class="t-details">
+                        <i class="fa-solid fa-chevron-right" style="font-size: 10px; color: var(--border);"></i>
+                    </div>
+                </div>
+            `).join('');
+        } catch (err) {
+            container.innerHTML = '<p style="text-align:center; color:red;">Error connecting to API.</p>';
+        }
+    }
+
+    // Modal Handlers
+    function openJoinRosterModal() {
+        document.getElementById('joinRosterModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeJoinRosterModal(e) {
+        document.getElementById('joinRosterModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    async function handleJoinRosterSubmit(e) {
+        e.preventDefault();
+        const applicationData = {
+            gamertag: document.getElementById('appGamertag').value,
+            efootballId: document.getElementById('appEfId').value,
+            division: document.getElementById('appDivision').value,
+            winRate: document.getElementById('appWinRate').value,
+            device: document.getElementById('appDevice').value,
+            contact: document.getElementById('appContact').value
+        };
+
+        try {
+            await fetch(`${API_V2}/api/join-roster`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(applicationData)
+            });
+        } catch (err) {}
+
+        alert('✅ APPLICATION TRANSMITTED!\nThe Rising Stars Captains will review your division records.');
+        closeJoinRosterModal();
+        e.target.reset();
+    }
+
+    function openWarLogsModal() {
+        const list = document.getElementById('warLogsList');
+        if (list) {
+            list.innerHTML = CLAN_WAR_MATCHES.map(m => `
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(0, 243, 255, 0.15); border-radius:12px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.62rem; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">${m.tourney}</div>
+                        <div style="font-family:'Rajdhani', sans-serif; font-weight:800; font-size:0.92rem; color:#fff; margin-top:2px;">
+                            <span style="color:#00f3ff;">TRS</span> vs <span>${m.opponent}</span>
+                        </div>
+                        <div style="font-size:0.65rem; color:#10b981; margin-top:2px;">MVP: <b>${m.mvp}</b></div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="background:#060b13; border:1px solid rgba(0, 243, 255, 0.35); color:#00f3ff; font-family:'Orbitron'; font-weight:900; font-size:0.85rem; padding:4px 10px; border-radius:8px;">
+                            ${m.trsScore} - ${m.oppScore}
+                        </div>
+                        <span style="font-size:0.6rem; color:#10b981; font-weight:bold; display:block; margin-top:3px;">VICTORY</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        document.getElementById('warLogsModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeWarLogsModal(e) {
+        document.getElementById('warLogsModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Menu & View Management
+    function toggleMenu() {
+        const menu = document.getElementById('side-menu');
+        const overlay = document.getElementById('menu-overlay');
+        const isActive = menu.classList.contains('active');
+        menu.classList.toggle('active', !isActive);
+        overlay.style.display = isActive ? 'none' : 'block';
+    }
+
+    function switchView(viewName) {
+        const menu = document.getElementById('side-menu');
+        const overlay = document.getElementById('menu-overlay');
+        const container = document.getElementById('dynamicContent');
+        const title = document.querySelector('.section-title-row h3');
+        const selector = document.getElementById('viewSelector');
+
+        if (menu.classList.contains('active')) toggleMenu();
+
+        if (viewName === 'total') {
+            if (title) title.innerText = "PLAYERS ROSTER";
+            if (selector) selector.value = "total";
+            renderTotalPlayers(container);
+        } else if (viewName === 'teams') {
+            if (title) title.innerText = "ALL CLAN CLUBS";
+            if (selector) selector.value = "teams";
+            renderTotalTeams(container);
+        } else if (viewName === 'bdr') {
+            if (title) title.innerText = "BDR RANKINGS";
+            renderBDRRankings(container);
+        } else if (viewName === 'market') {
+            if (title) title.innerText = "MARKET VALUES";
+            renderMarketValues(container);
+        } else if (viewName === 'auction') {
+            if (title) title.innerText = "AUCTION TOURNAMENT";
+            renderAuctionTour(container);
+        } else if (viewName === 'soloTour') {
+            if (title) title.innerText = "SOLO CHALLENGE";
+            createTourUI(container, 'solo', '#a855f7');
+        } else if (viewName === 'duoTour') {
+            if (title) title.innerText = "DUO CHALLENGE • 2V2";
+            renderDuoTour(container);
+        } else if (viewName === 'quickTour') {
+            if (title) title.innerText = "QUICK TOUR";
+            createTourUI(container, 'quick', '#ef4444');
+        } else if (viewName === 'teamBDR') {
+            if (title) title.innerText = "CHAMPIONSHIP STANDINGS";
+            renderTeamBDR(container);
+        } else if (viewName === 'trophies') {
+            if (title) title.innerText = "TROPHIES";
+            renderTrophiesView(container);
+        }
+    }
+
+    function renderBDRRankings(container) {
+        const sorted = [...allPlayers].sort((a, b) => (b.bdrPoints || 0) - (a.bdrPoints || 0));
+        let html = `
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; padding:5px 0;">
+                <i class="fa-solid fa-trophy" style="color:var(--gold); font-size:1.5rem;"></i>
+                <div>
+                    <h4 style="margin:0; font-family:'Orbitron';">BALLON D'OR</h4>
+                    <span style="font-size:0.7rem; color:var(--text-dim);">Official Individual Rankings</span>
+                </div>
+            </div>
+        `;
+        html += sorted.map((p, i) => `
+            <div class="player-row" onclick="window.location.href='player.html?id=${p._id}'" style="cursor:pointer;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span style="width:25px; font-weight:800; color:${i === 0 ? 'var(--gold)' : 'var(--text-dim)'}; text-align:center;">
+                        ${i === 0 ? '👑' : '#' + (i + 1)}
+                    </span>
+                    <img src="${p.image || 'https://via.placeholder.com/40'}" class="p-img">
+                    <span style="font-weight:700;">${p.name}</span>
+                </div>
+                <div style="text-align:right;">
+                    <b style="color:var(--gold); font-size:1rem; font-family:'Orbitron';">${p.bdrPoints || 0}</b>
+                    <span style="font-size:0.65rem; color:var(--text-dim); display:block;">PTS</span>
+                </div>
+            </div>
+        `).join('');
+        container.innerHTML = html;
+    }
+
+    function renderMarketValues(container) {
+        const sorted = [...allPlayers].sort((a, b) => (b.marketValue || 0) - (a.marketValue || 0));
+        let html = `
+            <table class="ranking-table">
+                <thead>
+                    <tr><th style="width:40px;">#</th><th style="text-align:left;">PLAYER</th><th style="text-align:right;">VALUE</th></tr>
+                </thead>
+                <tbody>
+        `;
+        html += sorted.map((p, i) => `
+            <tr onclick="window.location.href='player.html?id=${p._id}'" style="cursor:pointer;">
+                <td class="rank-col">${i + 1}</td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${p.image || 'https://via.placeholder.com/35'}" style="width:34px; height:34px; border-radius:8px; object-fit:cover;">
+                        <span style="font-weight:700; color:white;">${p.name}</span>
+                    </div>
+                </td>
+                <td style="text-align:right;">
+                    <b style="color:var(--accent); font-family:'Orbitron';">${(p.marketValue || 0)}M</b>
+                </td>
+            </tr>
+        `).join('');
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    // Tournament UI Loader
+    async function createTourUI(container, type, themeColor) {
+        container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:15px; overflow-x:auto; padding-bottom:8px;">
+                <span style="font-family:'Orbitron'; font-size:0.75rem; color:${themeColor}; font-weight:800; text-transform:uppercase;">${type} TOUR</span>
+                <select id="tourNameSelector" onchange="switchTourTab('${type}')" style="font-size:0.75rem;"></select>
+                <select id="tourTabSelector" onchange="switchTourTab('${type}')" style="font-size:0.75rem;">
+                    <option value="table">Table</option>
+                    <option value="fixtures">Fixtures</option>
+                    <option value="boot">Golden Boot</option>
+                </select>
+            </div>
+            <div id="tourContent"></div>
+        `;
+
+        try {
+            const res = await fetch(`${API}/api/tournaments/list/${type}`);
+            const tours = await res.json();
+            const selector = document.getElementById('tourNameSelector');
+            if (tours && tours.length > 0) {
+                selector.innerHTML = tours.map(t => `<option value="${t._id}">${t.name}</option>`).join('');
+                switchTourTab(type);
+            } else {
+                selector.innerHTML = '<option value="">No Active Tours</option>';
+                document.getElementById('tourContent').innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim);">No active tournaments.</p>';
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderAuctionTour(container) {
+        createTourUI(container, 'auction', '#00f3ff');
+    }
+
+    async function switchTourTab(type) {
+        const tourId = document.getElementById('tourNameSelector')?.value;
+        const category = document.getElementById('tourTabSelector')?.value;
+        const content = document.getElementById('tourContent');
+        if (!tourId || !content) return;
+
+        content.innerHTML = '<p style="text-align:center; padding:20px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Data...</p>';
+
+        try {
+            if (category === 'table') {
+                const res = await fetch(`${API}/api/smart/standings/${tourId}`);
+                let data = await res.json();
+                if (!data || !data.length) {
+                    content.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim);">Table not initialized.</p>';
+                    return;
+                }
+                content.innerHTML = `
+                    <div class="pts-table-wrapper">
+                        <table class="pts-table">
+                            <thead>
+                                <tr><th>#</th><th class="col-team-name">PARTICIPANT</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>PTS</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.map((s, i) => `
+                                    <tr>
+                                        <td style="color:var(--accent); font-weight:bold;">${i + 1}</td>
+                                        <td class="col-team-name">${s.participant}</td>
+                                        <td>${s.played || 0}</td>
+                                        <td>${s.wins || 0}</td>
+                                        <td>${s.draws || 0}</td>
+                                        <td>${s.losses || 0}</td>
+                                        <td style="color:${((s.gf || 0) - (s.ga || 0)) >= 0 ? '#10b981' : '#ef4444'}">${(s.gf || 0) - (s.ga || 0)}</td>
+                                        <td class="col-pts-bold">${s.points || 0}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (category === 'fixtures') {
+                const res = await fetch(`${API}/api/smart/fixtures/${tourId}`);
+                const matches = await res.json();
+                content.innerHTML = matches.map(m => `
+                    <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:700; flex:1;">${m.playerA}</span>
+                        <b style="background:#040711; border:1px solid var(--border); color:var(--accent); padding:4px 10px; border-radius:8px; font-family:'Orbitron';">
+                            ${m.status === 'Completed' ? `${m.scoreA} - ${m.scoreB}` : 'VS'}
+                        </b>
+                        <span style="font-weight:700; flex:1; text-align:right;">${m.playerB}</span>
+                    </div>
+                `).join('') || '<p style="text-align:center; padding:20px;">No fixtures found.</p>';
+            } else if (category === 'boot') {
+                const res = await fetch(`${API}/api/smart/tour-goals/${tourId}`);
+                const data = await res.json();
+                content.innerHTML = data.map((p, i) => `
+                    <div class="player-row">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="rank-col">${i + 1}</span>
+                            <span style="font-weight:700;">${p.name}</span>
+                        </div>
+                        <b style="color:var(--accent); font-family:'Orbitron';">${p.goals} GOALS</b>
+                    </div>
+                `).join('') || '<p style="text-align:center; padding:20px;">No goals recorded.</p>';
+            }
+        } catch (e) {
+            content.innerHTML = '<p style="text-align:center; color:red; padding:20px;">Failed to fetch tournament data.</p>';
+        }
+    }
+
+    // Bottom Navigation
+    function handleBottomNav(tab, btn) {
+        document.querySelectorAll('.b-nav-item').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        if (tab === 'players') switchView('total');
+        else if (tab === 'teams') switchView('teams');
+        else if (tab === 'support') openModmail();
+        else if (tab === 'profile') window.location.href = 'login.html';
+    }
+
+    function openModmail() {
+        document.getElementById('modmailModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModmail() {
+        document.getElementById('modmailModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    async function submitModmailTicket() {
+        const senderName = document.getElementById('mmSenderName').value.trim();
+        const contact = document.getElementById('mmContact').value.trim();
+        const category = document.getElementById('mmCategory').value;
+        const message = document.getElementById('mmMessage').value.trim();
+
+        if (!senderName || !contact || !message) return alert("Please fill in all ticket details.");
+
+        try {
+            await fetch(`${API_V2}/api/modmail/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senderName, contact, category, message })
+            });
+            alert("✅ MODMAIL DISPATCHED!\nYour message has reached the clan administration.");
+            document.getElementById('mmMessage').value = "";
+            closeModmail();
+        } catch (err) {
+            alert("Error sending ticket. Please try again.");
+        }
+    }
+
+    // Community Announcements
+    async function loadAnnouncements() {
+        try {
+            const res = await fetch(`${API_V2}/api/announcements`);
+            const data = await res.json();
+            const badge = document.getElementById('ann-badge');
+            const list = document.getElementById('ann-list');
+
+            if (data && data.length > 0) {
+                if (badge) {
+                    badge.innerText = data.length;
+                    badge.style.display = 'block';
+                }
+                if (list) {
+                    list.innerHTML = data.map(ann => `
+                        <div class="ann-item">
+                            <p>${ann.message}</p>
+                            <span>${new Date(ann.timestamp).toLocaleDateString()}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch (e) {}
+    }
+
+    function toggleAnnouncements() {
+        const box = document.getElementById('ann-box');
+        if (box) {
+            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+            const badge = document.getElementById('ann-badge');
+            if (badge) badge.style.display = 'none';
+        }
+    }
+
+    // Boot Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+        manageLoader();
+        loadAnnouncements();
+    });
+    </script>
+</body>
+</html>
