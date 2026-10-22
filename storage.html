@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL LINK | NEXUS TELEMETRY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #030712; --card: #0f172a; --accent: #10b981; --border: #1e293b; --dim: #94a3b8; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .dashboard { width: 100%; max-width: 500px; }
+
+        /* Tactical Header */
+        .tele-header { text-align: center; margin-bottom: 30px; border: 1px solid var(--border); padding: 20px; border-radius: 20px; background: linear-gradient(180deg, rgba(16, 185, 129, 0.1), transparent); }
+        .tele-header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 5px; color: var(--accent); }
+        .tele-header p { font-size: 0.6rem; color: var(--dim); margin-top: 5px; letter-spacing: 2px; }
+
+        .glass-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+        
+        /* Storage Gauge */
+        .storage-flex { display: flex; align-items: center; gap: 20px; }
+        .gauge { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #1e293b; display: flex; align-items: center; justify-content: center; position: relative; }
+        .gauge b { font-size: 1.2rem; color: var(--accent); }
+        
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 5px; }
+        .stat-row label { color: var(--dim); text-transform: uppercase; font-size: 0.6rem; font-weight: bold; }
+
+        /* Neural Pulse */
+        .pulse-container { display: flex; justify-content: space-around; text-align: center; }
+        .pulse-box i { font-size: 1.5rem; color: var(--accent); margin-bottom: 10px; display: block; animation: glow 2s infinite; }
+        
+        @keyframes glow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; filter: drop-shadow(0 0 10px var(--accent)); } }
+
+        .progress-track { width: 100%; height: 4px; background: #020617; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .container { width: 100%; max-width: 450px; }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-family: 'Rajdhani'; letter-spacing: 5px; color: var(--accent); margin: 0; text-transform: uppercase; }
+        
+        .glass-box { 
+            background: var(--card); border: 1px solid var(--border); 
+            border-radius: 20px; padding: 20px; margin-bottom: 15px; 
+            position: relative; overflow: hidden;
+        }
+
+        /* Hardware Monitor Section */
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px; }
+        .stat-row label { color: var(--dim); font-weight: 800; text-transform: uppercase; font-size: 0.6rem; letter-spacing: 1px; }
+        .stat-row span { font-family: monospace; font-weight: bold; }
+
+        /* Glowing RAM Bar */
+        .ram-container { margin: 20px 0; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 8px; font-weight: bold; }
+        .progress-track { width: 100%; height: 8px; background: #020617; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Neural Latency Pulse */
+        .latency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .mini-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 15px; border-radius: 15px; text-align: center; }
+        .mini-card i { font-size: 1.2rem; color: var(--accent); margin-bottom: 8px; display: block; }
+        .val { font-size: 1.2rem; font-weight: 900; font-family: 'Rajdhani'; }
+
+        .scanline {
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(16,185,129,0.02) 50%);
+            background-size: 100% 4px; pointer-events: none;
+        }
+        .glass-card, .glass-box {
+    width: 100% !important;
+    box-sizing: border-box;
+        }
+        .container {
+    width: 100%;
+    max-width: 500px; /* Limits width to look like a mobile app */
+    margin: auto;
+    
+    /* ADD THESE LINES */
+    display: flex;
+    flex-direction: column; /* Forces vertical stacking */
+    gap: 20px; /* Adds space between the two cards */
+    padding-bottom: 50px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="tele-header">
+        <h1>NEXUS STORAGE LINK</h1>
+        <p>DATABASE MONITORING • LIVE FEED</p>
+    </div>
+<div class="container">
+    <!-- STORAGE BLOCK -->
+    <div class="glass-card">
+        <div class="storage-flex">
+            <div class="gauge"><b id="perc">--</b></div>
+            <div style="flex:1">
+                <div class="stat-row"><label>Capacity</label><span>512.00 MB</span></div>
+                <div class="stat-row"><label>Used</label><span id="used">-- MB</span></div>
+                <div class="progress-track"><div id="pFill" class="progress-fill"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NETWORK BLOCK -->
+    <div class="glass-card pulse-container">
+        <div class="pulse-box">
+            <i class="fa-solid fa-bolt"></i>
+            <label style="font-size:0.5rem; color:var(--dim)">LATENCY</label>
+            <div id="ping" style="font-weight:900">-- MS</div>
+        </div>
+        <div class="pulse-box">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <label style="font-size:0.5rem; color:var(--dim)">STATUS</label>
+            <div id="status" style="font-weight:900; color:var(--accent)">ONLINE</div>
+        </div>
+        <div class="pulse-box">
+            <i class="fa-solid fa-microchip"></i>
+            <label style="font-size:0.5rem; color:var(--dim)">UPTIME</label>
+            <div id="uptime" style="font-weight:900">-- H</div>
+        </div>
+    </div>
+
+    <!-- INFRASTRUCTURE BLOCK -->
+    <div class="glass-card">
+        <div class="stat-row"><label>Cloud Service</label><span>AWS / Mumbai Region</span></div>
+        <div class="stat-row"><label>Node Location</label><span>ap-south-1</span></div>
+        <div class="stat-row"><label>Engine Version</label><span>MongoDB 7.0.12 (Atlas)</span></div>
+        <div class="stat-row"><label>Neural Records</label><span id="objects">--</span></div>
+    </div>
+</div>
+
+    <div class="header">
+        <h1>RENDER NODE-01</h1>
+        <p style="font-size:0.6rem; color:var(--dim); letter-spacing:2px;">CORE SYSTEMS TELEMETRY</p>
+    </div>
+
+    <!-- RAM MONITOR -->
+    <div class="glass-box">
+        <div class="scanline"></div>
+        <div class="bar-label">
+            <span>MEMORY CONSUMPTION</span>
+            <span id="n1-ramPercent" style="color:var(--accent)">--%</span>
+        </div>
+        <div class="progress-track"><div id="n1-ramFill" class="progress-fill"></div></div>
+        
+        <div style="margin-top:20px;">
+            <div class="stat-row"><label>Used Memory</label><span id="n1-ramUsed">--</span></div>
+            <div class="stat-row"><label>Total Provisioned</label><span id="n1-ramTotal">--</span></div>
+            <div class="stat-row"><label>Available Reserve</label><span id="n1-ramFree" style="color:var(--accent)">--</span></div>
+        </div>
+        <!-- DISK MONITOR (Add below RAM bar) -->
+<div class="ram-container" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+    <div class="bar-label">
+        <span>DISK STORAGE (SSD)</span>
+        <span id="n1-diskPercent" style="color:var(--accent)">--%</span>
+    </div>
+    <div class="progress-track"><div id="diskFill" class="progress-fill" style="background:#3b82f6; box-shadow: 0 0 15px #3b82f6;"></div></div>
+    
+    <div style="margin-top:20px;">
+        <div class="stat-row"><label>Filesystem Used</label><span id="n1-diskUsed">--</span></div>
+        <div class="stat-row"><label>Storage Capacity</label><span id="n1-diskTotal">--</span></div>
+        <div class="stat-row"><label>Available Sectors</label><span id="n1-diskFree" style="color:#3b82f6">--</span></div>
+    </div>
+</div>
+    </div>
+
+    <!-- LATENCY & UPTIME -->
+    <div class="latency-grid">
+        <div class="mini-card">
+    <i class="fa-solid fa-gauge-high"></i>
+    <label>NEURAL LATENCY</label>
+    <!-- ID MUST BE n1-ping -->
+    <div class="val" id="n1-ping">-- ms</div> 
+</div>
+<div class="mini-card">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    <label>NODE UPTIME</label>
+    <!-- ID MUST BE n1-uptime -->
+    <div class="val" id="n1-uptime">--</div>
+</div>
+    </div>
+
+    <!-- SERVER DETAILS -->
+    <div class="glass-box" style="margin-top:15px;">
+        <h4 style="font-size:0.6rem; color:var(--accent); letter-spacing:2px; margin-top:0;">HARDWARE ARCHIVE</h4>
+        <div class="stat-row"><label>Cloud Provider</label><span>Render.com (Linux)</span></div>
+        <div class="stat-row"><label>Physical Region</label><span id="region">Scanning...</span></div>
+        <div class="stat-row"><label>Node Architecture</label><span id="arch">Scanning...</span></div>
+        <div class="stat-row"><label>Instance UID</label><span id="instance" style="color:var(--accent)">Scanning...</span></div>
+    </div>
+    <div class="glass-card">
+    <div class="section-title"><i class="fa-solid fa-network-wired"></i> Neural Grid Status</div>
+    
+    <!-- Node 01 Info -->
+    <div class="stat-row">
+        <label>Primary Node (Stats)</label>
+        <span id="node1Status" style="color:var(--accent)">ONLINE</span>
+    </div>
+
+    <!-- Node 02 Info -->
+    <div class="stat-row">
+        <label>Auxiliary Node (AI)</label>
+        <span id="node2Status" style="color:var(--accent)">ONLINE</span>
+    </div>
+    </div>
+    <!-- NODE 02 MONITOR -->
+    <div class="header">
+        <h1>RENDER NODE-02</h1>
+        <p style="font-size:0.6rem; color:var(--dim); letter-spacing:2px;">AUXILIARY AI NEURAL LINK</p>
+    </div>
+
+    <div class="glass-box">
+        <div class="scanline"></div>
+        <!-- RAM -->
+        <div class="bar-label"><span>MEMORY (RAM)</span><span id="n2-ramPercent" style="color:var(--accent)">--%</span></div>
+        <div class="progress-track"><div id="n2-ramFill" class="progress-fill"></div></div>
+        <div class="stat-row" style="margin-top:10px;"><label>Used</label><span id="n2-ramUsed">--</span></div>
+        
+        <!-- DISK -->
+        <div class="ram-container" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="bar-label"><span>STORAGE (SSD)</span><span id="n2-diskPercent" style="color:#3b82f6">--%</span></div>
+            <div class="progress-track"><div id="n2-diskFill" class="progress-fill" style="background:#3b82f6; box-shadow: 0 0 15px #3b82f6;"></div></div>
+            <div class="stat-row" style="margin-top:10px;"><label>Used</label><span id="n2-diskUsed">--</span></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com"; 
+    const API_V2 = "https://nexus-database-v2.onrender.com";
+
+    // 1. DATABASE TELEMETRY (Top Storage Card)
+    async function syncTelemetry() {
+        try {
+            const res = await fetch(`${API}/api/admin/telemetry`);
+            const data = await res.json();
+            if (data.success) {
+                const usedMB = (data.storage.usedBytes / (1024 * 1024)).toFixed(2);
+                const perc = Math.min(Math.round((usedMB / 512) * 100), 100);
+                
+                document.getElementById('used').innerText = usedMB + " MB";
+                document.getElementById('perc').innerText = perc + "%";
+                document.getElementById('pFill').style.width = perc + "%";
+                document.getElementById('ping').innerText = data.network.latency + " MS";
+                document.getElementById('objects').innerText = data.storage.objects;
+                document.getElementById('uptime').innerText = (data.network.uptime / 3600).toFixed(1) + " H";
+            }
+        } catch (e) { 
+            console.log("DB Telemetry Offline");
+        }
+    }
+
+    // 2. UNIVERSAL NODE UPDATER
+    // This function handles n1 and n2 dynamically
+    async function updateNodeUI(url, prefix) {
+    const startTime = Date.now(); // Start timer for Latency
+
+    try {
+        const res = await fetch(`${url}/api/system/stats`);
+        const data = await res.json();
+        
+        // Calculate Latency (Ping)
+        const latency = Date.now() - startTime;
+
+        if (data.success) {
+            // Update Latency Box
+            safeUpdate(`${prefix}-ping`, latency + " ms");
+
+            // Update Uptime Box (Using the formatter)
+            // Ensure your backend sends 'uptimeSeconds' or 'uptime'
+            const uptimeValue = data.uptimeSeconds || data.ram.uptime || 0; 
+            safeUpdate(`${prefix}-uptime`, formatUptime(uptimeValue));
+
+            // Update RAM
+            safeUpdate(`${prefix}-ramUsed`, data.ram.used);
+            safeUpdate(`${prefix}-ramPercent`, data.ram.percent + "%");
+            const ramBar = document.getElementById(`${prefix}-ramFill`);
+            if(ramBar) ramBar.style.width = data.ram.percent + "%";
+
+            // Update DISK
+            safeUpdate(`${prefix}-diskUsed`, data.disk.used);
+            safeUpdate(`${prefix}-diskPercent`, data.disk.percent + "%");
+            const diskBar = document.getElementById(`${prefix}-diskFill`);
+            if(diskBar) diskBar.style.width = data.disk.percent + "%";
+
+            // Update Node-specific fields
+            if(prefix === 'n1') {
+                safeUpdate(`n1-ramTotal`, data.ram.total);
+                safeUpdate(`n1-ramFree`, data.ram.free);
+                if(data.system) {
+                    safeUpdate('region', data.system.region);
+                    safeUpdate('arch', data.system.arch);
+                    safeUpdate('instance', data.system.instanceId);
+                }
+            }
+        }
+    } catch (e) { 
+        safeUpdate(`${prefix}-ping`, "LOST");
+        safeUpdate(`${prefix}-uptime`, "OFFLINE");
+    }
+    }
+
+    // Helper to prevent script crashes if an ID is missing
+    function safeUpdate(id, value) {
+        const el = document.getElementById(id);
+        if(el && value !== undefined) el.innerText = value;
+    }
+
+    // 3. MAIN ORCHESTRATOR
+    async function refreshAllStats() {
+        // Ping Status
+        try {
+            const [n1, n2] = await Promise.all([
+                fetch(`${API}/test`).then(r => r.ok).catch(() => false),
+                fetch(`${API_V2}/test`).then(r => r.ok).catch(() => false)
+            ]);
+
+            const n1L = document.getElementById('node1Status');
+            if(n1L) { n1L.innerText = n1 ? "OPERATIONAL" : "OVERLOADED"; n1L.style.color = n1 ? "#10b981" : "#ef4444"; }
+
+            const n2L = document.getElementById('node2Status');
+            if(n2L) { n2L.innerText = n2 ? "OPERATIONAL" : "OVERLOADED"; n2L.style.color = n2 ? "#10b981" : "#ef4444"; }
+        } catch(e) {}
+
+        // Trigger updates for both APIs
+        updateNodeUI(API, 'n1');
+        updateNodeUI(API_V2, 'n2');
+    }
+    // Function to convert seconds to readable H:M:S format
+function formatUptime(seconds) {
+    if (!seconds || isNaN(seconds)) return "--";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    return `${h}H ${m}M`;
+}
+
+    // Initialize
+    window.onload = () => {
+        syncTelemetry();
+        refreshAllStats();
+        setInterval(syncTelemetry, 10000); // 10s
+        setInterval(refreshAllStats, 5000); // 5s
+    };
+</script>
+</body>
+</html>

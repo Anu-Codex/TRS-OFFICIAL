@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Players | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700;800&display=swap');
+
+        :root {
+            --bg: #090e17;
+            --card-bg: #111a28;
+            --border: #1a273a;
+            --accent: #10b981;
+            --gold: #f59e0b;
+            --silver: #94a3b8;
+            --bronze: #d97706;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* --- HEADER SECTION --- */
+        .header-title-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .fire-icon-wrap {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .header-title-box h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .header-title-box p {
+            margin: 4px 0 0;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* --- LIST CARDS --- */
+        .trending-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .trending-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .trending-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .player-info-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Rank Numbers */
+        .rank-num {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            width: 24px;
+            text-align: center;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .rank-1 { color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+        .rank-2 { color: #cbd5e1; }
+        .rank-3 { color: #d97706; }
+
+        /* Avatar */
+        .avatar-frame {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #1e293b;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Text Details */
+        .details-col {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .name-tier-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .p-name {
+            font-weight: 700;
+            font-size: 0.92rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tier Badge (S, A, B) */
+        .tier-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 1px 5px;
+            border-radius: 4px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .tier-S {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .tier-A {
+            background: rgba(14, 165, 233, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(14, 165, 233, 0.4);
+        }
+
+        .tier-B {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+        }
+
+        .team-subtext {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* --- STATS RIGHT --- */
+        .stats-right {
+            text-align: right;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-left: 10px;
+        }
+
+        .views-count-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-main);
+        }
+
+        .views-count-row i {
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .today-badge {
+            font-size: 0.65rem;
+            color: #f59e0b;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 50px 0;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header Box -->
+    <div class="header-title-box">
+        <div class="fire-icon-wrap">
+            <i class="fa-solid fa-fire"></i>
+        </div>
+        <div>
+            <h2>Trending This Week</h2>
+            <p>Most visited player profiles in the last 7 days</p>
+        </div>
+    </div>
+
+    <!-- Leaderboard Container -->
+    <div id="trendingList" class="trending-list">
+        <div id="loading">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--accent)"></i>
+            <p style="margin-top:10px; font-size:0.8rem;">CALCULATING TRENDS...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "https://nexus-database-v2.onrender.com";
+
+    async function loadTrending() {
+        try {
+            const res = await fetch(`${API}/api/players/trending/weekly`);
+            const players = await res.json();
+            const container = document.getElementById('trendingList');
+
+            if (!players || players.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#64748b; font-size:0.85rem; padding:30px;">No profile visits tracked yet this week.</p>`;
+                return;
+            }
+
+            container.innerHTML = players.map((p, index) => {
+                const rank = index + 1;
+                let rankClass = '';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+
+                return `
+                    <a href="player.html?id=${p._id}" class="trending-card">
+                        <div class="player-info-left">
+                            <span class="rank-num ${rankClass}">${rank}</span>
+                            <div class="avatar-frame">
+                                <img src="${p.image}" onerror="this.src='https://via.placeholder.com/50'">
+                            </div>
+                            <div class="details-col">
+                                <div class="name-tier-row">
+                                    <span class="p-name">${p.name}</span>
+                                    <span class="tier-badge tier-${p.tier || 'B'}">${p.tier || 'B'}</span>
+                                </div>
+                                <div class="team-subtext">
+                                    ${p.teamName}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-right">
+                            <div class="views-count-row">
+                                <i class="fa-regular fa-eye"></i>
+                                <span>${p.views7d}</span>
+                            </div>
+                            ${p.viewsToday > 0 ? `<span class="today-badge">+${p.viewsToday} today</span>` : ''}
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        } catch (err) {
+            console.error(err);
+            document.getElementById('trendingList').innerHTML = `<p style="color:#ef4444; text-align:center; font-size:0.85rem;">Failed to synchronize telemetry.</p>`;
+        }
+    }
+
+    window.onload = loadTrending;
+</script>
+
+</body>
+</html>

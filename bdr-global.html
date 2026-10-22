@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Solo BDR Rankings | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #060b13;
+            --card-bg: #0e1726;
+            --border: #162438;
+            --accent: #a855f7; /* Solo Purple */
+            --gold: #f59e0b;
+            --silver: #cbd5e1;
+            --bronze: #d97706;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .top-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        /* --- HERO HEADER --- */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(6, 11, 19, 0.9) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .hero-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .hero-text h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+
+        .hero-text p {
+            margin: 4px 0 0;
+            font-size: 0.75rem;
+            color: #a855f7;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* --- RANKING LIST --- */
+        .rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rank-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            transition: 0.2s;
+        }
+
+        .rank-card:hover {
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .rank-card.top-1 {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.08) 0%, var(--card-bg) 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .player-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rank-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .rank-1 { color: var(--gold); }
+        .rank-2 { color: var(--silver); }
+        .rank-3 { color: var(--bronze); }
+        .rank-other { color: #475569; }
+
+        .avatar-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #141f30;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-box i {
+            color: #475569;
+            font-size: 1.2rem;
+        }
+
+        .player-details {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .player-name {
+            font-weight: 700;
+            font-size: 0.92rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #ffffff;
+        }
+
+        .player-team {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+        }
+
+        .pts-badge {
+            text-align: right;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .pts-val {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            color: #c084fc; /* Bright Purple */
+        }
+
+        .pts-lbl {
+            display: block;
+            font-size: 0.62rem;
+            color: #64748b;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-chevron-left"></i> Home</a>
+    </div>
+
+    <!-- Banner -->
+    <div class="hero-banner">
+        <div class="hero-icon-box">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        <div class="hero-text">
+            <h1>GLOBAL BDR</h1>
+            <p>Solo Tour Official Rankings</p>
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="rankList" class="rank-list">
+        <div id="loading">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--accent)"></i>
+            <p style="margin-top:12px; font-size:0.8rem; letter-spacing:1px;">SYNCING SOLO BDR DATABASE...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+
+    async function loadSoloBDR() {
+        try {
+            const res = await fetch(`${API}/api/bdr/solo-global`);
+            const players = await res.json();
+            const container = document.getElementById('rankList');
+
+            if (!players || players.length === 0) {
+                container.innerHTML = `<p style="text-align:center; padding:40px; color:#64748b;">No Solo BDR records established yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = players.map((p, index) => {
+                const rank = index + 1;
+                let rankClass = 'rank-other';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+
+                const rankDisplay = rank === 1 ? `<i class="fa-solid fa-crown" style="color:var(--gold);"></i>` : rank;
+
+                let imgSrc = p.image ? p.image.trim() : "";
+                if (imgSrc.startsWith("http://")) imgSrc = imgSrc.replace("http://", "https://");
+
+                const avatarHTML = (imgSrc && imgSrc !== "" && imgSrc !== "null")
+                    ? `<img src="${imgSrc}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-user\\'></i>'">`
+                    : `<i class="fa-solid fa-user"></i>`;
+
+                return `
+                    <a href="player.html?id=${p._id}" class="rank-card ${rank === 1 ? 'top-1' : ''}">
+                        <div class="player-left">
+                            <span class="rank-badge ${rankClass}">${rankDisplay}</span>
+                            <div class="avatar-box">
+                                ${avatarHTML}
+                            </div>
+                            <div class="player-details">
+                                <span class="player-name">${p.name}</span>
+                                <span class="player-team">${p.teamName || 'Free Agent'}</span>
+                            </div>
+                        </div>
+
+                        <div class="pts-badge">
+                            <span class="pts-val">${p.soloBdrPoints || 0}</span>
+                            <span class="pts-lbl">SOLO BDR</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        } catch (e) {
+            document.getElementById('rankList').innerHTML = `<p style="color:#ef4444; text-align:center; padding:30px;">Error syncing Solo BDR rankings.</p>`;
+        }
+    }
+
+    window.onload = loadSoloBDR;
+</script>
+
+</body>
+</html>

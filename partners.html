@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALLIANCE | NEXUS LEGENDS eSPORTS</title>
+    
+    <!-- Typography & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #020617;
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --accent: #10b981; /* Nexus Emerald */
+            --bpf-gold: #f59e0b; /* BPF Secondary Gold */
+            --border: rgba(30, 41, 59, 0.5);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.08), transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(245, 158, 11, 0.05), transparent 40%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo { font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 1.2rem; }
+        .logo span { color: var(--accent); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            text-align: center;
+            padding: 100px 20px 60px;
+        }
+        .hero h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #fff 50%, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.9;
+        }
+        .hero p {
+            color: var(--accent);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: -10px;
+        }
+
+        /* --- PARENT FEDERATION FEATURE --- */
+        .federation-brand {
+            max-width: 900px;
+            margin: 0 auto 80px;
+            padding: 40px;
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.05), rgba(2, 6, 23, 0.8));
+            border: 1px solid var(--accent);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .federation-brand::before {
+            content: "";
+            position: absolute;
+            top: 0; right: 0;
+            width: 150px; height: 150px;
+            background: var(--accent);
+            filter: blur(100px);
+            opacity: 0.1;
+        }
+        .bpf-logo-container {
+            flex-shrink: 0;
+            width: 180px;
+            height: 180px;
+            background: var(--bg);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+        }
+        .bpf-logo-container i { font-size: 5rem; color: var(--accent); } /* Replace with actual BPF logo img */
+        
+        .bpf-text h2 { 
+            font-family: 'Rajdhani', sans-serif; 
+            font-size: 2rem; 
+            margin: 0; 
+            letter-spacing: 2px;
+            color: var(--text-main);
+        }
+        .bpf-text p { color: var(--text-dim); font-size: 0.95rem; margin-top: 15px; }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: var(--accent);
+            color: #000;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* --- PARTNERS GRID --- */
+        .partner-section-title {
+            text-align: center;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto 100px;
+            padding: 0 20px;
+        }
+
+        .partner-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            height: 160px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: grayscale(1);
+            opacity: 0.6;
+            cursor: pointer;
+        }
+
+        .partner-card:hover {
+            filter: grayscale(0);
+            opacity: 1;
+            border-color: var(--accent);
+            transform: scale(1.05);
+            background: rgba(16, 185, 129, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .partner-card img { max-width: 60%; max-height: 50%; object-fit: contain; }
+
+        /* --- CTA SECTION --- */
+        .partnership-cta {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(to top, rgba(16, 185, 129, 0.1), transparent);
+        }
+        .partnership-cta h3 { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; letter-spacing: 2px; margin-bottom: 30px; }
+        
+        .btn-partner {
+            padding: 18px 45px;
+            background: var(--accent);
+            color: #000;
+            text-decoration: none;
+            font-weight: 800;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .btn-partner:hover {
+            box-shadow: 0 0 30px var(--accent);
+            letter-spacing: 4px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .federation-brand { flex-direction: column; text-align: center; padding: 30px; }
+            .hero h1 { font-size: 3.5rem; letter-spacing: 8px; }
+            .bpf-logo-container { width: 120px; height: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">NEXUS <span>LEGENDS</span></div>
+        <div style="display: flex; gap: 20px;">
+            <a href="index.html" style="color: var(--text-dim); text-decoration: none; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">Home</a>
+            <a href="support.html" style="color: var(--text-dim); text-decoration: none; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">Support</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>ALLIANCE</h1>
+        <p>Strategic Global Partners</p>
+    </section>
+
+    <div class="container">
+        <!-- BPF MAIN PARTNER -->
+        <div class="federation-brand">
+            <div class="bpf-logo-container">
+                <!-- Replace with <img src="bpf-logo.png"> -->
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="bpf-text">
+                <span class="badge">Governing Body</span>
+                <h2>BENGAL PES FEDERATION</h2>
+                <p>Nexus Legends eSports operates under the official sanctioning and governance of the <b>BPF</b>. As an affiliate organization, we uphold the highest standards of competitive PES gaming in the region, ensuring fair play and professional growth for all athletes.</p>
+            </div>
+        </div>
+
+        <h4 class="partner-section-title">Official Technical & Brand Partners</h4>
+        
+        <div class="partners-grid">
+            <div class="partner-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b2/Konami_logo.svg" alt="Technical Partner">
+            </div>
+            <div class="partner-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg" alt="Hardware Partner">
+            </div>
+            <div class="partner-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg" alt="Apparel Partner">
+            </div>
+            <div class="partner-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Logitech_logo.svg" alt="Peripherals Partner">
+            </div>
+        </div>
+    </div>
+
+    <section class="partnership-cta">
+        <h3>READY TO LEVEL UP?</h3>
+        <p style="color: var(--text-dim); margin-bottom: 40px;">Join the Nexus Legends ecosystem and reach thousands of elite athletes.</p>
+        <a href="support.html" class="btn-partner">Apply for Partnership</a>
+    </section>
+
+</body>
+</html>

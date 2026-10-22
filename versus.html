@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAYER COMPARISON | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg: #060b13; --card: #0d121f; --border: #1e293b;
+            --emerald: #10b981; --purple: #8b5cf6; --text-dim: #94a3b8;
+        }
+
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: auto; }
+
+        /* Selection Header */
+        .vs-header { margin-bottom: 20px; }
+        .vs-header h4 { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 15px; }
+        .select-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        select { flex: 1; background: var(--card); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 12px; outline: none; font-weight: 600; }
+
+        .btn-download {
+            width: 100%; padding: 12px; background: var(--emerald); color: black;
+            border: none; border-radius: 10px; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;
+        }
+
+        /* --- THE COMPARISON CARD (Target for Download) --- */
+        #comparison-capture {
+            background: #0a0f1a; border: 1px solid var(--border); border-radius: 24px; padding: 20px;
+        }
+
+        .brand-logo { text-align: center; margin-bottom: 20px; opacity: 0.6; }
+        .brand-logo small { display: block; font-size: 0.55rem; letter-spacing: 3px; color: var(--text-dim); }
+        .brand-logo b { font-family: 'Rajdhani'; font-size: 0.9rem; color: white; }
+
+        .cards-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+
+        /* Individual Player Column */
+        .player-vs-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; padding-bottom: 15px; }
+        .vs-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 2px solid var(--accent); }
+        
+        .p-identity { padding: 15px 12px; }
+        .p-identity h3 { margin: 0; font-size: 1.1rem; font-weight: 800; }
+        .p-identity span { font-size: 0.65rem; color: var(--text-dim); display: block; margin-top: 4px; }
+        .p-team { font-size: 0.6rem; color: var(--accent); font-weight: 900; margin-top: 8px; text-transform: uppercase; }
+
+        /* Stat Grouping */
+        .stat-group { padding: 0 12px; margin-top: 15px; }
+        .group-label { font-size: 0.55rem; color: var(--text-dim); font-weight: 800; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; margin-bottom: 8px; display: block; }
+        
+        .mini-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 6px; }
+        .mini-row label { color: var(--text-dim); }
+        .mini-row b { color: white; }
+
+        /* Trophies Row */
+        .trophy-shelf { padding: 10px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+        .t-icon-box { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 6px; }
+        .t-icon-box img { width: 18px; }
+        .t-icon-box b { font-size: 0.8rem; }
+
+        /* --- H2H PROGRESS BARS --- */
+        .h2h-section { border-top: 1px solid var(--border); padding-top: 20px; }
+        .h2h-title { text-align: center; font-size: 0.65rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 20px; font-weight: 800; }
+
+        .h2h-row { margin-bottom: 18px; }
+        .h2h-info { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
+        .h2h-info .label { color: #64748b; font-size: 0.65rem; text-transform: uppercase; }
+
+        .bar-track { height: 6px; background: #1e293b; border-radius: 10px; display: flex; overflow: hidden; }
+        .bar-left { height: 100%; background: var(--emerald); transition: 0.5s; }
+        .bar-right { height: 100%; background: var(--purple); transition: 0.5s; }
+
+        #player-a-col { --accent: var(--emerald); }
+        #player-b-col { --accent: var(--purple); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="vs-header">
+        <h4>PLAYER COMPARISON</h4>
+        <div class="select-row">
+            <select id="selA" onchange="compare()"><option value="">Select Player A</option></select>
+            <span style="font-weight: 900; color: var(--text-dim);">VS</span>
+            <select id="selB" onchange="compare()"><option value="">Select Player B</option></select>
+        </div>
+        <button class="btn-download" onclick="download()"><i class="fa-solid fa-download"></i> Download PNG</button>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div id="comparison-capture">
+        <div class="brand-logo">
+            <small>NEXUS LEGENDS eSPORTS</small>
+            <b>PLAYER COMPARISON</b>
+        </div>
+
+        <div class="cards-row">
+            <!-- Player A Card -->
+            <div class="player-vs-card" id="player-a-col">
+                <img id="imgA" src="https://via.placeholder.com/200x160" class="vs-img">
+                <div class="p-identity">
+                    <h3 id="nameA">PLAYER A</h3>
+                    <span id="nickA">"NICKNAME"</span>
+                    <div id="teamA" class="p-team">TEAM NAME</div>
+                </div>
+                
+                <div class="stat-group">
+                    <span class="group-label">CURRENT SEASON</span>
+                    <div class="mini-row"><label>Market Value</label><b id="mvA">0</b></div>
+                    <div class="mini-row"><label>BDR Points</label><b id="bdrA">0</b></div>
+                    <div class="mini-row"><label>Auction Price</label><b id="aucA">0</b></div>
+                </div>
+
+                <div class="stat-group">
+                    <span class="group-label">ALL-TIME CAREER</span>
+                    <div class="mini-row"><label>Win Rate</label><b id="wrA" style="color:var(--emerald)">0%</b></div>
+                    <div class="mini-row"><label>Goals</label><b id="glA">0</b></div>
+                    <div class="mini-row"><label>Matches</label><b id="mtA">0</b></div>
+                </div>
+            </div>
+
+            <!-- Player B Card -->
+            <div class="player-vs-card" id="player-b-col">
+                <img id="imgB" src="https://via.placeholder.com/200x160" class="vs-img">
+                <div class="p-identity">
+                    <h3 id="nameB">PLAYER B</h3>
+                    <span id="nickB">"NICKNAME"</span>
+                    <div id="teamB" class="p-team">TEAM NAME</div>
+                </div>
+
+                <div class="stat-group">
+                    <span class="group-label">CURRENT SEASON</span>
+                    <div class="mini-row"><label>Market Value</label><b id="mvB">0</b></div>
+                    <div class="mini-row"><label>BDR Points</label><b id="bdrB">0</b></div>
+                    <div class="mini-row"><label>Auction Price</label><b id="aucB">0</b></div>
+                </div>
+
+                <div class="stat-group">
+                    <span class="group-label">ALL-TIME CAREER</span>
+                    <div class="mini-row"><label>Win Rate</label><b id="wrB" style="color:var(--emerald)">0%</b></div>
+                    <div class="mini-row"><label>Goals</label><b id="glB">0</b></div>
+                    <div class="mini-row"><label>Matches</label><b id="mtB">0</b></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Career Comparison Bars -->
+        <div class="h2h-section">
+            <div class="h2h-title">CAREER HEAD TO HEAD</div>
+            <div id="bar-container">
+                <!-- Bars like Market Value, Win Rate, Goals will be injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+    let players = [];
+
+    async function init() {
+        const res = await fetch(`${API}/api/players`);
+        players = await res.json();
+        const options = players.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+        document.getElementById('selA').innerHTML += options;
+        document.getElementById('selB').innerHTML += options;
+    }
+
+    async function compare() {
+        const idA = document.getElementById('selA').value;
+        const idB = document.getElementById('selB').value;
+        if(!idA || !idB) return;
+
+        const [pA, pB] = await Promise.all([
+            fetch(`${API}/api/players/profile/${idA}`).then(r => r.json()),
+            fetch(`${API}/api/players/profile/${idB}`).then(r => r.json())
+        ]);
+
+        renderPlayer('A', pA.player, pA.matches);
+        renderPlayer('B', pB.player, pB.matches);
+        renderBars(pA.player, pA.matches, pB.player, pB.matches);
+    }
+
+    function renderPlayer(side, p, matches) {
+        document.getElementById(`name${side}`).innerText = p.name;
+        document.getElementById(`nick${side}`).innerText = `"${p.nickname || ''}"`;
+        document.getElementById(`img${side}`).src = p.image || 'https://via.placeholder.com/200x160';
+        document.getElementById(`team${side}`).innerText = p.teamName || 'FREE AGENT';
+        document.getElementById(`mv${side}`).innerText = p.marketValue + 'M';
+        document.getElementById(`bdr${side}`).innerText = p.bdrPoints;
+        document.getElementById(`auc${side}`).innerText = p.auctionPrice + 'M';
+
+        // Calculate All-Time
+        const wins = matches.filter(m => {
+            const isA = m.playerA === p.name;
+            return isA ? m.scoreA > m.scoreB : m.scoreB > m.scoreA;
+        }).length;
+
+        const goals = matches.reduce((acc, m) => acc + (m.playerA === p.name ? m.scoreA : m.scoreB), 0);
+        
+        document.getElementById(`wr${side}`).innerText = matches.length > 0 ? Math.round((wins / matches.length) * 100) + '%' : '0%';
+        document.getElementById(`gl${side}`).innerText = goals;
+        document.getElementById(`mt${side}`).innerText = matches.length;
+    }
+
+    function renderBars(pA, mA, pB, mB) {
+        const stats = [
+            { label: 'Market Value', valA: pA.marketValue, valB: pB.marketValue },
+            { label: 'BDR Points', valA: pA.bdrPoints, valB: pB.bdrPoints },
+            { label: 'Total Goals', 
+              valA: mA.reduce((a, m) => a + (m.playerA === pA.name ? m.scoreA : m.scoreB), 0),
+              valB: mB.reduce((a, m) => a + (m.playerA === pB.name ? m.scoreA : m.scoreB), 0)
+            },
+            { label: 'Total Wins',
+              valA: mA.filter(m => (m.playerA === pA.name ? m.scoreA > m.scoreB : m.scoreB > m.scoreA)).length,
+              valB: mB.filter(m => (m.playerA === pB.name ? m.scoreA > m.scoreB : m.scoreB > m.scoreA)).length
+            }
+        ];
+
+        document.getElementById('bar-container').innerHTML = stats.map(s => {
+            const total = (s.valA + s.valB) || 1;
+            const percA = (s.valA / total) * 100;
+            const percB = (s.valB / total) * 100;
+            return `
+                <div class="h2h-row">
+                    <div class="h2h-info">
+                        <span style="color:var(--emerald)">${s.valA}</span>
+                        <span class="label">${s.label}</span>
+                        <span style="color:var(--purple)">${s.valB}</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-left" style="width:${percA}%"></div>
+                        <div class="bar-right" style="width:${percB}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function download() {
+        const target = document.getElementById('comparison-capture');
+        html2canvas(target, { backgroundColor: '#060b13' }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Nexus-VS-${document.getElementById('selA').value}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+
+    init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captain Login | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg: #020617;
+            --card: #0f172a;
+            --accent: #10b981;
+            --border: #1e293b;
+            --gold: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Background Decoration */
+        .bg-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--accent);
+            filter: blur(150px);
+            opacity: 0.1;
+            z-index: -1;
+            top: 10%;
+            left: 10%;
+        }
+
+        .login-card {
+            background: var(--card);
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        h2 { margin: 0 0 10px; font-size: 1.5rem; letter-spacing: -0.5px; }
+        p { color: #64748b; font-size: 0.85rem; margin-bottom: 30px; }
+
+        .input-group { text-align: left; margin-bottom: 20px; }
+        label { display: block; font-size: 0.75rem; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            background: #020617;
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: #020617;
+            border: none;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2); }
+
+        .footer-text { margin-top: 25px; font-size: 0.75rem; color: #475569; }
+        .footer-text a { color: var(--gold); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="login-card">
+        <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Back</a>
+        
+        <div class="icon-box">
+            <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <h2>Captain's Access</h2>
+        <p>Enter your credentials to enter the dressing room.</p>
+
+        <form id="captainLoginForm">
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="name@nexus.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>Access Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="input-group">
+                <label>Assigned Team</label>
+                <select id="teamSelect" required>
+                    <option value="">Choose your team...</option>
+                </select>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span>ENTER DRESSING ROOM</span>
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </button>
+        </form>
+
+        <div class="footer-text">
+            Forgot credentials? <a href="#">Contact Admin</a>
+        </div>
+    </div>
+
+    <script>
+        
+        // Ensure this URL is exactly what you see in Render Dashboard
+async function loadTeams() {
+    const select = document.getElementById('teamSelect');
+    // MAKE SURE THIS URL IS EXACTLY YOUR RENDER URL
+    const API_URL = "https://pes-park-backend.onrender.com"; 
+
+    try {
+        const res = await fetch(`${API_URL}/api/teams/all`);
+        
+        if (!res.ok) {
+            throw new Error(`Server responded with ${res.status}`);
+        }
+
+        const teams = await res.json();
+
+        if (teams && teams.length > 0) {
+            select.innerHTML = '<option value="">Choose your team...</option>';
+            teams.forEach(team => {
+                const opt = document.createElement('option');
+                opt.value = team.name;
+                opt.innerText = team.name;
+                select.appendChild(opt);
+            });
+        }
+    } catch (e) {
+        // This will pop up on your mobile and tell us the real error
+        alert("Connection Error: " + e.message + "\nCheck if Render is 'Live'");
+    }
+}
+
+        // 2. Handle Login
+const API = "https://pes-park-backend.onrender.com"; // Your Community Backend
+
+document.getElementById('captainLoginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    btn.innerText = "IMPORTING DATA...";
+
+    const payload = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        selectedTeam: document.getElementById('teamSelect').value
+    };
+
+    try {
+        const res = await fetch(`${API}/api/captain/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            // Save the "Synced Package" (Purse, Squad, Name)
+            localStorage.setItem('activeCaptainTeam', JSON.stringify(data));
+            window.location.href = `dressing-room.html?id=${encodeURIComponent(data.teamName)}`;
+        } else {
+            alert("❌ Login Failed: " + data.message);
+            btn.innerText = "ENTER DRESSING ROOM";
+        }
+    } catch (err) {
+        alert("Establishing sync connection... please try again in 5 seconds.");
+    }
+};
+
+function resetBtn() {
+    const btn = document.getElementById('loginBtn');
+    btn.innerHTML = '<span>ENTER DRESSING ROOM</span> <i class="fa-solid fa-right-to-bracket"></i>';
+    btn.disabled = false;
+}
+
+        window.onload = loadTeams;
+    </script>
+</body>
+</html>

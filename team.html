@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Profile | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;600;700&display=swap');
+
+        :root {
+            --bg: #060b13;
+            --card: #101926;
+            --border: #1e293b;
+            --accent: #10b981;
+            --gold: #f59e0b;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 60px;
+        }
+
+        .container { max-width: 500px; margin: auto; }
+
+        /* --- NAVIGATION --- */
+        .back-nav { margin-bottom: 20px; }
+        .back-nav a { color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+
+        /* --- HEADER CARD --- */
+        .header-card {
+            background: var(--card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .t-logo-frame {
+            width: 85px; height: 85px;
+            border-radius: 18px; overflow: hidden;
+            background: #000; border: 1px solid var(--border);
+        }
+        .t-logo-frame img { width: 100%; height: 100%; object-fit: contain; }
+        .header-info span { color: var(--text-dim); font-size: 0.65rem; letter-spacing: 2px; font-weight: bold; }
+        .header-info h1 { margin: 2px 0; font-size: 1.6rem; font-family: 'Orbitron'; text-transform: uppercase; }
+        .title-summary { color: var(--gold); font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+
+        /* --- ANALYTICS GRID --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; text-align: center; }
+        .stat-num { display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent); font-family: 'Orbitron'; }
+        .stat-label { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- WIN RATE BOX --- */
+        .win-rate-card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 25px; }
+        .wr-perc { font-size: 2rem; font-weight: 900; color: var(--accent); font-family: 'Orbitron'; }
+        .wr-record { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 1px; }
+
+        /* --- TROPHY CABINET --- */
+        .cabinet-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 25px; }
+        .cabinet-header { display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--gold); padding-left: 12px; margin-bottom: 20px; }
+        .cabinet-header h3 { margin: 0; font-size: 0.85rem; text-transform: uppercase; }
+        
+        .trophy-stage { background: rgba(0,0,0,0.4); border-radius: 15px; padding: 25px; text-align: center; margin-bottom: 20px; border: 1px solid rgba(245, 158, 11, 0.1); }
+        .main-trophy-img { width: 55px; filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.3)); }
+        
+        .trophy-pill { background: rgba(16, 185, 129, 0.05); border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; display: inline-block; margin-right: 5px;}
+
+        /* --- ROSTER LIST --- */
+        .section-title { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; font-weight: 800; padding-left: 5px; }
+        .roster-card { background: var(--card); border-radius: 24px; border: 1px solid var(--border); overflow: hidden; }
+        .player-row {
+            display: flex; align-items: center; padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.03); text-decoration: none; color: inherit;
+        }
+        .player-row:last-child { border-bottom: none; }
+        .rank-circle {
+            width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; font-weight: bold; color: var(--text-dim); margin-right: 15px;
+        }
+        .rank-circle.cap-gold { background: rgba(245, 158, 11, 0.1); border-color: var(--gold); color: var(--gold); }
+        .p-avatar { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: #000; margin-right: 15px; }
+        .p-info { flex: 1; }
+        .p-info h3 { margin: 0; font-size: 1rem; font-weight: 700; }
+        .cap-name { color: var(--gold) !important; }
+
+        #loader { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--accent)"></i>
+        <p style="color:var(--text-dim); margin-top:15px; font-size:0.7rem; letter-spacing:2px;">LINKING TO DATABASE...</p>
+    </div>
+
+    <div class="container">
+        <div class="back-nav"><a href="index.html"><i class="fa-solid fa-arrow-left"></i> BACK</a></div>
+
+        <div id="content" style="display: none;">
+            <!-- HEADER -->
+            <div class="header-card">
+                <div class="t-logo-frame"><img id="tLogo" src=""></div>
+                <div class="header-info">
+                    <span>TEAM PROFILE</span>
+                    <h1 id="tName">TEAM</h1>
+                    <p id="playerCount">0 players</p>
+                    <div class="title-summary"><i class="fa-solid fa-trophy"></i> <span id="titleSummaryText">0 Titles</span></div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS -->
+            <div class="stats-grid">
+                <div class="stat-card"><span class="stat-num" id="statLeague">0</span><span class="stat-label">League Wins</span></div>
+                <div class="stat-card"><span class="stat-num" id="statChampions">0</span><span class="stat-label">Cup Wins</span></div>
+            </div>
+
+            <!-- WIN RATE -->
+            <div class="win-rate-card">
+                <span class="wr-perc" id="wrPerc">0%</span>
+                <span style="display:block; font-size:0.8rem; margin:5px 0;">Calculated Win Rate</span>
+                <span id="wrRecord" style="font-size:0.7rem; color:var(--text-dim)">0W • 0D • 0L</span>
+            </div>
+
+            <!-- CABINET -->
+            <div class="section-title">Trophy Cabinet</div>
+            <div class="cabinet-card">
+                <div class="cabinet-header">
+                    <h3>History & Cabinet</h3>
+                    <div style="text-align:right"><b id="totalTitles" style="color:var(--gold); font-size:1.5rem;">0</b><br><small>TITLES</small></div>
+                </div>
+                <div class="trophy-stage"><img src="https://i.postimg.cc/15phyzFD/259302-removebg-preview.png" class="main-trophy-img"></div>
+                <div id="trophyList"></div>
+            </div>
+
+            <!-- ROSTER LIST -->
+            <div class="section-title">Official Roster</div>
+            <div class="roster-card" id="playerList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API = "https://pes-park-backend.onrender.com";
+        // 1. Get the Unique MongoDB _id from URL
+        const teamId = new URLSearchParams(window.location.search).get('id');
+
+        async function init() {
+            if (!teamId) {
+                document.getElementById('loader').innerHTML = "Error: No Team ID found.";
+                return;
+            }
+
+            try {
+                // 2. Fetch using the specific ID route
+                const res = await fetch(`${API}/api/teams/profile-by-id/${teamId}`);
+                const data = await res.json();
+
+                if (!data.team) throw new Error("Team not found");
+
+                const teamName = data.team.name;
+
+                // UI SET: Header
+                document.getElementById('tName').innerText = teamName;
+                document.getElementById('tLogo').src = data.team.logo || data.team.logoUrl;
+                document.getElementById('playerCount').innerText = `${data.players.length} Players Registered`;
+
+                // LOGIC: Win Rate calculation from match history
+                let w=0, d=0, l=0;
+                data.matches.forEach(m => {
+                    const isA = m.playerA === teamName;
+                    const myScore = isA ? m.scoreA : m.scoreB;
+                    const oppScore = isA ? m.scoreB : m.scoreA;
+                    if(myScore > oppScore) w++; else if(myScore === oppScore) d++; else l++;
+                });
+                const total = data.matches.length;
+                document.getElementById('wrPerc').innerText = (total > 0 ? Math.round((w/total)*100) : 0) + "%";
+                document.getElementById('wrRecord').innerText = `${w}W • ${d}D • ${l}L`;
+
+                // UI SET: Trophies
+                const trophies = data.trophies || [];
+                document.getElementById('totalTitles').innerText = trophies.length;
+                document.getElementById('titleSummaryText').innerText = `${trophies.length} Titles`;
+                document.getElementById('statLeague').innerText = trophies.filter(t => t.title.toLowerCase().includes('league')).length;
+                document.getElementById('statChampions').innerText = trophies.filter(t => t.title.toLowerCase().includes('champion')).length;
+                
+                document.getElementById('trophyList').innerHTML = trophies.map(t => 
+                    `<div class="trophy-pill">${t.title} - ${t.season}</div>`
+                ).join('');
+
+                // UI SET: Roster Numbering + Captain Crown
+                document.getElementById('playerList').innerHTML = data.players.map((p, i) => {
+                    const isCap = p.isCaptain;
+                    return `
+                        <a href="player.html?id=${p._id}" class="player-row">
+                            <div class="rank-circle ${isCap ? 'cap-gold' : ''}">
+                                ${isCap ? '<i class="fa-solid fa-crown"></i>' : (i + 1)}
+                            </div>
+                            <img src="${p.image || 'https://via.placeholder.com/50'}" class="p-avatar">
+                            <div class="p-info">
+                                <h3 class="${isCap ? 'cap-name' : ''}">${p.name} ${isCap ? '<span style="font-weight:400; font-size:0.7rem; color:var(--text-dim)">• Captain</span>' : ''}</h3>
+                                <p>"${p.nickname || p.name}"</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right" style="color:var(--border); font-size:0.7rem;"></i>
+                        </a>
+                    `;
+                }).join('');
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+            } catch (e) {
+    console.error("Detailed Error:", e);
+    document.getElementById('loader').innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <i class="fa-solid fa-triangle-exclamation fa-2x" style="color:var(--gold)"></i>
+            <br><br><b>SYSTEM LINK ERROR</b><br>
+            <p style="font-size:0.7rem; color:var(--text-dim); margin-top:10px;">
+                ID Received: ${teamId} <br>
+                Check if your Backend is running and the route exists.
+            </p>
+            <button onclick="location.reload()" style="background:var(--accent); border:none; padding:5px 15px; border-radius:5px; margin-top:10px;">Retry</button>
+        </div>`;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

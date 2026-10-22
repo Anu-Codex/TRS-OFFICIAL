@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Access Portal | Login & Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap');
+
+        :root {
+            --bg: #030712;
+            --card-bg: #0b1220;
+            --border: #16243b;
+            --accent: #00e5ff;
+            --green: #10b981;
+            --gold: #f59e0b;
+            --danger: #ef4444;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, #002b80 0%, #030712 80%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-header i {
+            font-size: 2.2rem;
+            color: var(--accent);
+            filter: drop-shadow(0 0 10px rgba(0,229,255,0.4));
+        }
+
+        .auth-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem;
+            letter-spacing: 2px;
+            margin: 8px 0 2px;
+        }
+
+        .auth-header p {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* Mode Switcher Tabs */
+        .auth-tabs {
+            display: flex;
+            background: #060b13;
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #060b13;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-submit:hover { opacity: 0.9; }
+
+        /* Social Divider */
+        .divider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 25px 0 20px;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .divider-row::before, .divider-row::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .google-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* OTP Modal Overlay */
+        .otp-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.92);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .otp-card {
+            background: #0f172a;
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 380px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 0 35px rgba(0, 229, 255, 0.25);
+        }
+
+        .otp-input {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem !important;
+            letter-spacing: 10px;
+            text-align: center;
+            color: var(--green) !important;
+            font-weight: 900;
+            padding: 12px !important;
+            margin: 15px 0 20px !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <h2>NEXUS <span>LEGENDS</span></h2>
+        <p>Tactical Identity & Tournament Portal</p>
+    </div>
+
+    <!-- Toggle Mode -->
+    <div class="auth-tabs">
+        <button type="button" class="tab-btn active" id="tabSignInBtn" onclick="switchAuthMode('signin')">SIGN IN</button>
+        <button type="button" class="tab-btn" id="tabSignUpBtn" onclick="switchAuthMode('signup')">SIGN UP</button>
+    </div>
+
+    <!-- 1. SIGN IN FORM -->
+    <form id="signInForm" onsubmit="handleSignInRequest(event)">
+        <div class="form-group">
+            <label>Registered Email</label>
+            <input type="email" id="siEmail" placeholder="yourname@gmail.com" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="siPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" id="btnSignInSubmit" class="btn-submit">
+            SEND 2FA CODE <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </form>
+
+    <!-- 2. SIGN UP FORM -->
+    <form id="signUpForm" onsubmit="handleSignUpRequest(event)" style="display:none;">
+        <div class="form-group">
+            <label>Select Your Player Profile (One-Time Link)</label>
+            <select id="suPlayerSelect" required>
+                <option value="">Loading Unclaimed Profiles...</option>
+            </select>
+            <small style="color:var(--gold); font-size:0.62rem; display:block; margin-top:4px;">
+                ⚠️ Permanent link: You cannot switch profiles later.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label>Your Personal Email</label>
+            <input type="email" id="suEmail" placeholder="yourname@gmail.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Create Password (Min 6 Characters)</label>
+            <input type="password" id="suPassword" minlength="6" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="btnSignUpSubmit" class="btn-submit" style="background:var(--green);">
+            CREATE ACCOUNT & SEND OTP
+        </button>
+    </form>
+
+    <!-- Social Alternative -->
+    <div class="divider-row">OR USE GOOGLE</div>
+    <div class="google-wrap">
+        <div id="googleBtn"></div>
+    </div>
+
+    <div style="text-align:center; margin-top:20px; font-size:0.75rem;">
+        <a href="index.html" style="color:var(--text-dim); text-decoration:none;">← Return to Main Hub</a>
+    </div>
+</div>
+
+<!-- OTP VERIFICATION MODAL -->
+<div id="otpModal" class="otp-modal" style="display: none;">
+    <div class="otp-card">
+        <i class="fa-solid fa-envelope-open-text fa-2x" style="color:var(--accent); margin-bottom:12px;"></i>
+        <h3 style="font-family:'Orbitron'; margin:0 0 6px; font-size:1.1rem;" id="otpModalTitle">VERIFY OTP</h3>
+        <p style="font-size:0.75rem; color:#94a3b8; margin:0;" id="otpSentNotice">
+            Enter the 6-digit security code sent to your email.
+        </p>
+
+        <form onsubmit="handleOtpVerification(event)">
+            <input type="text" id="otpCodeInput" class="otp-input" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required autofocus>
+            <button type="submit" id="btnVerifyOtp" class="btn-submit">
+                CONFIRM & ENTER NEXUS
+            </button>
+        </form>
+
+        <button type="button" onclick="closeOtpModal()" style="background:none; border:none; color:var(--text-dim); font-size:0.72rem; margin-top:15px; cursor:pointer;">
+            Cancel and Return
+        </button>
+    </div>
+</div>
+
+<script>
+    const API = "https://nexus-database-v2.onrender.com";
+    const GOOGLE_CLIENT_ID = "153914494881-o7k36nq1o3si33vb1c7fcb5uohcqegep.apps.googleusercontent.com";
+
+    let currentMode = "signin"; // 'signin' or 'signup'
+    let currentAuthEmail = "";
+
+    // 1. Tab Switcher
+    function switchAuthMode(mode) {
+        currentMode = mode;
+        const isSignIn = mode === 'signin';
+
+        document.getElementById('signInForm').style.display = isSignIn ? 'block' : 'none';
+        document.getElementById('signUpForm').style.display = isSignIn ? 'none' : 'block';
+
+        document.getElementById('tabSignInBtn').classList.toggle('active', isSignIn);
+        document.getElementById('tabSignUpBtn').classList.toggle('active', !isSignIn);
+
+        if (!isSignIn) loadUnclaimedPlayers();
+    }
+
+    // 2. Fetch Unclaimed Players for Sign Up
+    // --- 2. FETCH UNCLAIMED PLAYERS (WITH AUTO-PRELOAD & ERROR DIAGNOSTICS) ---
+    let cachedUnclaimedPlayers = null;
+    let isFetchingPlayers = false;
+
+    async function loadUnclaimedPlayers() {
+        const select = document.getElementById('suPlayerSelect');
+        if (!select) return;
+
+        // If already cached, render immediately without waiting
+        if (cachedUnclaimedPlayers && cachedUnclaimedPlayers.length > 0) {
+            renderUnclaimedDropdown(cachedUnclaimedPlayers);
+            return;
+        }
+
+        if (isFetchingPlayers) return;
+        isFetchingPlayers = true;
+
+        select.innerHTML = '<option value="">Syncing Player Database...</option>';
+
+        // Sanitize API URL to prevent double slashes
+        const cleanAPI = API.replace(/\/+$/, '');
+
+        try {
+            console.log(`[Auth] Fetching players from: ${cleanAPI}/api/players`);
+            const res = await fetch(`${cleanAPI}/api/players`);
+            
+            if (!res.ok) {
+                throw new Error(`Server returned HTTP status ${res.status}`);
+            }
+
+            const allPlayers = await res.json();
+
+            if (!Array.isArray(allPlayers)) {
+                throw new Error("API did not return a valid list of players.");
+            }
+
+            // Filter unclaimed players
+            cachedUnclaimedPlayers = allPlayers.filter(p => !p.isClaimed);
+            renderUnclaimedDropdown(cachedUnclaimedPlayers);
+
+        } catch (err) {
+            console.error("❌ Failed to load players for sign-up:", err);
+            select.innerHTML = `
+                <option value="">⚠️ Failed to load. Tap here to retry</option>
+            `;
+            // Allow user to tap the dropdown to retry
+            select.onchange = () => {
+                if (!select.value) {
+                    isFetchingPlayers = false;
+                    loadUnclaimedPlayers();
+                }
+            };
+        } finally {
+            isFetchingPlayers = false;
+        }
+    }
+
+    function renderUnclaimedDropdown(list) {
+        const select = document.getElementById('suPlayerSelect');
+        if (!select) return;
+
+        if (list.length === 0) {
+            select.innerHTML = '<option value="">All registered player profiles are claimed</option>';
+        } else {
+            select.innerHTML = '<option value="">-- Choose Your Player Profile --</option>' + 
+                list.map(p => `<option value="${p._id}">${p.name} (${p.teamName || 'Free Agent'})</option>`).join('');
+        }
+    }
+
+    // --- INITIALIZE ON PAGE OPEN ---
+    
+
+    // 3. Request Sign-Up OTP
+    async function handleSignUpRequest(e) {
+        e.preventDefault();
+        const playerId = document.getElementById('suPlayerSelect').value;
+        const email = document.getElementById('suEmail').value.trim();
+        const password = document.getElementById('suPassword').value;
+
+        if (!playerId) return alert("Please select your player profile!");
+
+        const btn = document.getElementById('btnSignUpSubmit');
+        btn.innerText = "DISPATCHING OTP...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${API}/api/auth/email/signup-request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, playerId })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                currentAuthEmail = email;
+                openOtpModal("ACCOUNT REGISTRATION", `Security code dispatched to ${email}`);
+            } else {
+                alert("❌ " + (data.error || "Sign-up failed"));
+            }
+        } catch (err) {
+            alert("Could not connect to authentication server.");
+        } finally {
+            btn.innerText = "CREATE ACCOUNT & SEND OTP";
+            btn.disabled = false;
+        }
+    }
+
+    // 4. Request Sign-In OTP
+    async function handleSignInRequest(e) {
+        e.preventDefault();
+        const email = document.getElementById('siEmail').value.trim();
+        const password = document.getElementById('siPassword').value;
+
+        const btn = document.getElementById('btnSignInSubmit');
+        btn.innerText = "VERIFYING CREDENTIALS...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${API}/api/auth/email/signin-request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                currentAuthEmail = email;
+                openOtpModal("TWO-FACTOR AUTHENTICATION", `Security code dispatched to ${email}`);
+            } else {
+                alert("❌ " + (data.error || "Invalid credentials"));
+            }
+        } catch (err) {
+            alert("Authentication server unreachable.");
+        } finally {
+            btn.innerText = "SEND 2FA CODE";
+            btn.disabled = false;
+        }
+    }
+
+    // 5. Verify OTP
+    async function handleOtpVerification(e) {
+        e.preventDefault();
+        const otp = document.getElementById('otpCodeInput').value.trim();
+        const endpoint = currentMode === 'signup' ? 'verify-signup' : 'verify-signin';
+
+        const btn = document.getElementById('btnVerifyOtp');
+        btn.innerText = "VALIDATING CODE...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`${API}/api/auth/email/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: currentAuthEmail, otp })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                alert("✅ Verification successful! Welcome back.");
+                finalizeSession(data.player);
+            } else {
+                alert("❌ " + (data.error || "Invalid OTP code"));
+            }
+        } catch (err) {
+            alert("Verification failed.");
+        } finally {
+            btn.innerText = "CONFIRM & ENTER NEXUS";
+            btn.disabled = false;
+        }
+    }
+
+    function openOtpModal(title, notice) {
+        document.getElementById('otpModalTitle').innerText = title;
+        document.getElementById('otpSentNotice').innerText = notice;
+        document.getElementById('otpCodeInput').value = "";
+        document.getElementById('otpModal').style.display = 'flex';
+    }
+
+    function closeOtpModal() {
+        document.getElementById('otpModal').style.display = 'none';
+    }
+
+    function finalizeSession(player) {
+        localStorage.setItem('nexus_player_user', JSON.stringify(player));
+        window.location.href = "player2.html"; // Routes directly to their individual profile
+    }
+
+    // --- GOOGLE SIGN-IN HANDLER ---
+    window.onload = function () {
+        // 1. Start fetching players in background immediately so it is ready
+        loadUnclaimedPlayers();
+
+        // 2. Initialize Google Sign-In SDK
+        if (typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleResponse,
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("googleBtn"),
+                { theme: "filled_blue", size: "large", shape: "pill", text: "continue_with", width: 260 }
+            );
+        }
+    };
+
+    async function handleGoogleResponse(response) {
+        try {
+            const res = await fetch(`${API}/api/auth/google`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ credential: response.credential })
+            });
+            const data = await res.json();
+
+            if (data.isLinked) {
+                finalizeSession(data.player);
+            } else {
+                alert("First time Google Login: Please switch to 'SIGN UP' to link your profile!");
+                switchAuthMode('signup');
+            }
+        } catch (e) {
+            alert("Google login error");
+        }
+    }
+</script>
+
+</body>
+</html>

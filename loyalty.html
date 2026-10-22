@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Command | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        :root { --accent: #10b981; --gold: #f59e0b; --bg: #020617; --card: #0f172a; }
+        body { background: var(--bg); color: white; font-family: 'Rajdhani', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        
+        /* Tactical Header */
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { letter-spacing: 8px; margin: 0; font-size: 2.5rem; }
+        .header p { color: var(--accent); font-weight: bold; font-size: 0.7rem; letter-spacing: 2px; }
+
+        /* Search & Form Boxes */
+        .glass-box { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #1e293b; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; background: #020617; border: 1px solid #1e293b; color: white; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-green { background: var(--accent); color: black; }
+        .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); margin-top: 10px; }
+
+        /* THE CARD DESIGN */
+        .loyalty-card-result { 
+            width: 100%; height: 260px; border-radius: 20px; position: relative; 
+            background-size: cover; background-position: center; display: none;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5); margin-top: 20px;
+        }
+        .card-name { position: absolute; top: 165px; left: 30px; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+        .card-num { position: absolute; top: 125px; left: 30px; font-family: monospace; font-size: 1.4rem; letter-spacing: 2px; }
+        .card-barcode { position: absolute; bottom: 20px; left: 30px; background: white; padding: 4px; height: 40px; border-radius: 4px; }
+        .status-pill { position: absolute; top: 20px; right: 20px; padding: 5px 12px; border-radius: 20px; font-size: 0.6rem; font-weight: 900; }
+      /* Card Showcase */
+        .card-showcase { display: flex; gap: 20px; overflow-x: auto; padding: 20px; scrollbar-width: none; }
+        .tier-display { min-width: 300px; background: #0f172a; border-radius: 20px; border: 1px solid #1e293b; padding: 15px; text-align: center; }
+        .tier-display img { width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .perks-list { text-align: left; font-size: 0.8rem; color: #94a3b8; }
+        .perks-list li { margin-bottom: 8px; list-style: none; display: flex; align-items: center; gap: 10px; }
+        .perks-list i { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>NEXUS PRIVILEGE</h1>
+        <p>MEMBERSHIP MANAGEMENT SYSTEM</p>
+    </div>
+  <div class="card-showcase">
+        <!-- VIP+ -->
+        <div class="tier-display">
+            <img src="VIP_CARD_URL">
+            <h3>VIP+</h3>
+            <ul class="perks-list">
+                <li><i class="fa-solid fa-check"></i> 10% Discount on Paid Tours</li>
+                <li><i class="fa-solid fa-check"></i> 1 Hour Early Booking</li>
+            </ul>
+        </div>
+        <!-- ELITE -->
+        <div class="tier-display" style="border-color: var(--gold);">
+            <img src="ELITE_CARD_URL">
+            <h3>ELITE</h3>
+            <ul class="perks-list">
+                <li><i class="fa-solid fa-check"></i> 20% Discount on Paid Tours</li>
+              <li><i class="fa-solid fa-check"></i> 3 Hours Early Booking</li>
+                <li><i class="fa-solid fa-check"></i> ELITE Badge</li>
+            </ul>
+        </div>
+        <!-- ELITE++ -->
+        <div class="tier-display" style="border-color: #0ea5e9;">
+            <img src="ELITE_PLUS_CARD_URL">
+            <h3>ELITE++</h3>
+            <ul class="perks-list">
+                <li><i class="fa-solid fa-check"></i> 35% Discount on Paid Tours</li>
+                <li><i class="fa-solid fa-check"></i> Instant Slot Confirmation</li>
+                <li><i class="fa-solid fa-check"></i> Premium Support Line</li>
+              <li><i class="fa-solid fa-check"></i> ELITE++ Badge</li>
+              </ul>
+        </div>
+  </div>
+
+    <!-- 1. Registration Area -->
+    <div id="apply-section" class="glass-box">
+        <h3>NEW APPLICATION</h3>
+        <input type="text" id="regName" placeholder="Full Registered Name">
+        <input type="tel" id="regPhone" placeholder="WhatsApp Number">
+        <button class="btn btn-green" onclick="submitApplication()">Transmit Application</button>
+    </div>
+
+    <!-- 2. Retrieval Area -->
+    <div class="glass-box">
+        <h3>RETRIEVE / RENEW CARD</h3>
+        <input type="text" id="searchId" placeholder="Enter Application ID (NEX-XXXXXX)">
+        <button class="btn btn-outline" onclick="checkStatus()">Search Database</button>
+    </div>
+
+    <!-- 3. Dynamic Card Area -->
+    <div id="cardResult" class="loyalty-card-result">
+        <div id="statusTag" class="status-pill"></div>
+        <div class="card-num" id="displayNum">XXXX XXXX XXXX XXXX</div>
+        <div class="card-name" id="displayName">PLAYER NAME</div>
+        <svg id="barcodeImg" class="card-barcode"></svg>
+    </div>
+    
+    <!-- Action Area -->
+    <div id="cardActions" style="display:none; margin-top:15px;">
+        <button class="btn btn-green" onclick="window.print()">Download Digital Card</button>
+        <button id="renewBtn" class="btn btn-outline" style="display:none; border-color:var(--gold); color:var(--gold);" onclick="requestRenewal()">Request Renewal</button>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+
+    async function submitApplication() {
+    const playerName = document.getElementById('regName').value;
+    const phoneNumber = document.getElementById('regPhone').value;
+    if(!playerName || !phoneNumber) return alert("Please fill both fields.");
+
+    try {
+        const res = await fetch(`${API}/api/loyalty/apply`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ playerName, phoneNumber })
+        });
+        const data = await res.json();
+
+        if(data.success) {
+            if(data.alreadyExists) {
+                alert("RECOVERY SUCCESS!\nThis phone is already registered.\nID: " + data.applicationId);
+            } else {
+                alert("APPLICATION TRANSMITTED!\nYour ID is: " + data.applicationId + "\nSave this to download your card later.");
+            }
+            // Auto-fill the search box for them
+            document.getElementById('searchId').value = data.applicationId;
+        } else {
+            alert("ERROR: " + data.error);
+        }
+    } catch (e) { alert("Server Connection Failed."); }
+    }
+
+    async function checkStatus() {
+        const appId = document.getElementById('searchId').value;
+        const res = await fetch(`${API}/api/loyalty/status/${appId}`);
+        const card = await res.json();
+
+        if(card.error) return alert(card.error);
+
+        const cardUI = document.getElementById('cardResult');
+        const actions = document.getElementById('cardActions');
+        const renewBtn = document.getElementById('renewBtn');
+
+        cardUI.style.display = 'block';
+        actions.style.display = 'block';
+
+        // 1. Set Status UI
+        const tag = document.getElementById('statusTag');
+        tag.innerText = card.status.toUpperCase();
+        tag.style.background = card.status === 'Approved' ? '#10b981' : (card.status === 'Pending' ? '#f59e0b' : '#ef4444');
+
+        // 2. Set Content
+        document.getElementById('displayName').innerText = card.playerName;
+        document.getElementById('displayNum').innerText = card.cardNumber;
+
+        // 3. Set Background Image based on Tier
+        let bg = "URL_OF_VIP_CARD";
+        if(card.tier === 'ELITE') bg = "URL_OF_ELITE_CARD";
+        if(card.tier === 'ELITE++') bg = "URL_OF_ELITE_PLUS_CARD";
+        cardUI.style.backgroundImage = `url('${bg}')`;
+
+        // 4. Generate Barcode (Only if approved)
+        if(card.status === 'Approved') {
+            JsBarcode("#barcodeImg", card.barcodeData, { format: "CODE128", height: 30, displayValue: false });
+        }
+
+        // 5. Renewal Logic
+        renewBtn.style.display = (card.status === 'Expired') ? 'block' : 'none';
+    }
+
+    async function requestRenewal() {
+        alert("Renewal request sent. Admins will process it shortly.");
+        // Logic to hit /api/loyalty/renew route...
+    }
+</script>
+
+</body>
+</html>

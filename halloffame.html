@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ARCHIVE | NEXUS LEGENDS eSPORTS</title>
+    
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #020617;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --accent: #10b981; /* Nexus Emerald */
+            --gold: #f59e0b;
+            --border: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .tactical-container {
+            max-width: 550px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* --- TACTICAL HEADER --- */
+        .legacy-header {
+            position: relative;
+            margin-bottom: 60px;
+        }
+
+        .legacy-header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 5rem;
+            line-height: 0.8;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            opacity: 0.1;
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2rem;
+            margin: 0;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .archive-id {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .archive-id::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* --- SEASON SELECTOR (Modern Tactical Scroll) --- */
+        .season-nav-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .nav-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .custom-selector {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .custom-selector:hover { border-color: var(--accent); }
+
+        .custom-selector select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        /* --- HIGHLIGHTS (Bento Grid Style) --- */
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .highlight-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 3px; height: 100%;
+            background: var(--accent);
+        }
+
+        .h-label {
+            font-size: 0.55rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .h-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        /* --- TROPHY ROSTER (Tactical Roster Style) --- */
+        .roster-section {
+            border-top: 1px solid var(--border);
+            padding-top: 30px;
+        }
+
+        .trophy-item {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            gap: 20px;
+            transition: 0.3s;
+        }
+
+        .trophy-item:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .trophy-visual {
+            width: 50px;
+            height: 50px;
+            background: var(--bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .trophy-visual img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px var(--gold));
+        }
+
+        .winner-data {
+            flex: 1;
+        }
+
+        .t-competition {
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+        }
+
+        .t-winner-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            margin: 2px 0;
+        }
+
+        .runner-box {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .runner-box b { color: #94a3b8; }
+
+        .back-nav {
+            margin-bottom: 30px;
+            display: inline-block;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .back-nav:hover { color: var(--accent); }
+
+        /* Footers */
+        .archive-footer {
+            margin-top: 60px;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tactical-container">
+        
+        <a href="index.html" class="back-nav"><i class="fa-solid fa-arrow-left"></i> Return to Command</a>
+
+        <header class="legacy-header">
+            <h1>ARCHIVE</h1>
+            <div class="header-content">
+                <h2>HALL OF FAME</h2>
+                <div class="archive-id">
+                    <span>RECORD UNIT: 2026-A</span>
+                    <span id="activeSeasonDisplay">SEASON 01</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="season-nav-wrapper">
+            <span class="nav-label">Access Archive By Season</span>
+            <div class="custom-selector">
+                <select id="seasonSelect" onchange="loadSeasonData(this.value)">
+                    <option value="">Syncing Archives...</option>
+                </select>
+                <i class="fa-solid fa-caret-down" style="color:var(--accent)"></i>
+            </div>
+        </div>
+
+        <div id="highlights-container" class="highlights-grid">
+            <!-- Highlights like Top BDR, Highest MV go here -->
+        </div>
+
+        <div class="roster-section">
+            <span class="nav-label">Verified Trophy Cabinet</span>
+            <div id="trophies-container">
+                <!-- Winners/Runners load here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API = "https://pes-park-backend.onrender.com/api/hof"; 
+        
+        // Custom icons mapping for different trophy titles
+        const getTrophyIcon = (title) => {
+            const t = title.toLowerCase();
+            if(t.includes('ballon')) return "https://i.ibb.co/Vmq8v0V/ballon-dor.png";
+            if(t.includes('ucl')) return "https://i.ibb.co/SrtXpYy/ucl-trophy.png";
+            if(t.includes('league')) return "https://i.ibb.co/0fM0Z4M/league-trophy.png";
+            if(t.includes('boot')) return "https://i.ibb.co/6R7V0H5/weekly-star.png";
+            return "https://i.ibb.co/0fM0Z4M/league-trophy.png"; // Default
+        };
+
+        async function initHOF() {
+            try {
+                const res = await fetch(`${API}/seasons`);
+                const seasons = await res.json();
+                const selector = document.getElementById('seasonSelect');
+
+                if (seasons.length > 0) {
+                    selector.innerHTML = seasons.map(s => `<option value="${s.seasonName}">${s.seasonName}</option>`).join('');
+                    loadSeasonData(seasons[0].seasonName);
+                }
+            } catch (err) { console.error("Sync Error"); }
+        }
+
+        async function loadSeasonData(name) {
+            if (!name) return;
+            document.getElementById('activeSeasonDisplay').innerText = name.toUpperCase();
+            
+            try {
+                const res = await fetch(`${API}/data/${encodeURIComponent(name)}`);
+                const data = await res.json();
+
+                // Render Bento Highlights
+                const hContainer = document.getElementById('highlights-container');
+                hContainer.innerHTML = (data.specialHighlights || []).map(h => `
+                    <div class="highlight-card">
+                        <span class="h-label">${h.label}</span>
+                        <div class="h-value">${h.value}</div>
+                    </div>
+                `).join('') || '<p>Archives Empty</p>';
+
+                // Render Trophy Roster
+                const tContainer = document.getElementById('trophies-container');
+                tContainer.innerHTML = (data.trophyWinners || []).map(t => `
+                    <div class="trophy-item">
+                        <div class="trophy-visual">
+                            <img src="${getTrophyIcon(t.title)}">
+                        </div>
+                        <div class="winner-data">
+                            <span class="t-competition">${t.title}</span>
+                            <div class="t-winner-name">${t.winner}</div>
+                            ${t.runner ? `
+                                <div class="runner-box">
+                                    <b>Runner Up:</b> <span>${t.runner}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <i class="fa-solid fa-shield-halved" style="opacity:0.2; font-size:1.5rem"></i>
+                    </div>
+                `).join('') || '<p>No Trophy Records</p>';
+
+            } catch (err) { console.error("Load Error"); }
+        }
+
+        window.onload = initHOF;
+    </script>
+
+    <footer class="archive-footer">
+        <p style="font-size:0.6rem; color:var(--text-dim); letter-spacing:2px;">
+            © NEXUS LEGENDS • ENCRYPTED DATA ARCHIVE • 2026-27
+        </p>
+    </footer>
+</body>
+</html>

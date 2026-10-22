@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIN RATE | NEXUS LEGENDS</title>
+    
+    <!-- External Assets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #060b13; 
+            --card: #101926; 
+            --accent: #10b981; 
+            --gold: #f59e0b; 
+            --danger: #ef4444; 
+            --border: #1e293b;
+            --text-dim: #64748b;
+        }
+
+        /* Basic Setup */
+        body { 
+            background-color: var(--bg); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 15px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        .container { 
+            width: 100%;
+            max-width: 500px; 
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation & Header */
+        .back-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            transition: 0.3s;
+        }
+        .back-nav:hover { color: var(--accent); }
+
+        /* Competition Tabs */
+        .tabs { 
+            display: flex; 
+            gap: 10px; 
+            overflow-x: auto; 
+            padding-bottom: 15px; 
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab { 
+            padding: 10px 22px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            cursor: pointer; 
+            white-space: nowrap; 
+            background: rgba(255,255,255,0.02); 
+            color: var(--text-dim); 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .tab.active { 
+            background: var(--accent); 
+            color: black; 
+            border-color: var(--accent); 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Controls Area */
+        .season-select { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            color: white; 
+            padding: 14px; 
+            border-radius: 14px; 
+            width: 100%; 
+            margin-bottom: 15px; 
+            font-weight: 700; 
+            outline: none; 
+            font-size: 0.9rem;
+        }
+
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+        .search-box input { 
+            width: 100%; 
+            padding: 16px 16px 16px 50px; 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            color: white; 
+            box-sizing: border-box; 
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-box input:focus { border-color: var(--accent); }
+
+        /* Performance Verdict Card */
+        .rank-info-card {
+            background: linear-gradient(145deg, var(--card) 0%, #060b13 100%); 
+            border: 1px solid var(--border); 
+            border-radius: 24px; 
+            padding: 22px;
+            display: flex; 
+            align-items: center; 
+            gap: 18px; 
+            margin-bottom: 15px;
+        }
+        .ric-icon { 
+            width: 50px; height: 50px; 
+            background: rgba(16, 185, 129, 0.08); 
+            border-radius: 14px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: var(--accent); 
+            font-size: 1.2rem;
+        }
+
+        /* Ranking List Styling */
+        #rankingList { margin-top: 10px; }
+
+        .player-row { 
+            display: flex; 
+            align-items: center; 
+            padding: 20px 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.03); 
+            gap: 15px; 
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .player-row:hover { background: rgba(255,255,255,0.02); }
+
+        .rank-num-box { 
+            width: 35px; 
+            font-weight: 900; 
+            color: #334155; 
+            text-align: center; 
+            font-family: 'Rajdhani';
+            font-size: 1.1rem;
+        }
+
+        .p-avatar { 
+            width: 52px; 
+            height: 52px; 
+            border-radius: 14px; 
+            object-fit: cover; 
+            background: #1e293b; 
+            border: 1px solid var(--border);
+        }
+        
+        .p-mid { flex: 1; }
+        .p-name { font-weight: 800; font-size: 1rem; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .wdl-text { font-size: 0.7rem; font-weight: 900; letter-spacing: 0.8px; }
+        .w { color: var(--accent); } 
+        .d { color: var(--gold); } 
+        .l { color: var(--danger); }
+
+        /* Multi-segment Win/Loss Bar */
+        .stat-bar { 
+            height: 5px; 
+            background: #1e293b; 
+            border-radius: 10px; 
+            margin-top: 12px; 
+            display: flex; 
+            overflow: hidden; 
+            width: 100%; 
+            max-width: 160px; 
+        }
+        .bar-win { background: var(--accent); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+        .bar-draw { background: var(--gold); }
+        .bar-loss { background: var(--danger); }
+
+        /* End Column */
+        .p-end { text-align: right; min-width: 90px; }
+        .m-val { display: block; font-size: 1rem; font-weight: 900; color: #f8fafc; }
+        .m-lab { display: block; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+        .win-perc { 
+            color: var(--accent); 
+            font-weight: 900; 
+            font-size: 1.2rem; 
+            margin-top: 4px; 
+            display: block; 
+            font-family: 'Rajdhani';
+        }
+
+        /* Skeleton Loader */
+        .skeleton { height: 80px; background: rgba(255,255,255,0.02); border-radius: 20px; margin-bottom: 10px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Back to Hub -->
+    <a href="index.html" class="back-nav">
+        <i class="fa-solid fa-chevron-left"></i> BACK TO DASHBOARD
+    </a>
+
+    <!-- Category Tabs -->
+    <div class="tabs">
+        <div class="tab active" onclick="changeFilter('Overall', this)">Overall</div>
+        <div class="tab" onclick="changeFilter('League', this)">League</div>
+        <div class="tab" onclick="changeFilter('Weekly', this)">Weekly</div>
+        <div class="tab" onclick="changeFilter('UCL', this)">UCL</div>
+    </div>
+
+    <!-- Period Selector -->
+    <select class="season-select">
+        <option>All-Time Records</option>
+        <option>Season 1 (Current)</option>
+    </select>
+
+    <!-- Search UI -->
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="pSearch" placeholder="Search by name or team..." oninput="renderRanking()">
+    </div>
+
+    <!-- Performance Verdict Card -->
+    <div class="rank-info-card">
+        <div class="ric-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div>
+            <h4 style="margin:0; font-size:0.6rem; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase;">Win Consistency Engine</h4>
+            <h2 id="filterLabel" style="margin:4px 0 0; font-size:0.9rem; font-family:'Rajdhani'; color:#f8fafc; letter-spacing:0.5px;">
+                Overall • All Seasons • min 5 matches
+            </h2>
+        </div>
+    </div>
+
+    <!-- The Dynamic List -->
+    <div id="rankingList">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+    let allPlayers = [];
+    let currentFilter = "Overall";
+
+    // 1. INITIAL FETCH
+    async function loadData() {
+        try {
+            const res = await fetch(`${API}/api/players`);
+            allPlayers = await res.json();
+            renderRanking();
+        } catch (e) {
+            console.error("Data Link Error:", e);
+            document.getElementById('rankingList').innerHTML = '<p style="text-align:center; color:red;">Connection to Neural Link Failed.</p>';
+        }
+    }
+
+    // 2. FILTER SWITCHING
+    function changeFilter(type, el) {
+        currentFilter = type;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        
+        const label = (type === 'Overall') ? 'min 5 matches' : 'min 3 matches';
+        document.getElementById('filterLabel').innerText = `${type.toUpperCase()} • ALL SEASONS • ${label}`;
+        
+        renderRanking();
+    }
+
+    // 3. CALCULATION & RENDERING ENGINE
+    function renderRanking() {
+        const query = document.getElementById('pSearch').value.toLowerCase();
+        const container = document.getElementById('rankingList');
+        
+        // Match minimum constraint logic
+        const minMatchesRequired = (currentFilter === 'Overall') ? 5 : 3;
+
+        // Step 1: Map players to their calculated stats
+        let data = allPlayers.map(p => {
+            const matches = p.matches || [];
+            
+            // Filter by Competition Type if not Overall
+            const filtered = (currentFilter === 'Overall') 
+                ? matches 
+                : matches.filter(m => m.tournamentType === currentFilter || m.opponentName.includes(currentFilter));
+
+            const w = filtered.filter(m => m.result === 'WIN').length;
+            const d = filtered.filter(m => m.result === 'DRAW').length;
+            const l = filtered.filter(m => m.result === 'LOSS').length;
+            const total = filtered.length;
+            
+            // Percentage Calculation
+            const rate = total > 0 ? ((w / total) * 100).toFixed(1) : 0;
+
+            return { ...p, w, d, l, total, rate };
+        });
+
+        // Step 2: Apply Filters & Constraints
+        data = data.filter(p => p.total >= minMatchesRequired && p.name.toLowerCase().includes(query));
+
+        // Step 3: Sort by Highest Win Rate
+        data.sort((a, b) => b.rate - a.rate || b.total - a.total);
+
+        // Step 4: Render HTML
+        if (data.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:40px; color:var(--text-dim);">No data meets criteria.</p>';
+            return;
+        }
+
+        container.innerHTML = data.map((p, i) => {
+            const winW = (p.w / p.total) * 100;
+            const drawW = (p.d / p.total) * 100;
+            const lossW = (p.l / p.total) * 100;
+            const rank = i + 1;
+
+            return `
+                <div class="player-row" onclick="window.location.href='player.html?id=${p._id}'">
+                    <div class="rank-num-box">
+                        ${rank === 1 ? '<img src="https://i.postimg.cc/cJWh3pvr/261227-removebg-preview.png" style="width:22px;">' : '#' + rank}
+                    </div>
+                    
+                    <img src="${p.image || 'https://via.placeholder.com/48'}" class="p-avatar" onerror="this.src='https://via.placeholder.com/48'">
+                    
+                    <div class="p-mid">
+                        <span class="p-name">${p.name}</span>
+                        <span class="wdl-text">
+                            <span class="w">${p.w}W</span> <span class="d">${p.d}D</span> <span class="l">${p.l}L</span>
+                        </span>
+                        <div class="stat-bar">
+                            <div class="bar-win" style="width:${winW}%"></div>
+                            <div class="bar-draw" style="width:${drawW}%"></div>
+                            <div class="bar-loss" style="width:${lossW}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-end">
+                        <span class="m-val">${p.total}</span>
+                        <span class="m-lab">Matches</span>
+                        <span class="win-perc">${p.rate}%</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Initialize on start
+    window.onload = loadData;
+</script>
+
+</body>
+</html>

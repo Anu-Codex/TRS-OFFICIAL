@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glory Gallery | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@700;800&family=Rajdhani:wght@600;700&display=swap');
+
+        :root {
+            --bg: #030712;
+            --card-bg: #0b1120;
+            --border: #16243b;
+            --accent: #10b981;
+            --gold: #f59e0b;
+            --cyan: #00e5ff;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+                radial-gradient(circle at 100% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 20px 15px 80px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .gallery-wrapper {
+            width: 100%;
+            max-width: 1080px;
+        }
+
+        /* Top Nav */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .back-link:hover { color: var(--accent); }
+
+        /* --- HERO TYPOGRAPHY HEADER --- */
+        .glory-hero {
+            text-align: center;
+            padding: 30px 10px 40px;
+            position: relative;
+        }
+
+        .hero-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 6px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .hero-headline {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.4rem, 8vw, 4.5rem);
+            font-weight: 800;
+            line-height: 0.95;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-headline span {
+            background: linear-gradient(90deg, var(--gold) 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtext {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        /* Filter Tabs */
+        .filter-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* --- POSTERS GRID --- */
+        .posters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .poster-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s;
+            position: relative;
+        }
+
+        .poster-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Poster Image Container (4:5 Aspect Ratio) */
+        .poster-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            background: #020617;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .poster-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .poster-card:hover .poster-media img {
+            transform: scale(1.05);
+        }
+
+        /* Overlay inspect icon */
+        .poster-inspect-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .poster-card:hover .poster-inspect-overlay {
+            opacity: 1;
+        }
+
+        .inspect-badge {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Floating Corner Ribbon */
+        .status-corner {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+            z-index: 2;
+        }
+
+        .tag-champion {
+            background: rgba(245, 158, 11, 0.25);
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .tag-mvp {
+            background: rgba(16, 185, 129, 0.25);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .tag-runnerup {
+            background: rgba(0, 229, 255, 0.25);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 229, 255, 0.5);
+        }
+
+        .tag-special {
+            background: rgba(239, 68, 68, 0.25);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        /* --- POSTER TYPOGRAPHY FOOTER --- */
+        .poster-info {
+            padding: 18px 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .meta-tour-name {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-tour-name i {
+            color: var(--gold);
+            font-size: 0.75rem;
+        }
+
+        .meta-player-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .meta-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .meta-status-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        .meta-season-pill {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* --- FULLSCREEN LIGHTBOX --- */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(12px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lightbox-content img {
+            width: 100%;
+            height: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 100000;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .lightbox-close:hover { opacity: 1; color: var(--accent); }
+
+        #loadingState {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+<div class="gallery-wrapper">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> NEXUS COMMAND</a>
+        <span style="font-family:'Orbitron'; font-size:0.75rem; color:var(--gold); letter-spacing:2px;">OFFICIAL ARCHIVES</span>
+    </div>
+
+    <!-- Hero Header -->
+    <div class="glory-hero">
+        <span class="hero-tag">THE VICTORY SHOWCASE</span>
+        <h1 class="hero-headline">GLORY <span>GALLERY</span></h1>
+        <p class="hero-subtext">Official Championship & Victory Poster Archives</p>
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterGallery('ALL', this)">ALL EDITIONS</button>
+        <button class="filter-btn" onclick="filterGallery('CHAMPION', this)">CHAMPIONS</button>
+        <button class="filter-btn" onclick="filterGallery('RUNNER-UP', this)">FINALISTS</button>
+        <button class="filter-btn" onclick="filterGallery('MVP', this)">MVPs</button>
+        <button class="filter-btn" onclick="filterGallery('GOLDEN BOOT', this)">GOLDEN BOOT</button>
+    </div>
+
+    <!-- Dynamic Poster Showcase Grid -->
+    <div id="postersGrid" class="posters-grid">
+        <div id="loadingState">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--accent)"></i>
+            <p style="margin-top:12px; font-size:0.8rem; letter-spacing:2px; font-family:'Orbitron';">RETRIEVING GLORY ARCHIVES...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen Lightbox Modal -->
+<div id="lightbox" class="lightbox-overlay" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <div class="lightbox-content" onclick="event.stopPropagation()">
+        <img id="lightboxImg" src="">
+    </div>
+</div>
+
+<script>
+    const API = "https://nexus-database-v2.onrender.com";
+    let cachedPosters = [];
+
+    async function loadGloryPosters() {
+        try {
+            const res = await fetch(`${API}/api/glory/posters`);
+            const posters = await res.json();
+            cachedPosters = Array.isArray(posters) ? posters : [];
+
+            renderPosters(cachedPosters);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('postersGrid').innerHTML = 
+                `<p style="color:#ef4444; text-align:center; padding:40px; font-family:'Orbitron';">ARCHIVE CONNECTION OFFLINE.</p>`;
+        }
+    }
+
+    function renderPosters(list) {
+        const grid = document.getElementById('postersGrid');
+
+        if (!list || list.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align:center; padding:60px 20px; color:#64748b;">
+                    <i class="fa-solid fa-images" style="font-size:2.5rem; opacity:0.2; margin-bottom:12px; display:block;"></i>
+                    <p style="letter-spacing:1px;">No victory posters uploaded for this category yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = list.map(p => {
+            const statusUpper = (p.status || "CHAMPION").toUpperCase();
+            
+            // Tag color style
+            let tagClass = "tag-champion";
+            if (statusUpper.includes("MVP")) tagClass = "tag-mvp";
+            else if (statusUpper.includes("RUNNER")) tagClass = "tag-runnerup";
+            else if (statusUpper.includes("BOOT")) tagClass = "tag-champion";
+            else if (statusUpper.includes("SPECIAL")) tagClass = "tag-special";
+
+            return `
+                <div class="poster-card">
+                    <div class="poster-media" onclick="openLightbox('${p.imageUrl}')">
+                        <img src="${p.imageUrl}" alt="${p.playerName}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x500/0b1120/64748b?text=POSTER+UNAVAILABLE'">
+                        <div class="status-corner ${tagClass}">
+                            ${statusUpper}
+                        </div>
+                        <div class="poster-inspect-overlay">
+                            <span class="inspect-badge"><i class="fa-solid fa-expand"></i> VIEW POSTER</span>
+                        </div>
+                    </div>
+
+                    <div class="poster-info">
+                        <span class="meta-tour-name">
+                            <i class="fa-solid fa-trophy"></i> ${p.tourName}
+                        </span>
+                        <h3 class="meta-player-name">${p.playerName}</h3>
+                        <div class="meta-bottom-row">
+                            <span class="meta-status-label">${p.status}</span>
+                            <span class="meta-season-pill">${p.season || 'Season 1'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterGallery(category, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        if (category === 'ALL') {
+            renderPosters(cachedPosters);
+        } else {
+            const filtered = cachedPosters.filter(p => 
+                (p.status || '').toUpperCase().includes(category)
+            );
+            renderPosters(filtered);
+        }
+    }
+
+    function openLightbox(url) {
+        document.getElementById('lightboxImg').src = url;
+        document.getElementById('lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    window.onload = loadGloryPosters;
+</script>
+
+</body>
+</html>

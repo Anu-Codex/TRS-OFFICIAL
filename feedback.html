@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Legends | Community Feedback Hub</title>
+    
+    <!-- Google Font: Outfit for modern gaming aesthetics -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #060913;
+            color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background ambient glowing lights (Dark Night esports vibe) */
+        .ambient-glow {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, rgba(79, 172, 254, 0.05) 50%, transparent 80%);
+            z-index: -1;
+            filter: blur(50px);
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            padding: 0 20px;
+        }
+
+        .clan-badge {
+            display: inline-block;
+            background: rgba(0, 242, 254, 0.1);
+            color: #00f2fe;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ffffff 30%, #4facfe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Widget Card Container */
+        main {
+            width: 100%;
+            max-width: 900px;
+            padding: 0 20px;
+            flex: 1;
+            margin-bottom: 50px;
+        }
+
+        .widget-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            background: rgba(6, 9, 19, 0.8);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .widget-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Glow Effect -->
+    <div class="ambient-glow"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="clan-badge">⚽ Official Community Hub</div>
+        <h1>NEXUS LEGENDS</h1>
+        <p class="subtitle">Drop your feedback, suggestions, or match experiences below to help us elevate our eFootball community.</p>
+    </header>
+
+    <!-- Feedback Widget Area -->
+    <main>
+        <div class="widget-card">
+            <!-- PASTE YOUR JAVASCRIPT WIDGET CODE BELOW THIS LINE -->
+            
+            <div class='wbnz-comments' data-webynize-id='13750'></div><script defer src='https://widgets.webynize.com/comments.js'></script>
+
+            <!-- PASTE YOUR JAVASCRIPT WIDGET CODE ABOVE THIS LINE -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Nexus Legends EFootball Community. Built for Glory.</p>
+    ></footer>
+
+</body>
+</html>

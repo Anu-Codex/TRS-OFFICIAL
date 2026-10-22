@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS LIVE | STADIUM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap');
+        :root { --bg: #020617; --accent: #10b981; --danger: #ef4444; --border: #1e293b; }
+        
+        body { background: var(--bg); color: white; font-family: 'Rajdhani', sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+
+        /* Broadcast Header */
+        .broadcast-header {
+            height: 60px; background: #000; display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 20px; border-bottom: 2px solid var(--accent);
+            z-index: 100;
+        }
+
+        .live-indicator {
+            background: var(--danger); color: white; padding: 4px 12px; border-radius: 4px;
+            font-family: 'Orbitron'; font-size: 0.7rem; font-weight: 900; animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* Viewport */
+        .viewport { flex: 1; position: relative; background: #000; }
+        
+        /* Player and Iframe must cover full area */
+        #video, #externalFrame { width: 100%; height: 100%; border: none; display: none; }
+
+        /* Sandbox Warning Overlay (For Mirror Sites) */
+        #sandbox-notice {
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); padding: 5px 15px; border-radius: 50px;
+            font-size: 0.6rem; color: var(--accent); border: 1px solid var(--accent);
+            z-index: 50; display: none; letter-spacing: 1px;
+        }
+
+        /* Status Overlay */
+        #status-overlay {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; background: var(--bg); z-index: 10;
+        }
+
+        .btn-action {
+            background: var(--accent); color: #000; border: none; padding: 15px 30px;
+            border-radius: 12px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer;
+            margin-top: 20px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="broadcast-header">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div class="live-indicator">LIVE</div>
+            <h2 id="matchTitle" style="margin:0; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;">SCANNING SIGNAL...</h2>
+        </div>
+        <div style="color:var(--accent); font-size:0.7rem; font-weight:bold;">
+            <i class="fa-solid fa-shield-halved"></i> SECURE LINK BY NEXUS LEGENDS
+        </div>
+    </div>
+
+    <div class="viewport">
+        <div id="sandbox-notice"><i class="fa-solid fa-lock"></i> NEXUS AD-BLOCKER ACTIVE</div>
+
+        <!-- 1. For .m3u8 Links -->
+        <video id="video" controls playsinline></video>
+
+        <!-- 2. For Mirror Web Links (like your Netmirror URL) -->
+        <iframe id="externalFrame" 
+                sandbox="allow-scripts allow-same-origin allow-forms" 
+                allowfullscreen>
+        </iframe>
+
+        <!-- Loading / Start UI -->
+        <div id="status-overlay">
+            <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color:var(--accent); margin-bottom:20px;"></i>
+            <h3 id="status-msg">ACQUIRING ENCRYPTED DATA...</h3>
+            <button id="startBtn" class="btn-action" style="display:none;" onclick="launchBroadcast()">INITIALIZE BROADCAST</button>
+        </div>
+    </div>
+
+    <script>
+        const API = "https://nexus-database-v2.onrender.com";
+        const video = document.getElementById('video');
+        const iframe = document.getElementById('externalFrame');
+        const overlay = document.getElementById('status-overlay');
+        const statusMsg = document.getElementById('status-msg');
+        const startBtn = document.getElementById('startBtn');
+        const sandboxNotice = document.getElementById('sandbox-notice');
+
+        let streamUrl = "";
+
+        async function init() {
+            try {
+                const res = await fetch(`${API}/api/live/now`);
+                const data = await res.json();
+
+                if (data.isActive && data.url) {
+                    document.getElementById('matchTitle').innerText = data.title;
+                    streamUrl = data.url;
+                    statusMsg.innerText = "SIGNAL STABLE";
+                    startBtn.style.display = "block";
+                    document.querySelector('.fa-spin').style.display = "none";
+                } else {
+                    statusMsg.innerText = "NO ACTIVE BROADCAST";
+                }
+            } catch (e) {
+                statusMsg.innerText = "NEXUS HUB DISCONNECTED";
+            }
+        }
+
+        function launchBroadcast() {
+            overlay.style.display = "none";
+
+            // Check if it's a raw video file or a Mirror Webpage
+            if (streamUrl.includes('.m3u8')) {
+                // Use HLS Player
+                video.style.display = "block";
+                startHlsPlayer(streamUrl);
+            } else {
+                // Use Secure Iframe for netmirror/blogspot links
+                iframe.style.display = "block";
+                sandboxNotice.style.display = "block";
+                iframe.src = streamUrl;
+            }
+        }
+
+        function startHlsPlayer(url) {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

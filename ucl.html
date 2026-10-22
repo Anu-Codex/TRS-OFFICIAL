@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCL Championship | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700;800&display=swap');
+
+        :root {
+            --bg: #030816;
+            --card-bg: #091326;
+            --border: #142340;
+            --ucl-blue: #0055ff;
+            --ucl-cyan: #00d1ff;
+            --gold: #f59e0b;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -10%, #002b80 0%, #030816 70%);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 15px;
+            padding-bottom: 70px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        /* Top Nav */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- UCL HERO BANNER --- */
+        .ucl-hero {
+            background: linear-gradient(135deg, rgba(0, 85, 255, 0.25) 0%, rgba(3, 8, 22, 0.85) 100%);
+            border: 1px solid rgba(0, 85, 255, 0.4);
+            border-radius: 24px;
+            padding: 26px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0, 85, 255, 0.25);
+        }
+
+        .ucl-hero::before {
+            content: "★ ★ ★ ★ ★";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: var(--gold);
+            letter-spacing: 6px;
+            opacity: 0.8;
+        }
+
+        .ucl-trophy-img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(0, 209, 255, 0.6));
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ucl-hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin: 0;
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        .ucl-hero p {
+            font-size: 0.75rem;
+            color: var(--ucl-cyan);
+            margin: 5px 0 0;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* --- NAVIGATION TABS --- */
+        .section-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .sec-tab {
+            flex: 1;
+            padding: 10px 4px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .sec-tab.active {
+            background: var(--ucl-blue);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 85, 255, 0.4);
+        }
+
+        /* --- SWISS 36 LEAGUE TABLE --- */
+        .table-wrap {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .legend-banner {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .leg-green { color: var(--accent); }
+        .leg-cyan { color: var(--ucl-cyan); }
+        .leg-red { color: var(--danger); }
+
+        .ucl-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .ucl-table th {
+            padding: 12px 8px;
+            color: var(--text-dim);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .ucl-table td {
+            padding: 12px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* 1-8 Direct Qualification Highlight */
+        .zone-r16 {
+            border-left: 3px solid var(--accent);
+            background: rgba(16, 185, 129, 0.03);
+        }
+
+        /* 9-24 Playoff Highlight */
+        .zone-playoff {
+            border-left: 3px solid var(--ucl-cyan);
+        }
+
+        /* 25-36 Elimination Zone */
+        .zone-elim {
+            border-left: 3px solid #334155;
+            opacity: 0.65;
+        }
+
+        .col-player {
+            text-align: left !important;
+            padding-left: 10px !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ucl-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #142340;
+            flex-shrink: 0;
+        }
+
+        .delta-tag {
+            font-size: 0.58rem;
+            font-weight: 900;
+            display: inline-block;
+            width: 22px;
+            text-align: center;
+        }
+        .delta-up { color: #34d399; }
+        .delta-down { color: #ef4444; }
+        .delta-same { color: #475569; }
+        .delta-new {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--gold);
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-size: 0.5rem;
+        }
+
+        /* --- QUALIFYING LEAGUES ACCORDION --- */
+        .league-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .league-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            color: var(--ucl-cyan);
+        }
+
+        /* --- MAIN UCL STAGE (TABS) --- */
+        .main-ucl-box {
+            background: var(--card-bg);
+            border: 1px solid var(--ucl-blue);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .match-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--ucl-blue);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .score-pill {
+            background: #020617;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Orbitron';
+            color: var(--ucl-cyan);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> NEXUS HUB</a>
+        <span style="font-family:'Orbitron'; font-size:0.75rem; color:var(--ucl-cyan); letter-spacing:1px;">SWISS STAGE</span>
+    </div>
+
+    <!-- UCL HERO -->
+    <div class="ucl-hero">
+        <img src="https://i.postimg.cc/QdC2NcRm/232668-removebg-preview.png" class="ucl-trophy-img" onerror="this.src='https://via.placeholder.com/60'">
+        <h1 id="uclSeasonTitle">ULTIMATE CHAMPIONS</h1>
+        <p>THE ELITE 36 TOURNAMENT ARENA</p>
+    </div>
+
+    <!-- MAIN VIEW SWITCHER -->
+    <div class="section-tabs">
+        <button class="sec-tab active" onclick="switchUclView('board', this)">TOP 36 BOARD</button>
+        <button class="sec-tab" onclick="switchUclView('leagues', this)">QUALIFYING TOURS</button>
+        <button class="sec-tab" onclick="switchUclView('main', this)">UCL TOURNAMENT</button>
+    </div>
+
+    <!-- SECTION 1: TOP 36 SWISS LEADERBOARD -->
+    <div id="view-board">
+        <div class="table-wrap">
+            <div class="legend-banner">
+                <span class="leg-green">● 1-8 Direct to R16</span>
+                <span class="leg-cyan">● 9-24 Play-offs</span>
+                <span class="leg-red">● 25-36 Eliminated</span>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="ucl-table">
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">#</th>
+                            <th style="width:25px;"></th>
+                            <th style="text-align:left; padding-left:10px;">PLAYER</th>
+                            <th>P</th><th>W</th><th>GD</th><th style="color:var(--gold);">PTS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top36Rows">
+                        <tr><td colspan="7" style="padding:40px; text-align:center; color:var(--text-dim);">Connecting to Neural Network...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: QUALIFYING LEAGUES STANDINGS -->
+    <div id="view-leagues" style="display:none;">
+        <div id="qualifyingLeaguesList"></div>
+    </div>
+
+    <!-- SECTION 3: MAIN UCL TOURNAMENT (FIXTURES & TABLE) -->
+    <div id="view-main" style="display:none;">
+        <div class="main-ucl-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="margin:0; font-family:'Orbitron'; font-size:1rem; color:var(--ucl-cyan);">MAIN TOURNAMENT</h3>
+                <select id="uclStageSelect" onchange="renderMainUclStage()" style="background:#020617; border:1px solid var(--border); color:white; padding:5px 10px; border-radius:8px; font-family:'Rajdhani'; font-size:0.8rem;">
+                    <option value="fixtures">Fixtures</option>
+                    <option value="table">League Table</option>
+                    <option value="boot">Golden Boot</option>
+                </select>
+            </div>
+            <div id="mainUclContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+    let uclGlobalData = null;
+
+    async function initUclPage() {
+        try {
+            const res = await fetch(`${API}/api/ucl/hub`);
+            const data = await res.json();
+            uclGlobalData = data;
+
+            if (data.seasonName) {
+                document.getElementById('uclSeasonTitle').innerText = data.seasonName.toUpperCase();
+            }
+
+            // 1. Render Top 36 Board
+            renderTop36(data.top36 || []);
+
+            // 2. Render Qualifying Leagues
+            renderQualifyingLeagues(data.qualifyingTours || []);
+
+            // 3. Render Main UCL Stage
+            renderMainUclStage();
+
+        } catch (e) {
+            console.error("UCL Load Error:", e);
+            document.getElementById('top36Rows').innerHTML = `<tr><td colspan="7" style="color:#ef4444; padding:30px; text-align:center;">Failed to connect to UCL database link.</td></tr>`;
+        }
+    }
+
+    function renderTop36(players) {
+        const tbody = document.getElementById('top36Rows');
+        if (!players || players.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="padding:40px; text-align:center; color:#64748b;">No players qualified in the pool yet. Connect Solo Tours in the Dashboard.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = players.map(p => {
+            // Zone styling
+            let zoneClass = 'zone-elim';
+            if (p.rank <= 8) zoneClass = 'zone-r16';
+            else if (p.rank <= 24) zoneClass = 'zone-playoff';
+
+            // Rank movement indicator
+            let deltaHtml = '<span class="delta-tag delta-same">—</span>';
+            if (p.deltaType === 'new') deltaHtml = '<span class="delta-tag delta-new">NEW</span>';
+            else if (p.deltaType === 'up') deltaHtml = `<span class="delta-tag delta-up">▲${p.deltaVal}</span>`;
+            else if (p.deltaType === 'down') deltaHtml = `<span class="delta-tag delta-down">▼${p.deltaVal}</span>`;
+
+            const gd = (p.gf || 0) - (p.ga || 0);
+
+            return `
+                <tr class="${zoneClass}">
+                    <td style="font-family:'Orbitron'; font-weight:900; font-size:0.95rem; color:${p.rank<=8?'var(--accent)':(p.rank<=24?'var(--ucl-cyan)':'var(--text-dim)')};">${p.rank}</td>
+                    <td>${deltaHtml}</td>
+                    <td>
+                        <div class="col-player">
+                            <img src="${p.image || 'https://via.placeholder.com/34'}" class="ucl-avatar" onerror="this.src='https://via.placeholder.com/34'">
+                            <div>
+                                <div style="font-weight:700; color:#fff; font-size:0.95rem;">${p.name}</div>
+                                <div style="font-size:0.65rem; color:var(--text-dim); text-transform:uppercase;">${p.teamName || 'Free Agent'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${p.played}</td>
+                    <td>${p.wins}</td>
+                    <td style="color:${gd>0?'var(--accent)':(gd<0?'var(--danger)':'var(--text-dim)')}; font-weight:700;">${gd>0?'+'+gd:gd}</td>
+                    <td style="font-family:'Orbitron'; font-weight:900; color:var(--gold); font-size:1rem;">${p.points}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function renderQualifyingLeagues(tours) {
+        const container = document.getElementById('qualifyingLeaguesList');
+        if (!tours || tours.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#64748b; padding:30px;">No Solo Leagues linked yet.</p>';
+            return;
+        }
+
+        container.innerHTML = tours.map(t => `
+            <div class="league-card">
+                <div class="league-header">
+                    <span><i class="fa-solid fa-trophy"></i> ${t.name}</span>
+                    <span style="font-size:0.7rem; color:var(--text-dim); font-family:'Rajdhani';">${t.participants ? t.participants.length : 0} PLAYERS</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderMainUclStage() {
+        const stage = document.getElementById('uclStageSelect').value;
+        const content = document.getElementById('mainUclContent');
+        if (!uclGlobalData || !uclGlobalData.uclMainData || !uclGlobalData.uclMainData.tour) {
+            content.innerHTML = '<p style="text-align:center; color:#64748b; padding:30px;">No Main UCL Tournament linked in the Dashboard yet.</p>';
+            return;
+        }
+
+        const { fixtures, standings, scorers } = uclGlobalData.uclMainData;
+
+        if (stage === 'fixtures') {
+            content.innerHTML = (fixtures.length > 0) ? fixtures.map(m => `
+                <div class="match-card">
+                    <span style="font-weight:700;">${m.playerA}</span>
+                    <b class="score-pill">${m.status === 'Completed' ? `${m.scoreA}-${m.scoreB}` : 'VS'}</b>
+                    <span style="font-weight:700;">${m.playerB}</span>
+                </div>
+            `).join('') : '<p style="text-align:center; color:#64748b;">No fixtures generated.</p>';
+        } else if (stage === 'table') {
+            content.innerHTML = (standings.length > 0) ? `
+                <table class="ucl-table">
+                    <thead><tr><th>#</th><th style="text-align:left;">PLAYER</th><th>P</th><th>W</th><th>PTS</th></tr></thead>
+                    <tbody>
+                        ${standings.sort((a,b)=>b.points-a.points).map((s,i)=>`
+                            <tr>
+                                <td style="color:var(--ucl-cyan);">${i+1}</td>
+                                <td style="text-align:left; font-weight:700;">${s.participant}</td>
+                                <td>${s.played}</td>
+                                <td>${s.wins}</td>
+                                <td style="color:var(--gold); font-weight:bold;">${s.points}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>` : '<p style="text-align:center; color:#64748b;">Table empty.</p>';
+        } else if (stage === 'boot') {
+            content.innerHTML = (scorers.length > 0) ? scorers.map((sc,i)=>`
+                <div class="match-card">
+                    <span>#${i+1} ${sc.playerName}</span>
+                    <b style="color:var(--ucl-cyan); font-family:'Orbitron';">${sc.totalValue} Goals</b>
+                </div>
+            `).join('') : '<p style="text-align:center; color:#64748b;">No goals recorded.</p>';
+        }
+    }
+
+    function switchUclView(view, btn) {
+        document.getElementById('view-board').style.display = (view === 'board') ? 'block' : 'none';
+        document.getElementById('view-leagues').style.display = (view === 'leagues') ? 'block' : 'none';
+        document.getElementById('view-main').style.display = (view === 'main') ? 'block' : 'none';
+
+        document.querySelectorAll('.sec-tab').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+    }
+
+    window.onload = initUclPage;
+</script>
+
+</body>
+</html>

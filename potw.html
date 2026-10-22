@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Player of the Week | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #060b13;
+            --card-bg: #0e1726;
+            --border: #162438;
+            --accent-cyan: #22d3ee;
+            --accent-green: #10b981;
+            --gold: #f59e0b;
+            --silver: #94a3b8;
+            --bronze: #d97706;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* --- HEADER --- */
+        .potw-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lightning-icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+            font-size: 1.1rem;
+        }
+
+        .header-text h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .header-text p {
+            margin: 3px 0 0;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* Refresh Button */
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* --- PLAYER CARDS --- */
+        .potw-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .potw-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .potw-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(34, 211, 238, 0.35);
+        }
+
+        /* Left Side: Rank & Delta */
+        .rank-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 32px;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .rank-num {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .rank-1 { color: var(--gold); }
+        .rank-2 { color: var(--silver); }
+        .rank-3 { color: var(--bronze); }
+        .rank-other { color: #3b4f6b; }
+
+        /* Delta Badges */
+        .badge-delta {
+            margin-top: 4px;
+            font-size: 0.58rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-new {
+            background: rgba(16, 185, 129, 0.18);
+            color: #34d399;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            text-transform: uppercase;
+        }
+
+        .badge-up {
+            color: #22d3ee;
+            font-weight: 900;
+        }
+
+        .badge-down {
+            color: var(--danger);
+            font-weight: 900;
+        }
+
+        .badge-same {
+            color: #475569;
+            font-size: 0.7rem;
+        }
+
+        /* Player Details */
+        .player-info-center {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .p-avatar-frame {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #141f30;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .p-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .p-avatar-frame i {
+            color: #475569;
+            font-size: 1.2rem;
+        }
+
+        .name-team-col {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .p-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #ffffff;
+        }
+
+        .p-team {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Right Side: Points & Record */
+        .points-col {
+            text-align: right;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-left: 10px;
+        }
+
+        .points-val {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #22d3ee; /* Turquoise/cyan highlight */
+            letter-spacing: -0.3px;
+        }
+
+        .record-summary {
+            font-size: 0.65rem;
+            color: #475569;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            margin-top: 3px;
+            text-transform: uppercase;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="potw-header">
+        <div class="header-left">
+            <div class="lightning-icon-box">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="header-text">
+                <h2>Best Player of the Week</h2>
+                <p id="potwTimestamp">Updated --:-- --</p>
+            </div>
+        </div>
+
+        <button class="btn-refresh" onclick="fetchPOTW()">
+            <i id="refreshIcon" class="fa-solid fa-arrows-rotate"></i> Refresh
+        </button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="potwList" class="potw-list">
+        <div id="loading">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color:var(--accent-cyan)"></i>
+            <p style="margin-top:12px; font-size:0.8rem; letter-spacing:1px;">ANALYZING WEEKLY MATCHES...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+
+    async function fetchPOTW() {
+        const refreshIcon = document.getElementById('refreshIcon');
+        if (refreshIcon) refreshIcon.classList.add('fa-spin');
+
+        try {
+            const res = await fetch(`${API}/api/potw/weekly`);
+            const data = await res.json();
+            const container = document.getElementById('potwList');
+
+            if (data.updatedAt) {
+                document.getElementById('potwTimestamp').innerText = `Updated ${data.updatedAt}`;
+            }
+
+            const list = data.leaderboard || [];
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:50px 20px; color:#64748b;">
+                        <i class="fa-solid fa-calendar-xmark" style="font-size:2rem; margin-bottom:10px; opacity:0.3;"></i>
+                        <p>No matches completed in the last 7 days.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = list.map((p) => {
+                // Rank styling
+                let rankClass = 'rank-other';
+                if (p.rank === 1) rankClass = 'rank-1';
+                else if (p.rank === 2) rankClass = 'rank-2';
+                else if (p.rank === 3) rankClass = 'rank-3';
+
+                // Delta badge rendering
+                let deltaHtml = '';
+                if (p.deltaType === 'new') {
+                    deltaHtml = `<span class="badge-delta badge-new">NEW</span>`;
+                } else if (p.deltaType === 'up') {
+                    deltaHtml = `<span class="badge-delta badge-up"><i class="fa-solid fa-caret-up" style="margin-right:2px;"></i>${p.deltaValue}</span>`;
+                } else if (p.deltaType === 'down') {
+                    deltaHtml = `<span class="badge-delta badge-down"><i class="fa-solid fa-caret-down" style="margin-right:2px;"></i>${p.deltaValue}</span>`;
+                } else {
+                    deltaHtml = `<span class="badge-delta badge-same">—</span>`;
+                }
+
+                // Avatar fallback & HTTPS sanitize
+                let imgSrc = p.image ? p.image.trim() : "";
+                if (imgSrc.startsWith("http://")) imgSrc = imgSrc.replace("http://", "https://");
+                
+                const avatarHTML = (imgSrc && imgSrc !== "" && imgSrc !== "null" && imgSrc !== "undefined")
+                    ? `<img src="${imgSrc}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-user\\'></i>'">`
+                    : `<i class="fa-solid fa-user"></i>`;
+
+                // Link to player profile if ID exists
+                const linkHref = p.playerId ? `player.html?id=${p.playerId}` : '#';
+
+                return `
+                    <a href="${linkHref}" class="potw-card">
+                        <div class="rank-col">
+                            <span class="rank-num ${rankClass}">${p.rank}</span>
+                            ${deltaHtml}
+                        </div>
+
+                        <div class="player-info-center">
+                            <div class="p-avatar-frame">
+                                ${avatarHTML}
+                            </div>
+                            <div class="name-team-col">
+                                <span class="p-title">${p.name}</span>
+                                <span class="p-team">${p.teamName}</span>
+                            </div>
+                        </div>
+
+                        <div class="points-col">
+                            <span class="points-val">${p.points}pts</span>
+                            <span class="record-summary">${p.wins}W ${p.draws}D ${p.losses}L · ${p.totalMatches}m</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+
+        } catch (err) {
+            console.error("POTW load error:", err);
+            document.getElementById('potwList').innerHTML = `
+                <p style="text-align:center; color:#ef4444; padding:30px; font-size:0.85rem;">
+                    Failed to synchronize Player of the Week telemetry.
+                </p>`;
+        } finally {
+            if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+        }
+    }
+
+    window.onload = fetchPOTW;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Nexus Legends | Ultimate eFootball Ecosystem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #030712;
+            --card: #0d1627;
+            --border: #162438;
+            --accent: #00e5ff;
+            --green: #10b981;
+            --gold: #f59e0b;
+            --purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% -10%, #061E4F 0%, #030712 60%),
+                radial-gradient(circle at 100% 90%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 20px 15px 70px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .welcome-wrapper {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* --- HERO BANNER --- */
+        .hero-section {
+            text-align: center;
+            padding: 40px 15px 30px;
+            position: relative;
+        }
+
+        .shield-glow {
+            width: 75px;
+            height: 75px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--accent);
+            font-size: 2rem;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+            animation: pulseShield 3s infinite ease-in-out;
+        }
+
+        .hero-section h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            font-weight: 900;
+            margin: 0 0 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-section h1 span { color: var(--accent); }
+
+        .hero-section p {
+            font-size: 1rem;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin: 0 0 25px;
+            font-weight: 600;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary-neon {
+            background: var(--green);
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+            transition: 0.2s;
+        }
+
+        .btn-primary-neon:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        .btn-secondary-neon {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-secondary-neon:hover { background: rgba(0, 229, 255, 0.2); }
+
+        /* --- CONTENT SECTIONS --- */
+        .info-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 24px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem;
+            color: #fff;
+            margin: 0 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .card-heading i { color: var(--accent); font-size: 1.1rem; }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 420px) { .feature-grid { grid-template-columns: 1fr; } }
+
+        .feature-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 15px;
+        }
+
+        .feature-box h4 {
+            margin: 0 0 5px;
+            font-size: 0.95rem;
+            color: #f1f5f9;
+            font-weight: 700;
+        }
+
+        .feature-box p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* Tournament Structure List */
+        .tour-struct-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .tour-struct-item:last-child { border-bottom: none; }
+
+        .tour-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .tour-info h5 {
+            margin: 0 0 3px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .tour-info p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Integrity Badges */
+        .integrity-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .integrity-row i {
+            color: var(--green);
+            font-size: 1rem;
+        }
+
+        .integrity-row span {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* WhatsApp Contact Banner */
+        .whatsapp-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 11, 19, 0.9) 100%);
+            border: 2px solid var(--green);
+            border-radius: 22px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.25);
+        }
+
+        .whatsapp-banner h3 {
+            font-family: 'Orbitron';
+            font-size: 1.2rem;
+            margin: 0 0 8px;
+            color: #fff;
+        }
+
+        .whatsapp-number {
+            font-family: 'Orbitron';
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--green);
+            margin: 12px 0 20px;
+            display: block;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            transition: 0.2s;
+        }
+
+        .btn-whatsapp:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+        @keyframes pulseShield {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 229, 255, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(0, 229, 255, 0.6); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="welcome-wrapper">
+
+    <!-- HERO HEADER -->
+    <div class="hero-section">
+        <div class="shield-glow">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h1>WELCOME TO <span>NEXUS LEGENDS</span></h1>
+        <p>The Ultimate Competitive eFootball Community Portal</p>
+
+        <div class="hero-cta-group">
+            <a href="login2.html" class="btn-primary-neon">
+                <i class="fa-solid fa-user-plus"></i> JOIN / CLAIM PROFILE
+            </a>
+            <a href="index.html" class="btn-secondary-neon">
+                <i class="fa-solid fa-compass"></i> ENTER HUB
+            </a>
+        </div>
+    </div>
+
+    <!-- 1. WHAT WE OFFER -->
+    <div class="info-card">
+        <div class="card-heading">
+            <i class="fa-solid fa-bolt"></i> What We Offer
+        </div>
+        <div class="feature-grid">
+            <div class="feature-box">
+                <h4>Pro Tournaments</h4>
+                <p>Structured league formats with automated points tables, group stages, and playoffs.</p>
+            </div>
+            <div class="feature-box">
+                <h4>Club Management</h4>
+                <p>Official club rosters, captaincy controls, and active dressing rooms.</p>
+            </div>
+            <div class="feature-box">
+                <h4>Transfer Market</h4>
+                <p>Fabrizio Romano-style news, release fees, and direct captain-to-captain trade offers.</p>
+            </div>
+            <div class="feature-box">
+                <h4>Player Dossiers</h4>
+                <p>Detailed performance stats, match activity calendars, and dynamic OVR ratings (50-99).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. JOINING BENEFITS -->
+    <div class="info-card">
+        <div class="card-heading">
+            <i class="fa-solid fa-gem"></i> Joining Benefits
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="integrity-row">
+                <i class="fa-solid fa-circle-check"></i>
+                <span><b>Ballon d'Or & BDR Rankings:</b> Compete globally for seasonal glory and individual awards.</span>
+            </div>
+            <div class="integrity-row">
+                <i class="fa-solid fa-circle-check"></i>
+                <span><b>Glory Gallery & Trophies:</b> Showcase your championship victory posters and cabinet honors.</span>
+            </div>
+            <div class="integrity-row">
+                <i class="fa-solid fa-circle-check"></i>
+                <span><b>Active Matchmaking:</b> Use the Bounty Arena to set up 1v1 challenges with community rivals anytime.</span>
+            </div>
+            <div class="integrity-row">
+                <i class="fa-solid fa-circle-check"></i>
+                <span><b>Admin Modmail Support:</b> Direct ticketing system for fast dispute resolution and assistance.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. TOURNAMENT STRUCTURE -->
+    <div class="info-card">
+        <div class="card-heading">
+            <i class="fa-solid fa-trophy"></i> Tournament Structure
+        </div>
+        <div>
+            <div class="tour-struct-item">
+                <div class="tour-icon"><i class="fa-solid fa-gavel"></i></div>
+                <div class="tour-info">
+                    <h5>Auction Tours</h5>
+                    <p>Manager-driven club ownership, live bidding purses, and tactical squad building.</p>
+                </div>
+            </div>
+            <div class="tour-struct-item">
+                <div class="tour-icon"><i class="fa-solid fa-user"></i></div>
+                <div class="tour-info">
+                    <h5>Solo & Quick Tours</h5>
+                    <p>Individual 1v1 showdowns designed to test pure mobile/console eFootball supremacy.</p>
+                </div>
+            </div>
+            <div class="tour-struct-item">
+                <div class="tour-icon"><i class="fa-solid fa-user-group"></i></div>
+                <div class="tour-info">
+                    <h5>Duo Challenge (2v2)</h5>
+                    <p>Group stage formatting (Groups A-F) allowing partner duos to conquer the league table.</p>
+                </div>
+            </div>
+            <div class="tour-struct-item">
+                <div class="tour-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="tour-info">
+                    <h5>The UCL Arena</h5>
+                    <p>Real-life UEFA 36-team Swiss format with direct R16 qualifiers, play-offs, and live golden boots.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. WEBSITE INTEGRITY & SECURITY -->
+    <div class="info-card">
+        <div class="card-heading">
+            <i class="fa-solid fa-lock"></i> Platform Integrity
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:0.85rem; color:#cbd5e1; line-height:1.5;">
+            <p style="margin:0;"><i class="fa-solid fa-check" style="color:var(--green); margin-right:8px;"></i> <b>Secure Google Sign-In & OTP:</b> Verified credentials with one-time profile linking to prevent identity theft.</p>
+            <p style="margin:0;"><i class="fa-solid fa-check" style="color:var(--green); margin-right:8px;"></i> <b>Automated Stat Sync:</b> Match results instantly calculate standings, goal differences, and BDR without manual tampering.</p>
+            <p style="margin:0;"><i class="fa-solid fa-check" style="color:var(--green); margin-right:8px;"></i> <b>Cloud Infrastructure:</b> Hosted on dedicated Render cloud nodes with 99.9% uptime and real-time latency monitoring.</p>
+        </div>
+    </div>
+
+    <!-- 5. JOIN COMMUNITY (WHATSAPP CONTACT) -->
+    <div class="whatsapp-banner">
+        <h3>READY TO COMPETE?</h3>
+        <p style="font-size:0.8rem; color:#94a3b8; margin:5px 0 10px;">Join our official community WhatsApp group or contact management directly.</p>
+        
+        <span class="whatsapp-number">+91 99030 99178</span>
+
+        <a href="https://wa.me/919903099178?text=Hello%20Nexus%20Legends,%20I%20want%20to%20join%20the%20community%20and%20participate%20in%20tournaments!" target="_blank" class="btn-whatsapp">
+            <i class="fa-brands fa-whatsapp fa-lg"></i> CONNECT VIA WHATSAPP
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMS TERMINAL | NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { --bg: #020617; --card: #0f172a; --accent: #10b981; --border: #1e293b; --dim: #64748b; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        
+        .terminal-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .terminal-header h1 { font-family: 'Rajdhani'; letter-spacing: 5px; color: var(--accent); margin: 0; }
+
+        .glass-box { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 20px; margin-bottom: 20px; position: relative; }
+        .type-selector { margin-bottom: 20px; padding: 12px; background: var(--accent); color: black; font-weight: 900; border-radius: 10px; border: none; width: 100%; cursor: pointer; }
+
+        .field-group { display: none; animation: fadeIn 0.4s ease; }
+        .active-group { display: block; }
+        
+        label { font-size: 0.6rem; color: var(--dim); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
+        input, textarea { width: 100%; padding: 12px; background: #020617; border: 1px solid var(--border); color: white; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 0.85rem; }
+        
+        .sub-header { font-size: 0.75rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin: 15px 0; font-weight: 900; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .btn-transmit { width: 100%; padding: 18px; background: var(--accent); color: black; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="terminal-header">
+        <h1>COMMAND HUB</h1>
+        <p style="font-size: 0.6rem; color: var(--dim); letter-spacing: 2px;">TACTICAL REQUEST FILING SYSTEM</p>
+    </div>
+
+    <select class="type-selector" id="formType" onchange="switchForm(this.value)">
+        <option value="ISSUE">1. ISSUE REPORTING</option>
+        <option value="SUBSTITUTION">2. SUBSTITUTION</option>
+        <option value="ID_CHANGE">3. ID CHANGE</option>
+        <option value="REPLACEMENT">4. PLAYER REPLACEMENT</option>
+    </select>
+
+    <div class="glass-box">
+        <label>TEAM NAME</label>
+        <input type="text" id="common_teamName" placeholder="Enter Official Team Name">
+
+        <!-- FORMAT 1: ISSUE REPORTING -->
+        <div id="form_ISSUE" class="field-group active-group">
+            <label>PLAYER NAME</label>
+            <input type="text" id="iss_pName">
+            <label>OPPO TEAM NAME</label>
+            <input type="text" id="iss_oppoTeam">
+            <label>PLAYER NAME (OPPONENT)</label>
+            <input type="text" id="iss_oppoPlayer">
+            <label>ISSUE DESCRIPTION</label>
+            <textarea id="iss_desc" rows="4"></textarea>
+        </div>
+
+        <!-- FORMAT 2: SUBSTITUTION -->
+        <div id="form_SUBSTITUTION" class="field-group">
+            <label>PLAYER IN - (NAME & NO.)</label>
+            <input type="text" id="sub_in">
+            <label>PLAYER OUT - (NAME & NO.)</label>
+            <input type="text" id="sub_out">
+        </div>
+
+        <!-- FORMAT 3: ID CHANGE -->
+        <div id="form_ID_CHANGE" class="field-group">
+            <label>PLAYER TAG</label>
+            <input type="text" id="id_tag">
+            <label>OLD ID</label>
+            <input type="text" id="id_old">
+            <label>NEW ID</label>
+            <input type="text" id="id_new">
+            <label>NEW ID NAME</label>
+            <input type="text" id="id_newName">
+        </div>
+
+        <!-- FORMAT 4: REPLACEMENT -->
+        <div id="form_REPLACEMENT" class="field-group">
+            <div class="sub-header">🔄 PLAYER IN</div>
+            <label>NAME</label><input type="text" id="rep_in_name">
+            <div class="grid-2">
+                <div><label>DIVISION</label><input type="text" id="rep_in_div"></div>
+                <div><label>RANK</label><input type="text" id="rep_in_rank"></div>
+            </div>
+            <div class="grid-2">
+                <div><label>ID</label><input type="text" id="rep_in_id"></div>
+                <div><label>TAG</label><input type="text" id="rep_in_tag"></div>
+            </div>
+
+            <div class="sub-header">🔽 PLAYER OUT</div>
+            <label>NAME</label><input type="text" id="rep_out_name">
+            <div class="grid-2">
+                <div><label>DIVISION</label><input type="text" id="rep_out_div"></div>
+                <div><label>RANK</label><input type="text" id="rep_out_rank"></div>
+            </div>
+            <div class="grid-2">
+                <div><label>ID</label><input type="text" id="rep_out_id"></div>
+                <div><label>TAG</label><input type="text" id="rep_out_tag"></div>
+            </div>
+        </div>
+
+        <button class="btn-transmit" onclick="submitRequest()">Transmit to Admin</button>
+    </div>
+    <!-- 2. TRACKER & DOWNLOAD SECTION -->
+<div class="glass-card" style="margin-top: 40px; border-top: 2px solid var(--accent);">
+    <label>TRACK REQUEST STATUS</label>
+    <div style="display:flex; gap:10px;">
+        <input type="text" id="trackID" placeholder="Enter NXS-XXXXXX" style="margin-bottom:0;">
+        <button class="btn-transmit" style="width:auto; padding:0 25px;" onclick="trackStatus()">SEARCH</button>
+    </div>
+
+    <!-- This area appears only after searching -->
+    <div id="statusResultArea" style="display:none; margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.7rem; color:var(--dim);">CURRENT STATUS:</span>
+            <span id="displayStatus" style="font-weight:900; padding:4px 12px; border-radius:5px; font-size:0.7rem;">PENDING</span>
+        </div>
+        
+        <div id="downloadZone" style="display:none; margin-top:20px;">
+            <p style="font-size:0.7rem; color:var(--accent); text-align:center; margin-bottom:15px;">✓ YOUR REQUEST HAS BEEN OFFICIALLY VERIFIED.</p>
+            <button class="btn-transmit" style="background:white; color:black;" onclick="generateDossier()">DOWNLOAD OFFICIAL DOSSIER</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+
+    function switchForm(type) {
+        document.querySelectorAll('.field-group').forEach(f => f.classList.remove('active-group'));
+        document.getElementById(`form_${type}`).classList.add('active-group');
+    }
+
+    async function submitRequest() {
+    const type = document.getElementById('formType').value;
+    const team = document.getElementById('common_teamName').value.trim();
+    
+    if(!team) return alert("Please enter Team Name");
+
+    let formData = {};
+    if(type === 'ISSUE') {
+        formData = { 
+            playerName: document.getElementById('iss_pName').value, 
+            oppoTeamName: document.getElementById('iss_oppoTeam').value, 
+            oppoPlayerName: document.getElementById('iss_oppoPlayer').value, 
+            issueDescription: document.getElementById('iss_desc').value 
+        };
+    } else if(type === 'SUBSTITUTION') {
+        formData = { 
+            subIn: document.getElementById('sub_in').value, 
+            subOut: document.getElementById('sub_out').value 
+        };
+    } else if(type === 'ID_CHANGE') {
+        formData = { 
+            playerTag: document.getElementById('id_tag').value, 
+            oldID: document.getElementById('id_old').value, 
+            newID: document.getElementById('id_new').value, 
+            newIDName: document.getElementById('id_newName').value 
+        };
+    } else if(type === 'REPLACEMENT') {
+        formData = { 
+            repIn: { 
+                name: document.getElementById('rep_in_name').value, 
+                div: document.getElementById('rep_in_div').value, 
+                rank: document.getElementById('rep_in_rank').value, 
+                id: document.getElementById('rep_in_id').value, 
+                tag: document.getElementById('rep_in_tag').value 
+            },
+            repOut: { 
+                name: document.getElementById('rep_out_name').value, 
+                div: document.getElementById('rep_out_div').value, 
+                rank: document.getElementById('rep_out_rank').value, 
+                id: document.getElementById('rep_out_id').value, 
+                tag: document.getElementById('rep_out_tag').value 
+            }
+        };
+    }
+
+    try {
+        const res = await fetch(`${API}/api/requests/submit`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                requestType: type, 
+                teamName: team, 
+                data: formData // Ensure this is wrapped in 'data'
+            })
+        });
+        const result = await res.json();
+        if(result.success) {
+            alert("TRANSMISSION SUCCESSFUL\nYour ID: " + result.requestID);
+            location.reload();
+        }
+    } catch (e) { alert("Link Error."); }
+    }
+  async function downloadDossier(reqID) {
+    const res = await fetch(`${API}/api/requests/track/${reqID}`);
+    const r = await res.json();
+    
+    document.getElementById('d-type').innerText = r.requestType;
+    let text = `TEAM: ${r.teamName}\n`;
+    // Add logic here to loop through r.data fields and add to text...
+    document.getElementById('d-content').innerText = text;
+
+    const template = document.getElementById('dossier-template');
+    html2canvas(template).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Nexus-Dossier-${reqID}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+  }
+    let currentRequestData = null; // Global variable to store fetched data
+
+async function trackStatus() {
+    const reqID = document.getElementById('trackID').value.trim();
+    if(!reqID) return alert("Please enter your Request ID");
+
+    try {
+        const res = await fetch(`${API}/api/requests/track/${reqID}`);
+        const data = await res.json();
+
+        if(!data || data.error) return alert("ID not found in Nexus Archives.");
+
+        currentRequestData = data; // Save for download
+        
+        // UI Updates
+        const area = document.getElementById('statusResultArea');
+        const statusLabel = document.getElementById('displayStatus');
+        const downloadZone = document.getElementById('downloadZone');
+
+        area.style.display = 'block';
+        statusLabel.innerText = data.status.toUpperCase();
+        
+        // Set Status Colors
+        if(data.status === 'Approved') {
+            statusLabel.style.background = 'var(--accent)';
+            statusLabel.style.color = 'black';
+            downloadZone.style.display = 'block';
+        } else if(data.status === 'Rejected') {
+            statusLabel.style.background = 'var(--danger)';
+            statusLabel.style.color = 'white';
+            downloadZone.style.display = 'none';
+        } else {
+            statusLabel.style.background = 'var(--gold)';
+            statusLabel.style.color = 'black';
+            downloadZone.style.display = 'none';
+        }
+
+    } catch (e) { alert("Command link failed."); }
+}
+
+async function generateDossier() {
+    if(!currentRequestData) return;
+    const r = currentRequestData;
+    const d = r.data;
+
+    // Fill Template with Data
+    document.getElementById('cert-id').innerText = r.requestID;
+    document.getElementById('cert-date').innerText = new Date(r.timestamp).toLocaleDateString();
+    document.getElementById('cert-type').innerText = r.requestType.replace('_', ' ');
+    document.getElementById('cert-team').innerText = `TEAM: ${r.teamName}`;
+
+    // Format Details based on Type
+    let details = "";
+    if(r.requestType === 'ISSUE') {
+        details = `PLAYER: ${d.playerName}\nREPORTED VS: ${d.oppoTeamName}\nISSUE: ${d.issueDescription}`;
+    } else if(r.requestType === 'SUBSTITUTION') {
+        details = `SUB IN: ${d.subIn}\nSUB OUT: ${d.subOut}`;
+    } else if(r.requestType === 'ID_CHANGE') {
+        details = `TAG: ${d.playerTag}\nOLD: ${d.oldID}\nNEW: ${d.newID}`;
+    } else if(r.requestType === 'REPLACEMENT') {
+        details = `REPLACED IN: ${d.repIn.name} (DIV: ${d.repIn.div})\nREPLACED OUT: ${d.repOut.name}`;
+    }
+    document.getElementById('cert-details').innerText = details;
+
+    // Convert Template to Image
+    const template = document.getElementById('dossier-template');
+    html2canvas(template, { backgroundColor: null, scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `NEXUS-DOSSIER-${r.requestID}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    });
+}
+</script>
+  <!-- HIDDEN DOSSIER TEMPLATE FOR IMAGE GENERATION -->
+<div id="dossier-template" style="position:fixed; left:-9999px; width:600px; padding:40px; background:#020617; border:10px solid #10b981; color:white; font-family:'Inter', sans-serif;">
+    <div style="text-align:center; border-bottom:2px solid #10b981; padding-bottom:20px; margin-bottom:20px;">
+        <h1 style="margin:0; font-family:'Rajdhani'; letter-spacing:10px; color:#10b981;">NEXUS LEGENDS</h1>
+        <p style="margin:5px 0 0; font-size:0.7rem; letter-spacing:3px; color:#94a3b8;">OFFICIAL MANAGEMENT DOSSIER</p>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+        <div>
+            <label style="color:#64748b; font-size:0.6rem; display:block;">AUTH ID</label>
+            <b id="cert-id" style="font-family:monospace; color:#10b981;"></b>
+        </div>
+        <div style="text-align:right;">
+            <label style="color:#64748b; font-size:0.6rem; display:block;">ISSUE DATE</label>
+            <b id="cert-date"></b>
+        </div>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:10px; border:1px solid #1e293b;">
+        <h3 id="cert-type" style="margin:0 0 10px 0; color:#10b981; text-transform:uppercase; font-size:0.9rem;">TYPE</h3>
+        <p id="cert-team" style="margin:0; font-size:1.1rem; font-weight:bold;"></p>
+        <div id="cert-details" style="margin-top:15px; font-family:monospace; color:#cbd5e1; white-space:pre-wrap; line-height:1.6;"></div>
+    </div>
+
+    <div style="margin-top:40px; display:flex; justify-content:space-between; align-items:flex-end;">
+        <div style="font-size:0.5rem; color:#475569; letter-spacing:1px;">SECURE TRANSMISSION V.7.0<br>BENGAL PES FEDERATION AFFILIATED</div>
+        <div style="border:3px solid #10b981; color:#10b981; padding:10px; font-weight:900; transform:rotate(-10deg);">APPROVED</div>
+    </div>
+</div>
+</body>
+</html>

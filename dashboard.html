@@ -1,0 +1,3105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NEXUS LEGENDS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script>
+  (function () {
+    var src = 'https://cdn.jsdelivr.net/npm/eruda';
+    if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
+    document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+    document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+  })();
+    </script>
+    <style>
+        :root {
+            --bg: #060b13; --card-bg: #101926; --border: #1e293b;
+            --accent: #10b981; --gold: #f59e0b; --danger: #ef4444; --text-dim: #94a3b8;
+        }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .dashboard-wrapper { width: 100%; max-width: 600px; }
+        h1 { text-align: center; font-size: 1.4rem; margin-bottom: 20px; letter-spacing: 2px;}
+
+        /* TAB MENU */
+        .admin-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 10px; width: 100%; scrollbar-width: none; }
+        .nav-tab { background: var(--card-bg); color: var(--text-dim); border: 1px solid var(--border); padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: 0.2s; }
+        .nav-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .admin-section { display: none; animation: fadeIn 0.3s ease; }
+        .admin-section.active-section { display: block !important; }
+
+        .sub-box { background: var(--card-bg); padding: 20px; border-radius: 18px; border: 1px solid var(--border); margin-bottom: 20px; }
+        h4 { margin: 0 0 15px 0; font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        input, select { width: 100%; padding: 12px; background: #060b13; border: 1px solid var(--border); color: white; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--accent); }
+        
+        button { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-green { background: var(--accent); color: #000; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .delete-btn { background: var(--danger); color: white; padding: 8px; border-radius: 8px; font-size: 0.75rem; }
+        
+        .list-container { max-height: 250px; overflow-y: auto; margin-top: 10px; border: 1px solid #1e293b; border-radius: 10px; padding: 5px; background: rgba(0,0,0,0.2); }
+        .row-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <h1>NEXUS COMMAND</h1>
+
+        <div class="admin-nav">
+            <button class="nav-tab active" onclick="showSection('sec-league', this)">General</button>
+            <button class="nav-tab" onclick="showSection('sec-players', this)">Players</button>
+            <button class="nav-tab" onclick="showSection('sec-teams', this)">Teams</button>
+            <button class="nav-tab" onclick="showSection('sec-smart', this)">Smart Center</button>
+            <button class="nav-tab" onclick="showSection('sec-prestige', this)">HOF</button>
+            <button class="nav-tab" onclick="showSection('sec-requests', this)">NMS Inbox</button>
+            <button class="nav-tab" onclick="showSection('sec-trophies', this)">CUSTOM TROPHIES</button>
+            <button class="nav-tab" onclick="showSection('sec-calendar', this)">EVENT CALENDARS</button>
+            <button class="nav-tab" onclick="showSection('sec-media', this)">Media Center</button>
+            <button class="nav-tab" style="color: var(--danger);" onclick="requestDangerAccess(this)">Danger</button>
+        </div>
+
+        <!-- 1. GENERAL (Global Dashboard Overview) -->
+        <div id="sec-league" class="admin-section active-section">
+            <div class="sub-box">
+                <h4><i class="fa-solid fa-chart-line"></i> Homepage Stats</h4>
+                <form id="statsForm">
+                    <p style="font-size:0.7rem; color:var(--accent)">Sets the top 4 boxes on index page manually.</p>
+                    <div class="grid-2">
+                        
+                        <input type="text" id="bdrLeader" placeholder="BDR Leader Name">
+                        <input type="number" id="bdrValue" placeholder="Points">
+                        <input type="text" id="highestMV" placeholder="MV Leader Name">
+                        <input type="number" id="mvValue" placeholder="MV Price (e.g. 500)">
+                    </div>
+                    <input type="number" id="teamsCount" placeholder="Total Teams Count">
+                    <button type="submit" class="btn-green">Apply to Homepage</button>
+                </form>
+            </div>
+            <div class="sub-box" style="border-left: 4px solid var(--accent);">
+    <h4><i class="fa-solid fa-bullhorn"></i> Post Announcement</h4>
+    <textarea id="annMessage" placeholder="Type community update here..." 
+              style="width: 100%; height: 80px; background: #060b13; border: 1px solid var(--border); color: white; border-radius: 10px; padding: 10px; outline: none;"></textarea>
+    <button onclick="postAnnouncement()" class="btn-green" style="margin-top:10px;">Send Notification</button>
+</div>
+            
+    <!-- Part 1: Create Tour -->
+    <div class="sub-box" style="border-left: 4px solid #00d1ff;">
+        <h4><i class="fa-solid fa-users-rectangle"></i> Create Duo Tournament</h4>
+        <input type="text" id="dtName" placeholder="Tournament Name (e.g. S1 Duo Masters)">
+        <button onclick="createDuoTour()" class="btn-green" style="background:#00d1ff; color:#000;">Initialize Duo Tour</button>
+    </div>
+
+    <!-- 2. DUO FIXTURE ENTRY -->
+<div class="sub-box" style="border-left: 4px solid #00d1ff;">
+    <h4><i class="fa-solid fa-users-viewfinder"></i> DUO FIXTURE ENTRY</h4>
+    
+    <!-- ADD THIS DROPDOWN HERE -->
+    <select id="dtTourSelect" style="border-color: #00d1ff; color: #00d1ff; margin-bottom: 15px;">
+        <option value="">Select Duo Tournament...</option>
+    </select>
+    
+    <div class="grid-2">
+        <select id="dtGroup">
+            <option value="Group A">Group A</option>
+            <option value="Group B">Group B</option>
+            <option value="Group C">Group C</option>
+            <option value="Group D">Group D</option>
+            <option value="Group E">Group E</option>
+            <option value="Group F">Group F</option>
+        </select>
+        <input type="text" id="dtStage" placeholder="Stage (e.g. Round 1)">
+    </div>
+
+    <div class="grid-2" style="margin-top:10px;">
+        <input type="text" id="dtPlayerA" placeholder="Team 1">
+        <input type="text" id="dtPlayerB" placeholder="Team 2">
+    </div>
+    
+    <button onclick="createDuoFixture()" class="btn-gold" style="background:#00d1ff; color:#000; margin-top: 15px;">
+        ADD DUO MATCH
+    </button>
+</div>
+            <!-- 3. DUO RESULT CENTRE & DELETE -->
+<div class="sub-box" style="border-left: 4px solid #ef4444;">
+    <h4><i class="fa-solid fa-trophy"></i> Duo Result Centre</h4>
+    <select id="dmTourSelect" onchange="loadDuoManagementFixtures()">
+        <option value="">Select Duo Tour to Manage...</option>
+    </select>
+    
+    <div id="duoManagementList" class="list-container" style="margin-top:15px; border-color:#334155;">
+        <p style="text-align:center; color:var(--text-dim); padding:10px;">Select a tour to view/edit matches.</p>
+    </div>
+    <!-- Inside the Duo Result Centre sub-box -->
+<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+    <p style="font-size:0.65rem; color:var(--text-dim); margin-bottom:10px;">
+        Use this if you deleted a match or made a scoring mistake to fix the table.
+    </p>
+    <button onclick="recalculateDuoTable()" class="btn-gold" style="background:#f59e0b; color:black;">
+        <i class="fa-solid fa-arrows-rotate"></i> SYNC DUO POINTS TABLE
+    </button>
+</div>
+</div>
+            <!-- 4. MANUAL GROUP OVERRIDE TOOL -->
+<div class="sub-box" style="border-left: 4px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
+    <h4 style="color:#a855f7;"><i class="fa-solid fa-wand-magic-sparkles"></i> Manual Group Fixer</h4>
+    <p style="font-size:0.65rem; color:var(--text-dim); margin-bottom:15px;">
+        Force a team into a specific group. This updates their table position and all their existing fixtures.
+    </p>
+    
+    <select id="mgTourSelect">
+        <option value="">Select Tournament...</option>
+    </select>
+
+    <div class="grid-2">
+        <input type="text" id="mgTeamName" placeholder="Enter Team Name Exactly">
+        <select id="mgGroup">
+            <option value="Group A">Move to Group A</option>
+            <option value="Group B">Move to Group B</option>
+            <option value="Group C">Move to Group C</option>
+            <option value="Group D">Move to Group D</option>
+            <option value="Group E">Move to Group E</option>
+            <option value="Group F">Move to Group F</option>
+        </select>
+    </div>
+    
+    <button onclick="manualGroupFix()" class="btn-gold" style="background:#a855f7; color:white; margin-top:10px;">
+        EXECUTE GROUP MOVE
+    </button>
+</div>
+            <!-- 5. DELETE DUO TOURNAMENT -->
+<div class="sub-box" style="border: 2px solid var(--danger); background: rgba(239, 68, 68, 0.05); margin-top: 30px;">
+    <h4 style="color: var(--danger);"><i class="fa-solid fa-trash-can"></i> Delete Tournament</h4>
+    <p style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 15px;">
+        Warning: This will permanently delete the tournament, all its fixtures, and the points table. This cannot be undone.
+    </p>
+    
+    <select id="deleteTourSelect" style="border-color: var(--danger); color: white;">
+        <option value="">Select Tour to Delete...</option>
+    </select>
+    
+    <button onclick="deleteFullDuoTour()" class="delete-btn" style="width: 100%; padding: 12px; margin-top: 10px; font-weight: 900;">
+        CONFIRM PERMANENT DELETE
+    </button>
+</div>
+            <!-- 1. NEURAL STAT INJECTOR -->
+<div class="sub-box" style="border-left: 4px solid #10b981;">
+    <h4><i class="fa-solid fa-file-import"></i> 1. Neural Stat Injector</h4>
+    <p style="font-size:0.65rem; color:var(--text-dim); margin-bottom:10px;">
+        Calculates points from fixtures into the table. <b>Groups will not change.</b>
+    </p>
+    <select id="siTourSelect"><option value="">Select Tour...</option></select>
+    <button onclick="injectDuoStats()" class="btn-green">INJECT MATCH DATA</button>
+</div>
+
+<!-- 2. INTERNAL FIXTURE ENGINE (Auto-Group) -->
+<div class="sub-box" style="border-left: 4px solid #00d1ff;">
+    <h4><i class="fa-solid fa-robot"></i> 2. Internal Match Engine</h4>
+    <p style="font-size:0.65rem; color:var(--text-dim); margin-bottom:10px;">
+        Generate matches between teams already assigned to groups.
+    </p>
+    <select id="ieTourSelect" onchange="loadInternalDuoTeams(this.value)">
+        <option value="">Select Tour...</option>
+    </select>
+    <input type="text" id="ieStage" placeholder="Stage (e.g. Round 2)">
+    
+    <div class="grid-2">
+        <select id="ieTeamA"><option>Select Team 1...</option></select>
+        <select id="ieTeamB"><option>Select Team 2...</option></select>
+    </div>
+    <button onclick="createInternalFixture()" class="btn-gold" style="background:#00d1ff; color:black; margin-top:10px;">
+        GENERATE INTERNAL MATCH
+    </button>
+</div>
+        </div>
+
+        <!-- 2. PLAYERS (Add/Edit/Delete) -->
+        <div id="sec-players" class="admin-section">
+            <div class="sub-box">
+                <h4><i class="fa-solid fa-user-plus"></i> Register New Player</h4>
+                <form id="playerForm">
+                    <div class="grid-2">
+                        <input type="text" id="pName" placeholder="Full Name" required>
+                        <input type="text" id="pNick" placeholder="Nickname">
+                    </div>
+                    <select id="pTeamSelect">
+        <option value="">Loading Teams...</option>
+                    </select>
+                    <input type="text" id="pImage" placeholder="ImgBB URL for Avatar">
+                    <button type="submit" class="btn-green">Add to League</button>
+                </form>
+            </div>
+            
+            <div class="sub-box" style="border-top: 2px solid var(--gold);">
+                <h4><i class="fa-solid fa-pen-to-square"></i> Edit Player Values</h4>
+                <select id="playerSelector" onchange="loadPlayerDataForEdit()">
+                    <option value="">Choose Player...</option>
+                </select>
+                <form id="updateStatsForm">
+                    <div class="grid-2">
+                        <div>
+                            <label style="font-size:0.6rem; color:var(--text-dim)">CHANGE NAME</label>
+                            <input type="text" id="upName" placeholder="Edit Player Name">
+                            <label style="font-size:0.6rem; color:var(--text-dim)">AUCTION PRICE</label>
+                            <input type="number" id="upAuction" placeholder="Fixed Price">
+                        </div>
+                        <div>
+                            <label style="font-size:0.6rem; color:var(--accent)">MARKET VALUE</label>
+                            <input type="number" id="upMarket" placeholder="Live Worth">
+                        </div>
+                        <input type="number" id="upBDR" placeholder="BDR Points">
+                        <input type="text" id="upNick" placeholder="Change Nickname">
+                        
+                    </div>
+                    <p style="font-size:0.7rem; color:var(--accent); margin-top:15px;">TACTICAL ATTRIBUTES (1-100)</p>
+<div class="grid-2">
+    <input type="number" id="attrCons" placeholder="Consistency">
+    <input type="number" id="attrBig" placeholder="Big Match Player">
+    <input type="number" id="attrScore" placeholder="Scoring">
+    <input type="number" id="attrPlay" placeholder="Playmaking">
+    <input type="number" id="attrDef" placeholder="Defense">
+    <input type="number" id="attrMent" placeholder="Mental Strength">
+</div>
+                    <button type="submit" class="btn-gold">Update Database</button>
+                </form>
+                <!-- SECRET AUTH RESET (Inside Edit Player sub-box) -->
+
+            </div>
+            <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed rgba(239, 68, 68, 0.3);">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <span style="font-size:0.68rem; color:#ef4444; font-weight:800;">[ADMIN SECRET] GOOGLE AUTH STATUS</span>
+            <div id="authStatusText" style="font-size:0.75rem; color:#94a3b8;">Select a player to view auth status</div>
+        </div>
+        <button type="button" onclick="secretUnlinkPlayerAuth()" class="delete-btn" style="width:auto; padding:6px 14px; font-size:0.7rem; font-weight:800;">
+            <i class="fa-solid fa-lock-open"></i> UNLINK GOOGLE
+        </button>
+    </div>
+            </div>
+
+            <div class="sub-box">
+                <h4>Player Registry (Delete)</h4>
+                <div id="adminPlayerList" class="list-container"></div>
+            </div>
+            <!-- CSV BULK IMPORT CARD -->
+<div class="sub-box" style="border-left: 4px solid var(--accent); background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 25, 38, 0.7) 100%); margin-top: 15px;">
+    <h4 style="color: var(--accent);"><i class="fa-solid fa-file-csv"></i> Bulk Import Players (.CSV)</h4>
+    <p style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 12px;">
+        Upload a <code>.csv</code> file with columns: <b>Name, SquadImage</b>. Review the parsed list and select who to import.
+    </p>
+
+    <!-- File Input -->
+    <div style="display:flex; gap:10px; align-items:center; margin-bottom: 15px;">
+        <input type="file" id="csvFileInput" accept=".csv" style="margin:0; padding:10px; background:#060b13; border:1px solid var(--border); border-radius:10px; color:white; flex:1;">
+        <button type="button" onclick="parseUploadedCsv()" class="btn-green" style="width:auto; padding:10px 18px; margin:0; font-size:0.8rem;">
+            <i class="fa-solid fa-magnifying-glass"></i> Parse CSV
+        </button>
+    </div>
+
+    <!-- Parsed Preview Box (Hidden until file parsed) -->
+    <div id="csvPreviewBox" style="display:none; border: 1px solid var(--border); border-radius: 14px; padding: 15px; background: rgba(0,0,0,0.3); margin-bottom: 15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span id="csvParsedCount" style="font-size:0.8rem; font-weight:700; color:var(--accent);">0 Players Found</span>
+            <div style="display:flex; gap:8px;">
+                <button type="button" onclick="toggleAllCsv(true)" style="background:none; border:none; color:var(--accent); font-size:0.7rem; font-weight:bold; cursor:pointer;">Select All</button>
+                <span style="color:var(--text-dim);">|</span>
+                <button type="button" onclick="toggleAllCsv(false)" style="background:none; border:none; color:var(--danger); font-size:0.7rem; font-weight:bold; cursor:pointer;">Deselect All</button>
+            </div>
+        </div>
+
+        <!-- Scrollable Player Checklist -->
+        <div id="csvPlayerList" class="list-container" style="max-height: 240px; overflow-y: auto;">
+            <!-- Player checklist will be injected here -->
+        </div>
+
+        <button type="button" onclick="submitSelectedCsvPlayers()" class="btn-green" style="width: 100%; margin-top: 15px; font-weight: 800; padding: 12px;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> IMPORT CHECKED PLAYERS TO DATABASE
+        </button>
+    </div>
+</div>
+        </div>
+
+        <!-- 3. TEAMS (Creation & Management) -->
+        <div id="sec-teams" class="admin-section">
+            <div class="sub-box">
+                <h4><i class="fa-solid fa-shield-halved"></i> Create Official Club</h4>
+                <form id="createTeamForm">
+                    <input type="text" id="ntName" placeholder="Club Name (e.g. PP ROYALS)" required>
+                    <input type="text" id="ntLogo" placeholder="Logo URL (ImgBB)" required>
+                    <p style="font-size:0.75rem; color:var(--text-dim);">Assign Initial Members:</p>
+                    <div id="teamMemberList" class="list-container"></div>
+                    <button type="submit" class="btn-green">Initialize Club</button>
+                </form>
+            </div>
+            <div class="sub-box" style="border-left: 4px solid var(--gold);">
+    <h4><i class="fa-solid fa-crown"></i> Assign Team Captain</h4>
+    
+    <label style="font-size:0.6rem; color:var(--text-dim)">1. SELECT CLUB</label>
+    <select id="capTeamSelect" onchange="loadCapMembers()">
+        <option value="">Choose Team...</option>
+    </select>
+
+    <label style="font-size:0.6rem; color:var(--text-dim)">2. SELECT NEW CAPTAIN</label>
+    <select id="capPlayerSelect">
+        <option value="">Select Member...</option>
+    </select>
+
+    <button onclick="assignCaptain()" class="btn-gold">Confirm Captaincy</button>
+            </div>
+            <!-- RELEASE PLAYER TOOL -->
+<div class="sub-box" style="border-left: 4px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+    <h4 style="color: var(--danger);"><i class="fa-solid fa-user-minus"></i> Player Release Center</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:15px;">Remove a player from their current team and return them to the Free Agent pool.</p>
+    
+    <label style="font-size:0.6rem; color:var(--text-dim);">1. SELECT TEAM</label>
+    <select id="relTeamSelect" onchange="loadPlayersForRelease(this.value)">
+        <option value="">Choose Team...</option>
+    </select>
+
+    <label style="font-size:0.6rem; color:var(--text-dim);">2. SELECT PLAYER TO RELEASE</label>
+    <select id="relPlayerSelect">
+        <option value="">Select Team First...</option>
+    </select>
+
+    <button onclick="executeRelease()" class="delete-btn" style="width: 100%; margin-top: 10px; font-weight: 900;">
+        RELEASE TO FREE AGENT POOL
+    </button>
+</div>
+            <!-- SIGN FREE AGENT DIRECTLY -->
+<div class="sub-box" style="border-left: 4px solid var(--accent); background: rgba(16, 185, 129, 0.05); margin-top: 15px;">
+    <h4 style="color: var(--accent);"><i class="fa-solid fa-user-plus"></i> Sign Free Agent to Team</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:15px;">
+        Pick an unassigned Free Agent and sign them directly to an active team.
+    </p>
+
+    <label style="font-size:0.6rem; color:var(--text-dim);">1. SELECT FREE AGENT</label>
+    <select id="faPlayerSelect">
+        <option value="">Loading Free Agents...</option>
+    </select>
+
+    <label style="font-size:0.6rem; color:var(--text-dim); margin-top: 10px; display:block;">2. ASSIGN TO TEAM</label>
+    <select id="faTargetTeamSelect">
+        <option value="">Choose Team...</option>
+    </select>
+
+    <label style="font-size:0.6rem; color:var(--text-dim); margin-top: 10px; display:block;">3. SIGNING / AUCTION VALUE (M) - OPTIONAL</label>
+    <input type="number" id="faSigningFee" placeholder="0" style="margin-bottom: 10px;">
+
+    <button onclick="executeSignFreeAgent()" class="btn-green" style="width: 100%; font-weight: 800;">
+        ASSIGN PLAYER TO SQUAD
+    </button>
+</div>
+        </div>
+
+        <!-- 4. SMART CENTER (Tournament Logic) -->
+        <div id="sec-smart" class="admin-section">
+            <!-- Update 1. Create Tournament box -->
+<div class="sub-box">
+        <h4>1. Create Tournament</h4>
+        <div class="grid-2">
+            <!-- ADD THE ONCHANGE ATTRIBUTE HERE -->
+            <select id="stType" onchange="refreshParticipantList()">
+                <option value="solo">Solo Challenge (Player vs Player)</option>
+                <option value="auction">Auction Tournament (Team vs Team)</option>
+                <option value="quick">Quick Tour (Knockout Only)</option>
+            </select>
+            
+            <input type="text" id="stName" placeholder="Tour Name (e.g. Pro League S1)">
+        </div>
+
+        <p style="font-size:0.7rem; color:var(--accent); margin-bottom:5px;">Select Participants:</p>
+    <!-- This list will now automatically update when you change the dropdown above -->
+        <div id="stParticipantList" class="list-container">
+            <p style="text-align:center; font-size:0.8rem; color:var(--text-dim);">Loading initial player list...</p>
+        </div>
+        
+        <button onclick="createSmartTour()" class="btn-green">Create & Start Tour</button>
+</div>
+
+            <div class="sub-box">
+                <h4>2. Add Match</h4>
+                <select id="sfTourSelect" onchange="loadTourParticipants()"><option>Loading...</option></select>
+                <div class="grid-2">
+                    <select id="sfPlayerA"></select>
+                    <select id="sfPlayerB"></select>
+                    <input type="text" id="sfStage" placeholder="Stage (e.g. Final / R16)">
+                </div>
+                <button onclick="createSmartFixture()" class="btn-gold">Generate Fixture</button>
+            </div>
+
+            <div class="sub-box">
+                <h4>3. Record Result</h4>
+                <select id="srTourSelect" onchange="loadTourFixtures()"><option>Choose Tour...</option></select>
+                <div id="srFixtureList"></div>
+            </div>
+            <div class="sub-box" style="border-left: 4px solid var(--gold);">
+    <h4><i class="fa-solid fa-sitemap"></i> Smart Knockout Generator</h4>
+    
+    <!-- Select ANY Tournament -->
+    <select id="akTourSelect" onchange="loadAKParticipants()">
+        <option value="">Select Tournament...</option>
+    </select>
+    
+    <div class="grid-2">
+        <input type="text" id="akStage" placeholder="Stage (e.g. Semi-Final, Final)">
+        <div style="display:flex; gap:5px">
+            <select id="akPlayerA"></select>
+            <select id="akPlayerB"></select>
+        </div>
+    </div>
+    <button onclick="createAKFixture()" class="btn-gold">Generate Knockout Match</button>
+            </div>
+            <!-- DELETE TOURNAMENT BOX -->
+<div class="sub-box" style="border: 1px solid var(--danger); background: rgba(239, 68, 68, 0.05);">
+    <h4 style="color: var(--danger);"><i class="fa-solid fa-trash-can"></i> 4. Delete Tournament</h4>
+    <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 10px;">
+        Warning: This will permanently delete the tournament, all its fixtures, and the points table.
+    </p>
+    <select id="deleteTourSelect" style="border-color: var(--danger);">
+        <option value="">Select Tournament to Delete...</option>
+    </select>
+    <button onclick="confirmDeleteTournament()" class="delete-btn" style="width: 100%; margin-top: 5px;">
+        Confirm Permanent Delete
+    </button>
+</div>
+            <div class="sub-box" style="border-left: 4px solid var(--accent);">
+    <h4><i class="fa-solid fa-people-arrows"></i> Create Member Match</h4>
+    <select id="subTourSelect" onchange="loadMainFixtures()"><option>Select Tournament...</option></select>
+    
+    <p style="font-size:0.7rem; color:var(--text-dim);">1. Select Team Fixture:</p>
+    <select id="subParentSelect" onchange="loadTeamPlayers()"><option>Select Match...</option></select>
+    
+    <div class="grid-2">
+        <div>
+            <label id="labelTeamA" style="font-size:0.6rem; color:var(--accent);">TEAM A PLAYER</label>
+            <select id="subPlayerA"></select>
+        </div>
+        <div>
+            <label id="labelTeamB" style="font-size:0.6rem; color:var(--accent);">TEAM B PLAYER</label>
+            <select id="subPlayerB"></select>
+        </div>
+    </div>
+    <button onclick="createSubFixture()" class="btn-green">Generate Member Match</button>
+            </div>
+            <!-- REPLACE PLAYER IN TOURNAMENT -->
+<div class="sub-box" style="border-left: 4px solid var(--accent); background: rgba(16, 185, 129, 0.05); margin-top: 15px;">
+    <h4><i class="fa-solid fa-arrows-rotate"></i> Replace Player in Tournament</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:12px;">
+        Substitute a player in a tournament. This updates the points table and all upcoming/completed fixtures.
+    </p>
+
+    <label style="font-size:0.6rem; color:var(--text-dim);">1. SELECT TOURNAMENT</label>
+    <select id="repTourSelect" onchange="loadReplaceParticipants(this.value)">
+        <option value="">Select Tournament...</option>
+    </select>
+
+    <div class="grid-2" style="margin-top: 10px;">
+        <div>
+            <label style="font-size:0.6rem; color:var(--danger);">CURRENT PLAYER (TO REMOVE)</label>
+            <select id="repOldPlayerSelect">
+                <option value="">Select Tournament First...</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:0.6rem; color:var(--accent);">NEW REPLACEMENT PLAYER</label>
+            <select id="repNewPlayerSelect">
+                <option value="">Select New Player from DB...</option>
+            </select>
+        </div>
+    </div>
+
+    <button type="button" onclick="executePlayerReplacement()" class="btn-green" style="width: 100%; margin-top: 15px; font-weight: 800;">
+        CONFIRM PLAYER REPLACEMENT
+    </button>
+</div>
+            <!-- UCL TOURNAMENT & QUALIFICATION STATION -->
+<div class="sub-box" style="border-left: 4px solid #0055ff; background: linear-gradient(180deg, rgba(0, 85, 255, 0.08) 0%, rgba(16, 25, 38, 0.6) 100%);">
+    <h4 style="color: #38bdf8;"><i class="fa-solid fa-shield-halved"></i> UCL Control Center</h4>
+    <p style="font-size:0.72rem; color:var(--text-dim); margin-bottom: 15px;">
+        Connect registered Solo Tours to feed into the <b>Top 36 UCL Table</b>, lock rank movement snapshots, and link the Main UCL Tournament.
+    </p>
+
+    <!-- Part A: Add Solo Tour to UCL Pool -->
+    <label style="font-size:0.65rem; color:var(--text-dim); text-transform:uppercase;">1. Select Solo Tour to Add to UCL Pool</label>
+    <div style="display:flex; gap:10px; margin-top:5px; margin-bottom:15px;">
+        <select id="uclSoloTourSelect" style="margin:0; flex:1;">
+            <option value="">Select Solo Tour...</option>
+        </select>
+        <button type="button" onclick="addSoloTourToUcl()" class="btn-green" style="width:auto; padding:10px 18px; margin:0; background:#0055ff; color:white;">
+            <i class="fa-solid fa-plus"></i> Connect
+        </button>
+    </div>
+
+    <!-- Active Qualifying Tours List -->
+    <label style="font-size:0.65rem; color:var(--text-dim); text-transform:uppercase;">Active Qualifying Leagues</label>
+    <div id="uclConnectedTours" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:5px; margin-bottom:20px; min-height:30px;">
+        <span style="font-size:0.75rem; color:#64748b;">Loading connected tours...</span>
+    </div>
+
+    <hr style="border:0; border-top:1px solid rgba(255,255,255,0.08); margin:15px 0;">
+
+    <!-- Part B: Link Active Main UCL Tournament -->
+    <label style="font-size:0.65rem; color:var(--text-dim); text-transform:uppercase;">2. Link Active UCL Main Tournament (Fixtures / Standings)</label>
+    <div style="display:flex; gap:10px; margin-top:5px; margin-bottom:15px;">
+        <select id="uclMainTourSelect" style="margin:0; flex:1;">
+            <option value="">Select Main UCL Tournament...</option>
+        </select>
+        <button type="button" onclick="setMainUclTournament()" class="btn-gold" style="width:auto; padding:10px 18px; margin:0;">
+            Link UCL
+        </button>
+    </div>
+
+    <!-- Part C: Snapshot Trigger for Movement ▲ / ▼ -->
+    <button type="button" onclick="snapshotUclRanks()" class="delete-btn" style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; width:100%; padding:10px; font-weight:700; font-size:0.75rem;">
+        <i class="fa-solid fa-camera"></i> Lock Rank Snapshot (Calculate ▲ / ▼)
+    </button>
+</div>
+        </div>
+
+        <!-- 5. PRESTIGE (SMART HOF) -->
+<div id="sec-prestige" class="admin-section">
+    
+    <!-- BLOCK 1: SEASON CONTEXT -->
+    <div class="sub-box" style="border-left: 4px solid var(--accent);">
+        <h4><i class="fa-solid fa-calendar-check"></i> 1. Set Active Season</h4>
+        <input type="text" id="hofSeasonName" placeholder="e.g. Season 7 • 2026" required>
+        <p style="font-size:0.6rem; color:var(--text-dim)">This name will be linked to the entries below.</p>
+    </div>
+
+    <!-- BLOCK 2: TOURNAMENT PODIUM -->
+    <div class="sub-box" style="border-left: 4px solid #3b82f6;">
+        <h4><i class="fa-solid fa-trophy"></i> 2. Tournament Standings</h4>
+        <select id="tourNameIn">
+            <option value="Auction Tour">Auction Tour</option>
+            <option value="Solo Challenge">Solo Challenge</option>
+            <option value="UCL">Champions League</option>
+        </select>
+        
+        <div class="grid-2">
+            <div>
+                <label style="font-size:0.6rem; color:var(--gold)">WINNER (1st)</label>
+                <select id="tourWinner" class="player-dd"></select>
+            </div>
+            <div>
+                <label style="font-size:0.6rem; color:var(--dim)">RUNNER UP (2nd)</label>
+                <select id="tourRunner" class="player-dd"></select>
+            </div>
+        </div>
+        <label style="font-size:0.6rem; color:var(--dim)">3RD POSITION (Optional)</label>
+        <select id="tourThird" class="player-dd"></select>
+        
+        <button onclick="saveTourPodium()" class="btn-green" style="background:#3b82f6; color:white;">Publish Standing</button>
+    </div>
+
+    <!-- BLOCK 3: INDIVIDUAL TROPHIES (AUTO-COUNT) -->
+    <div class="sub-box" style="border-left: 4px solid var(--gold);">
+        <h4><i class="fa-solid fa-medal"></i> 3. Individual Awards</h4>
+        <div class="grid-2">
+            <select id="awardType">
+                <option value="ballonDor">Ballon d'Or</option>
+                <option value="goldenBoot">Golden Boot</option>
+                <option value="ucl">UCL Best Player</option>
+                <option value="weekly">Weekly Star</option>
+                <option value="League">QUICK TOUR CHAMPION</option>
+            </select>
+            <select id="awardPlayer" class="player-dd"></select>
+        </div>
+        <button onclick="awardSmartTrophy()" class="btn-gold">Award & Increment Profile +1</button>
+    </div>
+    <!-- CHAMPION CELEBRATION LAUNCHER -->
+<div class="sub-box" style="border-left: 4px solid #ff003c; background: linear-gradient(135deg, rgba(255, 0, 60, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);">
+    <h4 style="color:#ff003c;"><i class="fa-solid fa-crown"></i> Launch Champion Celebration Banner</h4>
+    <p style="font-size:0.72rem; color:var(--text-dim); margin-bottom:15px;">
+        Triggers the 6-second floating champion card with fireworks for all visitors.
+    </p>
+
+    <div class="grid-2">
+        <input type="text" id="celTitleIn" placeholder="Title (e.g. WEEKLY WINNER, UCL CHAMPION)">
+        <select id="celTrophyIn">
+            <option value="https://i.postimg.cc/qvqPB29Q/232667-removebg-preview.png">Weekly Cup (Default)</option>
+            <option value="https://i.postimg.cc/vH0Rd0Sj/232666-removebg-preview.png">Ballon d'Or</option>
+            <option value="https://i.postimg.cc/QdC2NcRm/232668-removebg-preview.png">Champions Trophy (UCL)</option>
+            <option value="https://i.postimg.cc/15phyzFD/259302-removebg-preview.png">Golden Boot / League Trophy</option>
+        </select>
+    </div>
+
+    <div class="grid-2" style="margin-top:10px;">
+        <select id="celPlayerSelect" onchange="autoFillCelebrationPlayer(this.value)">
+            <option value="">Select Winning Player...</option>
+        </select>
+        <input type="text" id="celScorerIn" placeholder="Stat Note (e.g. Sidhu — 17 goals)">
+    </div>
+
+    <div class="grid-2" style="margin-top:10px;">
+        <input type="text" id="celTeamIn" placeholder="Team Name (e.g. ADRENALINE)">
+        <input type="text" id="celThemeColorIn" placeholder="Color Hex (e.g. #ef4444)">
+    </div>
+
+    <button type="button" onclick="publishCelebrationCard()" class="btn-gold" style="background:#ff003c; color:white; width:100%; margin-top:15px; font-weight:800; padding:12px;">
+        🚀 LAUNCH TO ALL VISITORS
+    </button>
+</div>
+
+</div>
+        <div id="sec-loyalty" class="admin-section">
+    <div class="sub-box">
+        <h4><i class="fa-solid fa-id-card"></i> Card Applications</h4>
+        <div id="applicationList" class="list-container"></div>
+    </div>
+        </div>
+        <!-- 7. NMS MANAGEMENT INBOX -->
+<div id="sec-requests" class="admin-section">
+    <div class="sub-box" style="border-left: 4px solid var(--accent);">
+        <h4><i class="fa-solid fa-envelope-open-text"></i> Tactical Requests Inbox</h4>
+        <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 15px;">Review and Approve/Reject Roster changes, Substitutions, and ID updates.</p>
+        
+        <div id="nmsRequestList" class="list-container" style="max-height: 500px;">
+            <!-- Requests will be injected here -->
+            <p style="text-align:center; padding:20px; color:var(--text-dim);">Syncing with Command Hub...</p>
+        </div>
+    </div>
+</div>
+        <div id="sec-trophies" class="admin-section">
+    <!-- Block 1: Create New Trophy Type -->
+    <div class="sub-box" style="border-left: 4px solid var(--accent);">
+        <h4><i class="fa-solid fa-plus"></i> Define New Trophy</h4>
+        <input type="text" id="trName" placeholder="Trophy Name (e.g. UCL Winner)">
+        <input type="text" id="trImage" placeholder="ImgBB Image URL">
+        <button onclick="createTrophyType()" class="btn-green">Create Trophy globally</button>
+    </div>
+
+    <!-- Block 2: Award Trophies -->
+    <div class="sub-box" style="border-left: 4px solid var(--gold);">
+        <h4><i class="fa-solid fa-medal"></i> Award Trophy to Player</h4>
+        <select id="trPlayerSelect"><option>Select Player...</option></select>
+        
+        <label style="font-size:0.6rem; color:var(--text-dim)">CORE TROPHIES (Increments Count)</label>
+        <select id="trCoreType">
+            <option value="ballonDor">Ballon d'Or</option>
+            <option value="quickTour">Quick Tour Champion</option>
+            <option value="soloBoot">Solo Golden Boot</option>
+            <option value="auctionBoot">Auction Golden Boot</option>
+        </select>
+        <button onclick="awardCoreTrophy()" class="btn-gold" style="margin-bottom:15px;">Award Core Trophy</button>
+
+        <label style="font-size:0.6rem; color:var(--text-dim)">CUSTOM TROPHIES (Adds to Profile)</label>
+        <select id="trCustomSelect"><option>Loading Custom Trophies...</option></select>
+        <button onclick="awardCustomTrophy()" class="btn-green">Award Custom Trophy</button>
+    </div>
+        </div>
+
+        <!-- 6. DANGER ZONE (Sync & Reset) -->
+        <div id="sec-danger" class="admin-section">
+            <div class="sub-box" style="border: 2px solid var(--danger);">
+                <h3 style="color:var(--danger)">Database Tools</h3>
+                <button onclick="syncMarketValues()" class="btn-green" style="margin-bottom:10px">Sync Prices from Auction Site</button>
+                <button onclick="syncAllSystemStats()" class="btn-gold">Full Recalculate (History -> Points/BDR/MV)</button>
+                <hr style="border:0; border-top:1px solid var(--border); margin:15px 0;">
+                <button onclick="nuclearReset('tours')" class="delete-btn">Wipe All Fixtures</button>
+                <button onclick="nuclearReset('stats')" class="delete-btn" style="margin-top:10px">Reset All Player Values to 0</button>
+            </div>
+            <div class="sub-box" style="border: 1px solid var(--accent); background: rgba(16, 185, 129, 0.05);">
+    <h4 style="color: var(--accent);"><i class="fa-solid fa-sync"></i> Official Club Synchronization</h4>
+    <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 15px;">
+        Connects to the Auction Database to import Team Names and Club Logos for all registered players.
+    </p>
+    <button onclick="triggerTeamSync()" class="btn-green">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Run Global Club Sync
+    </button>
+            </div>
+             <div style="padding: 15px; border: 1px solid var(--danger); border-radius: 12px; margin-top: 15px;">
+    <h4 style="margin: 0; color: white;">Wipe Match History</h4>
+    <p style="font-size: 0.7rem; color: var(--text-dim);">Clears the "Match History" list and "Season Summary" for ALL players. This does NOT reset BDR or Market Value.</p>
+    <button onclick="wipeAllHistory()" class="delete-btn" style="width: 100%; margin-top: 10px; background: linear-gradient(90deg, #ef4444, #991b1b);">
+        <i class="fa-solid fa-eraser"></i> Clear Global Match History
+    </button>
+             </div>
+            <div class="sub-box" style="border: 1px solid var(--gold); background: rgba(245, 158, 11, 0.05);">
+    <h4 style="color: var(--gold);"><i class="fa-solid fa-arrows-rotate"></i> Historical Data Repair</h4>
+    <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 15px;">
+        This will recalculate every player's Market Value, BDR, and H2H list based on the actual match results stored in the archive.
+    </p>
+    <button onclick="triggerHistoricalSync()" class="btn-gold">
+        <i class="fa-solid fa-database"></i> Rebuild Player Stats
+    </button>
+            </div>
+            <div class="sub-box" style="border: 1px solid #3b82f6; background: rgba(59, 130, 246, 0.05);">
+    <h4 style="color: #3b82f6;"><i class="fa-solid fa-table-list"></i> Table Recovery</h4>
+    
+    <!-- ADD THIS DROPDOWN HERE -->
+    <label style="font-size:0.6rem; color:var(--text-dim); display:block; margin-bottom:5px;">1. SELECT TOURNAMENT TO FIX:</label>
+    <select id="rebuildTourSelect" style="border-color: #3b82f6; margin-bottom:10px;">
+        <option value="">-- Loading Tournaments... --</option>
+    </select>
+
+    <p style="font-size: 0.65rem; color: var(--text-dim); margin-bottom:10px;">2. Click to recalculate all points from fixtures.</p>
+    
+    <button onclick="rebuildPointsTable()" class="btn-gold" style="background:#3b82f6; color:white;">
+        <i class="fa-solid fa-arrows-rotate"></i> REBUILD POINTS TABLE FROM FIXTURES
+    </button>
+            </div>
+            <div class="sub-box" style="border: 1px solid #8b5cf6; background: rgba(139, 92, 246, 0.05);">
+    <h4 style="color: #a78bfa;"><i class="fa-solid fa-file-import"></i> Squad Image Sync</h4>
+    <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 15px;">
+        Pull player squad images directly from the Auction Database and apply them to player profiles.
+    </p>
+    <button onclick="triggerSquadSync()" class="btn-green" style="background: #8b5cf6; color: white;">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Sync Squads from Auction
+    </button>
+            </div>
+            <div class="sub-box" style="border: 1px solid var(--accent); background: rgba(16, 185, 129, 0.05);">
+    <h4 style="color: var(--accent);"><i class="fa-solid fa-sync"></i> Logo Recovery Tool</h4>
+    <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 10px;">Instantly import club logos for newly registered players.</p>
+    <button onclick="syncNewLogos()" class="btn-green">
+        <i class="fa-solid fa-shield-halved"></i> SYNC MISSING LOGOS
+    </button>
+            </div>
+            <div class="sub-box" style="border: 1px solid #3b82f6; margin-top:15px;">
+    <h4 style="color:#3b82f6"><i class="fa-solid fa-sync-alt"></i> Selective Pro-Sync</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim);">
+        Recalculates all BDR & Market Values using ONLY <b>Auction</b> and <b>Solo</b> match history. 
+        <span style="color:#ef4444;">Quick Tour matches will be ignored.</span>
+    </p>
+    <button onclick="triggerProSync()" class="btn-gold" style="background: linear-gradient(90deg, #3b82f6, #1d4ed8); color: white;">
+        <i class="fa-solid fa-bolt-lightning"></i> RUN PRO-TOUR SYNC
+    </button>
+            </div>
+            <div class="sub-box" style="border-left: 4px solid var(--gold); margin-top: 15px;">
+    <h4 style="color:var(--gold)"><i class="fa-solid fa-arrows-split-up-and-left"></i> Isolate Auction & Solo BDR</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:10px;">
+        Deducts Solo Tour points from the old BDR list and confines old BDR to <b>Auction Tour matches only</b>.
+    </p>
+    <button onclick="separateBDR()" class="btn-gold" style="background:#f59e0b; color:#000;">
+        ISOLATE AUCTION BDR
+    </button>
+            </div>
+            <div class="sub-box" style="border-left: 4px solid var(--accent); margin-top: 15px;">
+    <h4 style="color:var(--accent)"><i class="fa-solid fa-clock-rotate-left"></i> Sync Old Solo Matches to History</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:10px;">
+        Imports all historical Solo Tour matches into each player's Match History, Head-to-Head, and Match Activity Calendar.
+    </p>
+    <button type="button" onclick="syncOldSoloMatches()" class="btn-green" style="background:#10b981; color:black; font-weight:800;">
+        <i class="fa-solid fa-arrows-rotate"></i> SYNC ALL SOLO MATCHES TO PROFILES
+    </button>
+            </div>
+            <!-- GLOBAL SOLO BDR RECALCULATE TOOL -->
+<div class="sub-box" style="border-left: 4px solid #a855f7; background: rgba(168, 85, 247, 0.05); margin-top: 15px;">
+    <h4 style="color:#a855f7;"><i class="fa-solid fa-globe"></i> Sync Global Solo BDR Rankings</h4>
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-bottom:12px;">
+        Scans all completed Solo Tour matches and recalculates <b>soloBdrPoints</b> for all players. Old Auction BDR is left untouched.
+    </p>
+    <button type="button" onclick="triggerSoloBdrSync()" class="btn-gold" style="background:#a855f7; color:white; font-weight:800; width:100%; padding:12px;">
+        <i class="fa-solid fa-arrows-rotate"></i> REBUILD GLOBAL SOLO BDR
+    </button>
+</div>
+            <div class="sub-box" style="border: 2px solid var(--gold); background: rgba(245, 158, 11, 0.05); margin-top: 20px;">
+    <h4 style="color: var(--gold);"><i class="fa-solid fa-gavel"></i> Auction Tournament Stats Control</h4>
+    <p style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 15px; line-height: 1.4;">
+        Manage BDR Points and Market Value calculations specifically for <b>Auction Tournaments</b>.
+    </p>
+
+    <!-- BUTTON 1: MASTER RECALCULATE -->
+    <div style="margin-bottom: 15px;">
+        <span style="font-size: 0.65rem; color: #ef4444; font-weight: 800; display:block; margin-bottom:4px;">EMERGENCY / ONE-TIME USE</span>
+        <button type="button" onclick="triggerAuctionMasterSync()" class="delete-btn" style="width: 100%; padding: 12px; background: #ef4444; font-weight: 900;">
+            <i class="fa-solid fa-triangle-exclamation"></i> RUN MASTER AUCTION RECALCULATE (WIPES & REBUILDS)
+        </button>
+    </div>
+
+    <!-- BUTTON 2: INCREMENTAL SYNC -->
+    <div>
+        <span style="font-size: 0.65rem; color: var(--accent); font-weight: 800; display:block; margin-bottom:4px;">MOST DEMANDED (DAILY USE)</span>
+        <button type="button" onclick="triggerAuctionIncrementalSync()" class="btn-green" style="width: 100%; padding: 12px; font-weight: 900;">
+            <i class="fa-solid fa-bolt"></i> SYNC NEW / UPDATED AUCTION MATCHES (+/-)
+        </button>
+    </div>
+            </div>
+        </div>
+        <div id="sec-calendar" class="admin-section">
+    <div class="sub-box">
+        <h4>Add Event to Calendar</h4>
+        <input type="text" id="evTitle" placeholder="Event Title">
+        <input type="date" id="evDate">
+        <select id="evType">
+            <option value="league">Team League (Gold)</option>
+            <option value="weekly">Weekly (Blue)</option>
+            <option value="ucl">UCL (Purple)</option>
+            <option value="playoff">Playoff (Orange)</option>
+            <option value="auction">Auction (Green)</option>
+        </select>
+        <button onclick="saveEvent()" class="btn-green">Post to Calendar</button>
+    </div>
+        </div>
+        <div id="sec-media" class="admin-section">
+    <div class="sub-box">
+        <h4><i class="fa-solid fa-video"></i> Add Video to Showcase</h4>
+        <input type="text" id="vTitle" placeholder="Video Title (e.g. S7 Grand Final)">
+        <input type="text" id="vUrl" placeholder="Full YouTube Link (https://youtube.com/watch?v=...)">
+        <select id="vCat">
+            <option value="Tournament">Tournament Replay</option>
+            <option value="Highlights">Player Highlights</option>
+            <option value="Tutorial">Tactical Tutorial</option>
+        </select>
+        <button onclick="addMedia()" class="btn-green">Publish to Media Hub</button>
+    </div>
+
+    <div class="sub-box">
+        <h4>Manage Videos</h4>
+        <div id="adminVideoList" class="list-container"></div>
+    </div>
+            <div class="sub-box" style="border-left: 4px solid var(--danger);">
+    <h4><i class="fa-solid fa-tower-broadcast"></i> Live Broadcast Control</h4>
+    <input type="text" id="liveTitle" placeholder="Match Title (e.g. East Bengal vs Mohun Bagan)">
+    <input type="text" id="liveUrl" placeholder="Blogspot Link (https://...)">
+    
+    <div class="grid-2">
+        <button onclick="setLive(true)" class="btn-green">GO LIVE 🚀</button>
+        <button onclick="setLive(false)" class="delete-btn">END STREAM</button>
+    </div>
+            </div>
+            <!-- GLORY GALLERY PUBLISHER -->
+<div class="sub-box" style="border-left: 4px solid var(--gold); background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, rgba(15, 23, 42, 0.6) 100%);">
+    <h4 style="color: var(--gold);"><i class="fa-solid fa-award"></i> Glory Gallery Showcase Manager</h4>
+    <p style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 15px;">
+        Publish championship and tournament winning posters with official typography tags.
+    </p>
+
+    <div class="grid-2">
+        <input type="text" id="gloryPlayerIn" placeholder="Player Name (e.g. Pappali)" required>
+        <input type="text" id="gloryTourIn" placeholder="Tournament Name (e.g. S1 PRO LEAGUE)" required>
+    </div>
+
+    <div class="grid-2" style="margin-top: 10px;">
+        <select id="gloryStatusIn">
+            <option value="CHAMPION">CHAMPION</option>
+            <option value="RUNNER-UP">RUNNER-UP</option>
+            <option value="MVP">MVP OF THE TOURNAMENT</option>
+            <option value="GOLDEN BOOT">GOLDEN BOOT WINNER</option>
+        </select>
+        <input type="text" id="glorySeasonIn" placeholder="Season / Year (e.g. Season 8 • 2026)">
+    </div>
+
+    <input type="text" id="gloryImageIn" placeholder="Poster Image URL (ImgBB, Cloudinary, etc.)" style="margin-top: 10px;" required>
+
+    <button type="button" onclick="publishGloryPoster()" class="btn-gold" style="width: 100%; margin-top: 15px; font-weight: 800;">
+        <i class="fa-solid fa-cloud-arrow-up"></i> PUBLISH POSTER TO GLORY GALLERY
+    </button>
+
+    <!-- Poster Management List -->
+    <h5 style="color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase; margin: 20px 0 10px;">Current Posters</h5>
+    <div id="gloryAdminList" class="list-container" style="max-height: 180px; overflow-y: auto;">
+        <p style="text-align:center; font-size:0.75rem; color:#64748b;">Loading posters...</p>
+    </div>
+</div>
+            
+        </div>
+    </div>
+
+    <script>
+    const API = "https://pes-park-backend.onrender.com";
+    const API_V2 = "https://nexus-database-v2.onrender.com";
+
+    // Security Check
+    if (localStorage.getItem('isAdmin') !== 'true') { window.location.href = 'login.html'; }
+
+    function showSection(id, btn) {
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active-section'));
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active-section');
+        btn.classList.add('active');
+    }
+
+    async function loadAllDashboardData() {
+        try {
+            const [pRes, tRes, teamRes] = await Promise.all([
+                fetch(`${API}/api/players`),
+                fetch(`${API}/api/smart/tournaments`),
+                fetch(`${API}/api/teams/all`),
+            ]);
+
+            const players = await pRes.json();
+            const tours = await tRes.json();
+            const teams = await teamRes.json();
+            const duoRes = await fetch(`${API_V2}/api/duo/tournaments`);
+            const duoTours = await duoRes.json();
+
+            // Populate Player Selectors
+            const pOpts = players.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+            document.getElementById('playerSelector').innerHTML = '<option value="">Choose Player...</option>' + pOpts;
+            
+            // Populate List Containers
+            document.getElementById('adminPlayerList').innerHTML = players.map(p => `
+                <div class="row-item"><span>${p.name}</span><button class="delete-btn" onclick="deletePlayer('${p._id}')">X</button></div>
+            `).join('');
+
+            document.getElementById('teamMemberList').innerHTML = players.map(p => `
+                <div style="display:flex; gap:10px; padding:5px"><input type="checkbox" class="nt-member-cb" value="${p.name}"> <label>${p.name}</label></div>
+            `).join('');
+
+            document.getElementById('stParticipantList').innerHTML = players.map(p => `
+                <div style="display:flex; gap:10px; padding:5px"><input type="checkbox" class="st-cb" value="${p.name}"> <label>${p.name}</label></div>
+            `).join('');
+            document.getElementById('capPlayerSelect').innerHTML = players.map(p => `
+                <div style="display:flex; gap:10px; padding:5px"><input type="checkbox" class="st-cb" value="${p.name}"> <label>${p.name}</label></div>
+            `).join('');
+            document.getElementById('trPlayerSelect').innerHTML = '<option value="">Select Player...</option>' + 
+    players.map(p => `<option value="${p._id}">${p.name}</option>`).join('');
+            document.getElementById('repNewPlayerSelect').innerHTML = '<option value="">Choose Player...</option>' + pOpts;
+
+            const teamOpts = teams.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+        
+        const teamSelectors = ['capTeamSelect', 'pTeamSelect', 'relTeamSelect', 'faTargetTeamSelect'];
+        teamSelectors.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = '<option value="">Select Club...</option>' + teamOpts;
+        });
+
+            // Populate Tour Selectors
+            const tourOpts = tours.map(t => `<option value="${t._id}">${t.name}</option>`).join('');
+            document.getElementById('sfTourSelect').innerHTML = '<option>Select Tour...</option>' + tourOpts;
+            document.getElementById('srTourSelect').innerHTML = '<option>Select Tour...</option>' + tourOpts;
+            document.getElementById('deleteTourSelect').innerHTML = '<option value="">Select Tour to Delete...</option>' + tourOpts;
+            document.getElementById('subTourSelect').innerHTML = '<option>Select Tour...</option>' + tourOpts;
+            document.getElementById('rebuildTourSelect').innerHTML = '<option>Select Tour...</option>' + tourOpts;
+            document.getElementById('repTourSelect').innerHTML = '<option>Select Tour...</option>' + tourOpts;
+            
+            const duoOpts = duoTours.map(t => `<option value="${t._id}">${t.name} (DUO)</option>`).join('');
+            document.getElementById('dmTourSelect').innerHTML = '<option value="">Select Duo Tour...</option>' + duoOpts;
+            document.getElementById('mgTourSelect').innerHTML = '<option value="">Select Duo Tour...</option>' + duoOpts;
+            document.getElementById('siTourSelect').innerHTML = '<option value="">Select Duo Tour...</option>' + duoOpts;
+            document.getElementById('ieTourSelect').innerHTML = '<option value="">Select Duo Tour...</option>' + duoOpts;
+            document.getElementById('srTourSelect').innerHTML += duoOpts;
+
+            // Inside loadAllDashboardData():
+const uclSoloSel = document.getElementById('uclSoloTourSelect');
+        if (uclSoloSel) {
+            uclSoloSel.innerHTML = '<option value="">Select Tour to Add to Pool...</option>' + allTourOpts;
+        }
+
+        const uclMainSel = document.getElementById('uclMainTourSelect');
+        if (uclMainSel) {
+            uclMainSel.innerHTML = '<option value="">Select Main UCL Tournament...</option>' + allTourOpts;
+        }
+
+        // Refresh connected qualification leagues badges
+        if (typeof loadUclAdminData === 'function') {
+            loadUclAdminData();
+        }
+            
+            
+
+        
+
+    } catch (e) { console.error("Sync Error", e); }
+        syncDuoDropdowns();
+        loadFreeAgentsDropdown();
+        loadCelebrationPlayers();
+        loadGloryAdminList();
+    }
+
+    // Load Player Data for Edit
+    async function loadPlayerDataForEdit() {
+        const id = document.getElementById('playerSelector').value;
+        if(!id) return;
+        const res = await fetch(`${API}/api/players/${id}`);
+        const p = await res.json();
+        document.getElementById('upName').value = p.name || "";
+        document.getElementById('upAuction').value = p.auctionPrice || 0;
+        document.getElementById('upMarket').value = p.marketValue || 0;
+        document.getElementById('upBDR').value = p.bdrPoints || 0;
+        document.getElementById('upNick').value = p.nickname || "";
+        const attr = p.attributes || {};
+document.getElementById('attrCons').value = attr.consistency || 50;
+document.getElementById('attrBig').value = attr.bigMatch || 50;
+document.getElementById('attrScore').value = attr.scoring || 50;
+document.getElementById('attrPlay').value = attr.playmaking || 50;
+document.getElementById('attrDef').value = attr.defense || 50;
+document.getElementById('attrMent').value = attr.mental || 50;
+    const authStatus = document.getElementById('authStatusText');
+        if (authStatus) {
+            if (p.isClaimed && p.googleEmail) {
+                authStatus.innerHTML = `<span style="color:#10b981;">● Claimed by: ${p.googleEmail}</span>`;
+            } else {
+                authStatus.innerHTML = `<span style="color:#64748b;">○ Unclaimed Profile</span>`;
+            }
+        }
+    }
+
+    // Generic Form Submission Logic
+    const setup = (id, url, method, dataFn) => {
+        const f = document.getElementById(id);
+        if(f) f.onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dataFn()) });
+            if(res.ok) { alert("Database Updated!"); location.reload(); }
+        };
+    };
+
+    setup('statsForm', `${API}/api/stats`, 'PUT', () => ({ 
+        bdrLeader: document.getElementById('bdrLeader').value, 
+        bdrValue: document.getElementById('bdrValue').value,
+        highestMV: document.getElementById('highestMV').value,
+        mvValue: document.getElementById('mvValue').value,
+        teamsCount: document.getElementById('teamsCount').value 
+    }));
+
+    setup('playerForm', `${API}/api/players`, 'POST', () => ({ 
+        name: document.getElementById('pName').value, 
+        nickname: document.getElementById('pNick').value,
+        teamName: document.getElementById('pTeamSelect').value.trim(),
+        image: document.getElementById('pImage').value 
+    }));
+
+    const updateForm = document.getElementById('updateStatsForm');
+if (updateForm) {
+    updateForm.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        // Get the CURRENTLY selected ID
+        const id = document.getElementById('playerSelector').value;
+        if (!id) return alert("Please select a player first!");
+
+        const data = {
+            name: document.getElementById('upName').value, // Include Name
+            auctionPrice: document.getElementById('upAuction').value,
+            marketValue: document.getElementById('upMarket').value,
+            bdrPoints: document.getElementById('upBDR').value,
+            nickname: document.getElementById('upNick').value,
+            attributes: {
+                consistency: parseInt(document.getElementById('attrCons').value),
+                bigMatch: parseInt(document.getElementById('attrBig').value),
+                scoring: parseInt(document.getElementById('attrScore').value),
+                playmaking: parseInt(document.getElementById('attrPlay').value),
+                defense: parseInt(document.getElementById('attrDef').value),
+                mental: parseInt(document.getElementById('attrMent').value)
+            }
+        };
+
+        try {
+            const res = await fetch(`${API}/api/players/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                alert("Player Updated Successfully! ✅");
+                location.reload();
+            } else {
+                alert("Update failed. Check server logs.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Connection Error");
+        }
+    };
+}
+    setup('createTeamForm', `${API}/api/teams/create`, 'POST', () => ({
+        name: document.getElementById('ntName').value,
+        logo: document.getElementById('ntLogo').value,
+        members: Array.from(document.querySelectorAll('.nt-member-cb:checked')).map(cb => cb.value)
+    }));
+
+    // Smart Center Logic
+    async function createSmartTour() {
+        const data = {
+            name: document.getElementById('stName').value,
+            type: document.getElementById('stType').value,
+            participants: Array.from(document.querySelectorAll('.st-cb:checked')).map(cb => cb.value)
+        };
+        const res = await fetch(`${API}/api/smart/create-tour`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        if(res.ok) { alert("Tour Created!"); location.reload(); }
+    }
+
+    async function loadTourParticipants() {
+        const id = document.getElementById('sfTourSelect').value;
+        const res = await fetch(`${API}/api/smart/participants/${id}`);
+        const parts = await res.json();
+        const opts = parts.map(p => `<option value="${p}">${p}</option>`).join('');
+        document.getElementById('sfPlayerA').innerHTML = opts;
+        document.getElementById('sfPlayerB').innerHTML = opts;
+    }
+
+    async function createSmartFixture() {
+    const data = {
+        tourId: document.getElementById('sfTourSelect').value,
+        playerA: document.getElementById('sfPlayerA').value,
+        playerB: document.getElementById('sfPlayerB').value,
+        // NEW: Grabs the stage (Final, R16, etc.) from the input
+        stage: document.getElementById('sfStage').value || "League", 
+        isSubFixture: false 
+    };
+
+    // Safety check: Don't send empty data
+    if (!data.tourId || !data.playerA || !data.playerB) {
+        alert("❌ Error: Select Tournament and BOTH participants!");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/api/smart/create-fixture`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+            alert(`✅ Fixture [${data.stage}] Added Successfully!`);
+            document.getElementById('sfStage').value = ""; // Clear stage input
+        }
+    } catch (e) {
+        alert("❌ Link Error: Server Unreachable");
+    }
+    }
+        // 1. Show auth status when player is selected in edit dropdown
+// Inside your existing loadPlayerDataForEdit() function, add:
+
+
+// 2. Secret Unlink Trigger
+async function secretUnlinkPlayerAuth() {
+    const id = document.getElementById('playerSelector').value;
+    if (!id) return alert("Select a player first!");
+
+    if (!confirm("⚠️ Are you sure you want to unlink this player's Google account? They will be able to claim a new profile on their next login.")) return;
+
+    try {
+        const res = await fetch(`${API_V2}/api/admin/players/${id}/unlink-auth`, {
+            method: 'PUT'
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            alert("✅ " + data.message);
+            loadPlayerDataForEdit();
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (e) {
+        alert("Server communication error.");
+    }
+        }
+
+    async function loadTourFixtures() {
+    const tourId = document.getElementById('srTourSelect').value;
+    const container = document.getElementById('srFixtureList');
+
+    const res = await fetch(`${API}/api/smart/fixtures/${tourId}`);
+    const matches = await res.json();
+
+    container.innerHTML = matches.map(m => {
+        const isSub = m.isSubFixture;
+        const bgColor = isSub ? "rgba(16, 185, 129, 0.05)" : "rgba(0,0,0,0.3)";
+        const label = isSub ? `<span style="color:var(--accent); font-size:0.6rem;">MEMBER MATCH</span>` : `<span style="color:var(--text-dim); font-size:0.6rem;">TEAM MATCH</span>`;
+
+        return `
+        <div class="sub-box" style="background: ${bgColor}; border: 1px solid ${isSub ? 'var(--accent)' : '#1e293b'};">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                ${label}
+                <i class="fa-solid fa-trash-can" 
+                   onclick="deleteIndividualFixture('${m._id}')" 
+                   style="color:var(--danger); cursor:pointer; font-size:0.8rem; padding:5px;"></i>
+            </div>
+            <input type="text" id="stg-${m._id}" value="${m.stage || ''}" 
+                   placeholder="Edit Stage (e.g. Semi-Final)" 
+                   style="font-size:0.6rem; padding:5px; margin: 5px 0; border-color:var(--gold);">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                <span style="font-weight:700; font-size:0.8rem;">${m.playerA}</span>
+                <span style="font-size:0.6rem; opacity:0.5;">VS</span>
+                <span style="font-weight:700; font-size:0.8rem;">${m.playerB}</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-top:10px;">
+                <input type="number" id="scA-${m._id}" value="${m.scoreA}" placeholder="0">
+                <input type="number" id="scB-${m._id}" value="${m.scoreB}" placeholder="0">
+                <button onclick="submitSmartScore('${m._id}')" class="btn-green" style="padding:10px; font-size:0.8rem;">
+                    <i class="fa-solid fa-save"></i>
+                </button>
+            </div>
+
+            <!-- WALKOVER SECTION -->
+            <div style="display:flex; gap:5px; margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">
+                <button onclick="markWalkover('${m._id}', 'A')" 
+                        style="flex:1; background:transparent; color:#10b981; border:1px solid #10b981; padding:5px; font-size:0.55rem; border-radius:5px; font-weight:bold; cursor:pointer;">
+                        W/O ${m.playerA.split(' ')[0]}
+                </button>
+                <button onclick="markWalkover('${m._id}', 'B')" 
+                        style="flex:1; background:transparent; color:#10b981; border:1px solid #10b981; padding:5px; font-size:0.55rem; border-radius:5px; font-weight:bold; cursor:pointer;">
+                        W/O ${m.playerB.split(' ')[0]}
+                </button>
+            </div>
+            <div style="font-size: 0.55rem; color: #475569; margin-top: 5px; text-align: center;">Status: ${m.status}</div>
+        </div>
+        `;
+    }).join('');
+    }
+
+    async function submitSmartScore(id) {
+    const sA = document.getElementById(`scA-${id}`).value;
+    const sB = document.getElementById(`scB-${id}`).value;
+    const stageName = document.getElementById(`stg-${id}`).value; // NEW
+
+    try {
+        const res = await fetch(`${API}/api/smart/update-score/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                scoreA: sA, 
+                scoreB: sB, 
+                stage: stageName // SENDING STAGE NAME TO BACKEND
+            })
+        });
+
+        if(res.ok) {
+            alert("Match Data Updated!");
+            loadTourFixtures();
+        }
+    } catch (e) { alert("Error"); }
+    }
+        
+        // 1. Function to add new rows dynamically in the UI
+function addHofRow(containerId, type) {
+    const container = document.getElementById(containerId);
+    
+    if (type === 'highlight') {
+        const div = document.createElement('div');
+        div.className = "grid-2";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+            <input type="text" placeholder="Label (e.g. MVP)">
+            <input type="text" placeholder="Value (e.g. Indranil)">
+        `;
+        container.appendChild(div);
+    } else {
+        const div = document.createElement('div');
+        div.className = "sub-box";
+        div.style.background = "rgba(255,255,255,0.05)";
+        div.style.marginBottom = "10px";
+        div.innerHTML = `
+            <input type="text" placeholder="Trophy Name (e.g. UCL Season 1)">
+            <div class="grid-2">
+                <input type="text" placeholder="Winner Name">
+                <input type="text" placeholder="Runner Name">
+            </div>
+        `;
+        container.appendChild(div);
+    }
+}
+
+// 2. Function to collect all data and send to Backend
+async function saveAdvancedHof() {
+    const seasonName = document.getElementById('hofSeasonName').value;
+    if (!seasonName) return alert("Please enter a Season Name!");
+
+    // Gather Highlights
+    const highlights = Array.from(document.querySelectorAll('#highlightInputs .grid-2')).map(row => {
+        const inputs = row.querySelectorAll('input');
+        return { label: inputs[0].value, value: inputs[1].value };
+    }).filter(h => h.label.trim() !== "");
+
+    // Gather Trophy Winners
+    const trophies = Array.from(document.querySelectorAll('#trophyInputs .sub-box')).map(box => {
+        const mainInput = box.querySelector('input[type="text"]'); // The Trophy Name
+        const gridInputs = box.querySelectorAll('.grid-2 input'); // Winner and Runner
+        return { 
+            title: mainInput.value, 
+            winner: gridInputs[0].value, 
+            runner: gridInputs[1].value 
+        };
+    }).filter(t => t.title.trim() !== "");
+
+    const payload = {
+        seasonName: seasonName,
+        specialHighlights: highlights,
+        trophyWinners: trophies
+    };
+
+    try {
+        const res = await fetch(`${API}/api/hof/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("✅ Hall of Fame Published Successfully!");
+            location.reload();
+        } else {
+            alert("❌ Failed to publish. Check console.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("❌ Connection Error.");
+    }
+}
+        // 1. Populate all dropdowns with the class 'player-dd'
+async function populateHofDropdowns() {
+    const res = await fetch(`${API}/api/players`);
+    const players = await res.json();
+    const options = '<option value="">Select Player...</option>' + 
+                    players.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+    
+    document.querySelectorAll('.player-dd').forEach(select => {
+        select.innerHTML = options;
+    });
+}
+
+// 2. Logic for Block 2: Tournament Results
+async function saveTourPodium() {
+    const season = document.getElementById('hofSeasonName').value;
+    const tour = document.getElementById('tourNameIn').value;
+    const first = document.getElementById('tourWinner').value;
+    const second = document.getElementById('tourRunner').value;
+    const third = document.getElementById('tourThird').value;
+
+    if(!season || !first) return alert("Season and Winner are required!");
+
+    const payload = {
+        seasonName: season,
+        trophyWinners: [{ 
+            title: tour, 
+            winner: first, 
+            runner: second,
+            third: third // Ensure your HOF page shows this if you want
+        }]
+    };
+
+    const res = await fetch(`${API}/api/hof/save`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if(res.ok) alert(`Tournament Podium Saved for ${tour}!`);
+}
+
+// 3. Logic for Block 3: Individual Trophies (The Auto-Counter)
+async function awardSmartTrophy() {
+    const season = document.getElementById('hofSeasonName').value;
+    const type = document.getElementById('awardType').value;
+    const player = document.getElementById('awardPlayer').value;
+
+    if(!season || !player) return alert("Select Season and Player!");
+
+    const res = await fetch(`${API}/api/hof/award-smart-trophy`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ seasonName: season, trophyType: type, playerName: player })
+    });
+
+    if(res.ok) {
+        alert(`SUCCESS: ${player} received the trophy. Profile count incremented!`);
+    }
+}
+
+// Call populateHofDropdowns when the HOF tab is opened
+
+    // Danger Zone
+    async function nuclearReset(type) {
+        if(!confirm("ARE YOU ABSOLUTELY SURE? THIS WIPES DATA PERMANENTLY.")) return;
+        const url = type === 'tours' ? '/api/danger/reset-tours' : '/api/danger/reset-player-stats';
+        const method = type === 'tours' ? 'DELETE' : 'PUT';
+        await fetch(`${API}${url}`, { method });
+        alert("Wipe Complete."); location.reload();
+    }
+
+    async function syncMarketValues() {
+        await fetch(`${API}/api/danger/import-auction-mv`);
+        alert("Synced from Auction Site!");
+    }
+
+    async function syncAllSystemStats() {
+        await fetch(`${API}/api/smart/sync-all-rewards`);
+        alert("System Sync Complete!");
+    }
+        async function triggerTeamSync() {
+    if (!confirm("This will overwrite current Team Names and Logos with data from the Auction Site. Proceed?")) return;
+
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    // UI Feedback
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ACCESSING AUCTION DATABASE...`;
+
+    try {
+        const res = await fetch(`${API}/api/danger/import-team-data`);
+        const data = await res.json();
+
+        if (data.success) {
+            alert("COMMAND EXECUTED: " + data.message);
+            location.reload();
+        } else {
+            alert("SYNC ERROR: " + data.error);
+        }
+    } catch (e) {
+        alert("CRITICAL ERROR: Connection to Nexus Server interrupted.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+        }
+        async function loadApplications() {
+    const res = await fetch(`${API}/api/loyalty/inbox`); // Create this GET route in backend
+    const apps = await res.json();
+    document.getElementById('applicationList').innerHTML = apps.map(a => `
+        <div class="sub-box" style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between;">
+                <b>${a.playerName}</b>
+                <span>${a.phoneNumber}</span>
+            </div>
+            <div class="grid-2" style="margin-top:10px;">
+                <select id="tier-${a._id}">
+                    <option value="VIP+">VIP+</option>
+                    <option value="ELITE">ELITE</option>
+                    <option value="ELITE++">ELITE++</option>
+                </select>
+                <button onclick="approveCard('${a._id}')" class="btn-green">Approve & Issue</button>
+            </div>
+        </div>
+    `).join('') || "No pending applications.";
+}
+
+async function approveCard(id) {
+    const tier = document.getElementById(`tier-${id}`).value;
+    await fetch(`${API}/api/loyalty/approve/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ tier })
+    });
+    alert("Card Issued!");
+    loadApplications();
+}
+        // Function to switch between Player list and Team list in Smart Center
+// Function to switch between Player list and Team list based on Tour Type
+async function refreshParticipantList() {
+    const tourType = document.getElementById('stType').value; // 'solo' or 'auction'
+    const container = document.getElementById('stParticipantList');
+    container.innerHTML = '<p style="text-align:center; font-size:0.8rem;">Accessing Archives...</p>';
+
+    // Logic: Solo = Players | Auction = Teams
+    const endpoint = (tourType === 'auction') ? '/api/teams/all' : '/api/players';
+    
+    try {
+        const res = await fetch(`${API}${endpoint}`);
+        const data = await res.json();
+
+        container.innerHTML = data.map(item => `
+            <div style="display:flex; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                <input type="checkbox" class="st-cb" value="${item.name}" style="width:18px; height:18px; margin:0;"> 
+                <label style="font-size:0.9rem;">${item.name}</label>
+            </div>
+        `).join('');
+    } catch (e) {
+        container.innerHTML = '<p style="color:red">Failed to load data.</p>';
+    }
+}
+        
+
+// Add this to your stType dropdown in HTML
+// 
+
+// Call this inside loadAllDashboardData so it loads players by default
+// 
+        // Function to load participants (Teams or Players) into Knockout Selector
+async function loadAKParticipants() {
+    const tourId = document.getElementById('akTourSelect').value;
+    const playerASel = document.getElementById('akPlayerA');
+    const playerBSel = document.getElementById('akPlayerB');
+
+    if (!tourId) return;
+
+    try {
+        // This endpoint fetches the participants array specifically for that tourId
+        const res = await fetch(`${API}/api/smart/participants/${tourId}`);
+        const participants = await res.json();
+
+        const options = '<option value="">Select...</option>' + 
+                        participants.map(name => `<option value="${name}">${name}</option>`).join('');
+        
+        playerASel.innerHTML = options;
+        playerBSel.innerHTML = options;
+    } catch (err) { console.error("Error loading participants:", err); }
+}
+
+async function createAKFixture() {
+    const tourId = document.getElementById('akTourSelect').value;
+    const stage = document.getElementById('akStage').value;
+    const pA = document.getElementById('akPlayerA').value;
+    const pB = document.getElementById('akPlayerB').value;
+
+    if (!tourId || !stage || !pA || !pB) return alert("Fill all fields!");
+
+    const res = await fetch(`${API}/api/smart/create-fixture`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            tourId,
+            stage,
+            playerA: pA,
+            playerB: pB,
+            type: "Knockout" // Tag as knockout for the HOF/Index pages
+        })
+    });
+
+    if(res.ok) alert(`${stage} fixture created successfully!`);
+}
+        async function rebuildPointsTable() {
+    // 1. Target the NEW dropdown ID
+    const tourId = document.getElementById('rebuildTourSelect').value;
+
+    // 2. The safety check
+    if (!tourId || tourId === "" || tourId.includes("Select")) {
+        alert("❌ ACTION DENIED: You must select a specific tournament from the dropdown first!");
+        return;
+    }
+
+    if (!confirm("Rebuild this table from match history?")) return;
+
+    try {
+        const res = await fetch(`${API}/api/smart/recalculate-table/${tourId}`);
+        const data = await res.json();
+        if (data.success) alert("✅ SUCCESS: Table rebuilt!");
+    } catch (e) {
+        alert("❌ Connection Error");
+    }
+        }
+        async function confirmDeleteTournament() {
+    const tourId = document.getElementById('deleteTourSelect').value;
+    if (!tourId) return alert("Please select a tournament to delete!");
+
+    const check = confirm("⚠️ DANGER: This will delete this tournament, all its matches, and its points table forever. Proceed?");
+    if (!check) return;
+
+    try {
+        const res = await fetch(`${API}/api/smart/tournament/${tourId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("Tournament deleted successfully! 🗑️");
+            location.reload();
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (e) {
+        alert("Server error. Check if the delete route exists.");
+    }
+        }
+        // Load main team-vs-team fixtures
+async function loadMainFixtures() {
+    const tourId = document.getElementById('subTourSelect').value;
+    const parentSel = document.getElementById('subParentSelect');
+    
+    if (!tourId) return;
+
+    try {
+        const res = await fetch(`${API}/api/smart/fixtures/${tourId}`);
+        const matches = await res.json();
+        
+        // Filter: We only want main TEAM vs TEAM matches (not sub-fixtures)
+        const mainMatches = matches.filter(m => !m.isSubFixture);
+
+        if (mainMatches.length === 0) {
+            parentSel.innerHTML = '<option value="">No Team Matches Found</option>';
+            return;
+        }
+
+        // We store the Team Names in attributes so we can fetch their players later
+        parentSel.innerHTML = '<option value="">Select Team Match...</option>' + 
+            mainMatches.map(m => `
+                <option value="${m._id}" data-ta="${m.playerA}" data-tb="${m.playerB}">
+                    ${m.playerA} vs ${m.playerB}
+                </option>
+            `).join('');
+    } catch (e) {
+        console.error("Error loading parent fixtures", e);
+    }
+        }
+
+// Fetch players for the two teams in the selected fixture
+async function loadTeamPlayers() {
+    const sel = document.getElementById('subParentSelect');
+    const selectedOption = sel.options[sel.selectedIndex];
+    
+    // Get the team names we stored in the attributes above
+    const teamA = selectedOption.getAttribute('data-ta');
+    const teamB = selectedOption.getAttribute('data-tb');
+
+    if (!teamA || !teamB) return;
+
+    try {
+        // Fetch players for both teams in parallel
+        const [resA, resB] = await Promise.all([
+            fetch(`${API}/api/teams/members/${encodeURIComponent(teamA)}`),
+            fetch(`${API}/api/teams/members/${encodeURIComponent(teamB)}`)
+        ]);
+
+        const playersA = await resA.json();
+        const playersB = await resB.json();
+
+        // Populate Player Selectors
+        document.getElementById('subPlayerA').innerHTML = playersA.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        document.getElementById('subPlayerB').innerHTML = playersB.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        
+        // Update Labels so you know which team you are picking for
+        document.getElementById('labelTeamA').innerText = `${teamA.toUpperCase()} PLAYER`;
+        document.getElementById('labelTeamB').innerText = `${teamB.toUpperCase()} PLAYER`;
+
+    } catch (e) {
+        console.error("Error loading team members", e);
+    }
+}
+
+async function createSubFixture() {
+    const tourId = document.getElementById('subTourSelect').value;
+    const parentId = document.getElementById('subParentSelect').value;
+    const pA = document.getElementById('subPlayerA').value;
+    const pB = document.getElementById('subPlayerB').value;
+
+    if (!tourId || !parentId || !pA || !pB) return alert("Error: Missing Data");
+
+    const data = {
+        tourId,
+        parentFixtureId: parentId, // This MUST be the MongoDB _id of the Team Match
+        playerA: pA,
+        playerB: pB,
+        isSubFixture: true,
+        stage: "Member Clash"
+    };
+
+    const res = await fetch(`${API}/api/smart/create-fixture`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    if(res.ok) {
+        alert("PREMIUM LINK ESTABLISHED: Member Match added under Team Fixture.");
+    }
+}
+        // Populate the team list for captaincy on load
+async function loadCapTeams() {
+    const res = await fetch(`${API}/api/teams/all`);
+    const teams = await res.json();
+    document.getElementById('capTeamSelect').innerHTML = '<option value="">Choose Team...</option>' + 
+        teams.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
+}
+
+// Load players when a team is selected
+async function loadCapMembers() {
+    const teamName = document.getElementById('capTeamSelect').value;
+    if(!teamName) return;
+    
+    const res = await fetch(`${API}/api/teams/members/${encodeURIComponent(teamName)}`);
+    const players = await res.json();
+    document.getElementById('capPlayerSelect').innerHTML = players.map(p => 
+        `<option value="${p._id}">${p.name}</option>`).join('');
+}
+
+async function assignCaptain() {
+    const playerId = document.getElementById('capPlayerSelect').value;
+    const teamName = document.getElementById('capTeamSelect').value;
+
+    if(!playerId) return alert("Select a player!");
+
+    const res = await fetch(`${API}/api/teams/assign-captain`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ playerId, teamName })
+    });
+
+    if(res.ok) {
+        alert("COMMAND EXECUTED: New Captain Assigned.");
+        location.reload();
+    }
+}
+        // 1. Delete an Entire Tournament
+
+
+// 2. Delete One Specific Match
+async function deleteIndividualFixture(id) {
+    if (!confirm("Remove this match from the database? This is permanent.")) return;
+
+    try {
+        const res = await fetch(`${API}/api/smart/delete-fixture/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            alert("Fixture Deleted.");
+            loadTourFixtures(); // Refresh the list immediately
+        }
+    } catch (e) { alert("Delete failed."); }
+}
+        // 1. Function to Load and Render all Requests
+
+        async function triggerHistoricalSync() {
+    if (!confirm("This will recalculate ALL player profiles from scratch using match history. This may take a few seconds. Proceed?")) return;
+
+    const btn = event.currentTarget;
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> REPLAYING HISTORY...`;
+
+    try {
+        const res = await fetch(`${API}/api/danger/sync-player-stats-from-history`);
+        const data = await res.json();
+        if (data.success) {
+            alert("SUCCESS: " + data.message);
+            location.reload();
+        }
+    } catch (e) {
+        alert("Sync Failed. Check server logs.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-database"></i> Rebuild Player Stats`;
+    }
+        }
+        async function triggerSquadSync() {
+    if (!confirm("This will overwrite existing squad images with those from the Auction site. Proceed?")) return;
+
+    const btn = event.currentTarget;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> SYNCING SQUADS...`;
+
+    try {
+        const res = await fetch(`${API}/api/danger/sync-squad-images`);
+        const data = await res.json();
+
+        if (data.success) {
+            alert("✅ " + data.message);
+            location.reload();
+        } else {
+            alert("❌ ERROR: " + data.error);
+        }
+    } catch (e) {
+        alert("CRITICAL ERROR: Connection to server lost.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+        }
+        async function createTrophyType() {
+    const name = document.getElementById('trName').value;
+    const image = document.getElementById('trImage').value;
+    await fetch(`${API}/api/trophies/define`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name, image })
+    });
+    alert("Trophy defined!"); loadTrophyList();
+}
+
+async function awardCoreTrophy() {
+    const playerId = document.getElementById('trPlayerSelect').value;
+    const type = document.getElementById('trCoreType').value;
+    await fetch(`${API}/api/trophies/award-core`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ playerId, type })
+    });
+    alert("Core Trophy Awarded!");
+}
+
+async function awardCustomTrophy() {
+    const playerId = document.getElementById('trPlayerSelect').value;
+    const trophyId = document.getElementById('trCustomSelect').value;
+    await fetch(`${API}/api/trophies/award-custom`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ playerId, trophyId })
+    });
+    alert("Custom Trophy Assigned!");
+}
+
+async function loadTrophyList() {
+    const res = await fetch(`${API}/api/trophies/list`);
+    const trophies = await res.json();
+    document.getElementById('trCustomSelect').innerHTML = trophies.map(t => `<option value="${t._id}">${t.name}</option>`).join('');
+}
+        async function syncNewLogos() {
+    // Capture the button element to show loading state
+    const btn = event.currentTarget;
+    const original = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ANALYZING DATABASE...`;
+
+    try {
+        // Replace ${API} with your actual backend URL variable
+        const res = await fetch(`${API}/api/admin/sync-new-logos`);
+        const data = await res.json();
+        
+        if (data.success) {
+            alert("COMMAND EXECUTED: " + data.message);
+            location.reload(); // Refresh to see updated logos
+        } else {
+            alert("SYNC FAILED: " + data.error);
+        }
+    } catch (e) {
+        alert("CONNECTION ERROR: Check Server Status.");
+        console.error(e);
+    } finally {
+        // Reset button state
+        btn.disabled = false;
+        btn.innerHTML = original;
+    }
+        }
+        async function saveEvent() {
+    const data = {
+        title: document.getElementById('evTitle').value,
+        date: document.getElementById('evDate').value,
+        type: document.getElementById('evType').value
+    };
+    await fetch(`${API}/api/calendar/events`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    alert("Calendar Updated!");
+        }
+        async function addMedia() {
+    const data = {
+        title: document.getElementById('vTitle').value,
+        youtubeUrl: document.getElementById('vUrl').value,
+        category: document.getElementById('vCat').value
+    };
+
+    const res = await fetch(`${API_V2}/api/media/add`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    if(res.ok) { alert("Video Added!"); location.reload(); }
+        }
+        async function loadMediaManager() {
+    const res = await fetch(`${API_V2}/api/media/all`);
+    const videos = await res.json();
+    document.getElementById('adminVideoList').innerHTML = videos.map(v => `
+        <div class="row-item">
+            <span>${v.title}</span>
+            <button class="delete-btn" onclick="deleteVideo('${v._id}')">Remove</button>
+        </div>
+    `).join('');
+        }
+        async function deleteVideo(id) {
+    if(confirm("Delete this video?")) {
+        await fetch(`${API_V2}/api/media/${id}`, { method: 'DELETE' });
+        location.reload();
+    }
+        }
+        async function triggerProSync() {
+    if (!confirm("This will reset all current BDR/Market Values and rebuild them ONLY from Auction and Solo match history. Proceed?")) return;
+
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> SYNCING PRO DATA...`;
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/smart/sync-pro-rewards`);
+        const data = await res.json();
+        
+        if (data.success) {
+            alert("✅ " + data.message);
+            location.reload();
+        } else {
+            alert("❌ Error: " + data.error);
+        }
+    } catch (e) {
+        alert("❌ Failed to reach server.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+        }
+        async function postAnnouncement() {
+    const msg = document.getElementById('annMessage').value;
+    if(!msg) return alert("Message is empty!");
+
+    const res = await fetch(`${API_V2}/api/announcements`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: msg })
+    });
+
+    if(res.ok) {
+        alert("Announcement Published! 🚀");
+        document.getElementById('annMessage').value = "";
+    }
+        }
+        async function deletePlayer(id) {
+    if (!confirm("⚠️ DANGER: Permanently delete this player and all their records?")) return;
+
+    try {
+        const res = await fetch(`${API}/api/players/${id}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            alert("Player Deleted successfully.");
+            location.reload();
+        }
+    } catch (e) {
+        alert("Error deleting player.");
+    }
+        }
+        // Function to load DUO fixtures into the score update area
+async function loadDuoFixtures() {
+    const tourId = document.getElementById('srTourSelect').value; // Reuse the same dropdown
+    const container = document.getElementById('srFixtureList');
+
+    if (!tourId) return;
+
+    container.innerHTML = '<p style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> Fetching Duo Matches...</p>';
+
+    try {
+        // FETCH FROM API_DUO (Important!)
+        const res = await fetch(`${API_V2}/api/duo/fixtures/${tourId}`);
+        const matches = await res.json();
+
+        if (matches.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-dim);">No Duo fixtures found.</p>';
+            return;
+        }
+
+        container.innerHTML = matches.map(m => `
+            <div class="sub-box" style="border-left: 3px solid #00d1ff; background: rgba(0,0,0,0.2);">
+                <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 5px; font-weight: bold;">
+            STAGE: ${m.stage}
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;">
+            <span>${m.playerA}</span>
+            <span style="color:#00d1ff">VS</span>
+            <span>${m.playerB}</span>
+        </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
+                    <input type="number" id="duo-scA-${m._id}" value="${m.scoreA}" placeholder="0">
+                    <input type="number" id="duo-scB-${m._id}" value="${m.scoreB}" placeholder="0">
+                    <button onclick="updateDuoScore('${m._id}')" class="btn-green" style="background:#00d1ff; color:black; padding:10px;">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (e) {
+        container.innerHTML = '<p style="color:red; text-align:center;">Failed to load Duo matches.</p>';
+    }
+}
+        async function createDuoTour() {
+    const name = document.getElementById('dtName').value;
+    const res = await fetch(`${API_V2}/api/duo/create-tour`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name })
+    });
+    if(res.ok) { alert("Duo Tour Live!"); location.reload(); }
+}
+
+async function createDuoFixture() {
+    const tourId = document.getElementById('dtTourSelect').value;
+    const groupSelect = document.getElementById('dtGroup');
+    const groupValue = groupSelect.options[groupSelect.selectedIndex].value; // Stronger capture
+    const stage = document.getElementById('dtStage').value || "Group Stage";
+    const pA = document.getElementById('dtPlayerA').value;
+    const pB = document.getElementById('dtPlayerB').value;
+
+    if(!tourId || !pA || !pB) return alert("Fill Team 1 and Team 2!");
+
+    const res = await fetch(`${API_V2}/api/duo/create-fixture`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+            tourId, 
+            playerA: pA, 
+            playerB: pB, 
+            stage, 
+            group: groupValue // Sends A, B, C, D, E, or F
+        })
+    });
+
+    if(res.ok) {
+        alert(`Match added to ${groupValue}! ✅`);
+        document.getElementById('dtPlayerA').value = "";
+        document.getElementById('dtPlayerB').value = "";
+    }
+}
+        async function updateDuoScore(id) {
+    const sA = document.getElementById(`duo-scA-${id}`).value;
+    const sB = document.getElementById(`duo-scB-${id}`).value;
+
+    const res = await fetch(`${API_V2}/api/duo/update-score/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ scoreA: sA, scoreB: sB })
+    });
+
+    if(res.ok) {
+        alert("Duo Score Updated! ✅");
+        loadDuoFixtures();
+    }
+        }
+        // 1. Load Duo Matches for Management
+async function loadDuoManagementFixtures() {
+    const tourId = document.getElementById('dmTourSelect').value;
+    const container = document.getElementById('duoManagementList');
+    if (!tourId) return;
+
+    container.innerHTML = '<p style="text-align:center; padding:10px;">Fetching Fixtures...</p>';
+
+    try {
+        const res = await fetch(`${API_V2}/api/duo/fixtures/${tourId}`);
+        const matches = await res.json();
+
+        container.innerHTML = matches.map(m => `
+            <div class="sub-box" style="background: rgba(0,0,0,0.3); border: 1px solid #1e293b; margin-bottom: 15px; padding: 15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <!-- EDITABLE METADATA -->
+                    <div style="display:flex; gap:5px;">
+                        <select id="edit-grp-${m._id}" style="width:auto; padding:4px; font-size:0.6rem; margin:0; background:#1e293b;">
+                            <option value="Group A" ${m.group === 'Group A' ? 'selected' : ''}>GRP A</option>
+                            <option value="Group B" ${m.group === 'Group B' ? 'selected' : ''}>GRP B</option>
+                            <option value="Group C" ${m.group === 'Group C' ? 'selected' : ''}>GRP C</option>
+                            <option value="Group D" ${m.group === 'Group D' ? 'selected' : ''}>GRP D</option>
+                            <option value="Group E" ${m.group === 'Group E' ? 'selected' : ''}>GRP E</option>
+                            <option value="Group F" ${m.group === 'Group F' ? 'selected' : ''}>GRP F</option>
+                        </select>
+                        <input type="text" id="edit-stg-${m._id}" value="${m.stage || ''}" placeholder="Stage" style="width:70px; padding:4px; font-size:0.6rem; margin:0; background:#1e293b;">
+                    </div>
+                    <button onclick="deleteDuoFixture('${m._id}')" style="width:auto; padding:4px 8px; background:none; color:#ef4444; border:1px solid #ef4444; font-size:0.6rem; border-radius:4px;">DELETE</button>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.85rem; margin-bottom:10px; color:white;">
+                    <span style="flex:1;">${m.playerA}</span>
+                    <span style="color:#00d1ff; margin:0 10px;">VS</span>
+                    <span style="flex:1; text-align:right;">${m.playerB}</span>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items:center;">
+                    <input type="number" id="dm-scA-${m._id}" value="${m.scoreA}" placeholder="0" style="margin:0;">
+                    <input type="number" id="dm-scB-${m._id}" value="${m.scoreB}" placeholder="0" style="margin:0;">
+                    <button onclick="updateDuoResult('${m._id}')" class="btn-green" style="background:#00d1ff; color:black; padding: 10px; margin:0; width:45px;">
+                        <i class="fa-solid fa-save"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) { console.log(e); }
+}
+
+// 2. Submit Score to Duo Result Centre
+async function updateDuoResult(id) {
+    const sA = document.getElementById(`dm-scA-${id}`).value;
+    const sB = document.getElementById(`dm-scB-${id}`).value;
+    
+    // CAPTURE THE GROUP FROM THE DROPDOWN INSIDE THE MATCH CARD
+    const group = document.getElementById(`edit-grp-${id}`).value; 
+    const stage = document.getElementById(`edit-stg-${id}`).value;
+
+    const res = await fetch(`${API_V2}/api/duo/update-score/${id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+            scoreA: parseInt(sA || 0), 
+            scoreB: parseInt(sB || 0),
+            group: group, // THIS MOVES THE MATCH
+            stage: stage
+        })
+    });
+
+    if(res.ok) {
+        alert("Match Updated! Now click 'SYNC DUO POINTS TABLE' to apply changes.");
+        loadDuoManagementFixtures();
+    }
+}
+
+// 3. Delete Duo Fixture
+async function deleteDuoFixture(id) {
+    if(!confirm("⚠️ Delete this fixture permanently? This will NOT automatically revert points in the table.")) return;
+
+    const res = await fetch(`${API_V2}/api/duo/fixture/${id}`, { method: 'DELETE' });
+    if(res.ok) {
+        alert("Fixture Removed.");
+        loadDuoManagementFixtures();
+    }
+}
+
+// 4. Initial Sync: Add this to your loadAllDashboardData()
+async function syncDuoDropdowns() {
+    const res = await fetch(`${API_V2}/api/duo/tournaments`);
+    const tours = await res.json();
+    const opts = tours.map(t => `<option value="${t._id}">${t.name}</option>`).join('');
+    
+    document.getElementById('dmTourSelect').innerHTML = '<option value="">Select Duo Tour to Manage...</option>' + opts;
+    document.getElementById('dtTourSelect').innerHTML = '<option value="">Select Duo Tournament...</option>' + opts;
+}
+async function recalculateDuoTable() {
+    // 1. Get the ID from the management dropdown
+    const tourId = document.getElementById('dmTourSelect').value;
+    
+    if (!tourId) {
+        return alert("❌ ERROR: Please select a Duo Tournament from the Result Centre dropdown first!");
+    }
+
+    if (!confirm("This will WIPE the current table and rebuild it using match history. Use this to fix mistakes. Proceed?")) return;
+
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-cog fa-spin"></i> REBUILDING...';
+    btn.disabled = true;
+
+    try {
+        // 2. Call the NEW Duo API
+        const res = await fetch(`${API_V2}/api/duo/recalculate/${tourId}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            alert("✅ SUCCESS: " + data.message);
+            // Refresh the management list to show updated status
+            if (typeof loadDuoManagementFixtures === "function") loadDuoManagementFixtures();
+        } else {
+            alert("❌ BACKEND ERROR: " + data.error);
+        }
+    } catch (e) {
+        console.error("Recalc Fetch Failed:", e);
+        alert("❌ CONNECTION ERROR: Duo Server is not responding.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+        // 1. The Execution Function
+async function manualGroupFix() {
+    const tourId = document.getElementById('mgTourSelect').value;
+    const teamName = document.getElementById('mgTeamName').value.trim();
+    const newGroup = document.getElementById('mgGroup').value;
+
+    if (!tourId || !teamName) return alert("Select Tour and enter Team Name!");
+
+    const btn = event.target;
+    btn.innerText = "EXECUTING...";
+    
+    try {
+        const res = await fetch(`${API_V2}/api/duo/manual-group-move`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ tourId, teamName, newGroup })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            alert("✅ " + data.message);
+            document.getElementById('mgTeamName').value = ""; // Clear input
+            // Refresh management list to see the changes
+            if (typeof loadDuoManagementFixtures === "function") loadDuoManagementFixtures();
+        }
+    } catch (e) {
+        alert("Connection to Duo Server failed.");
+    } finally {
+        btn.innerText = "EXECUTE GROUP MOVE";
+    }
+}
+        // Function to delete the entire Duo Tournament
+async function deleteFullDuoTour() {
+    const tourId = document.getElementById('deleteTourSelect').value;
+    
+    if (!tourId) return alert("Please select a tournament to delete!");
+
+    const check = confirm("⚠️ FINAL WARNING ⚠️\n\nThis will wipe ALL matches and points for this tournament. Are you 100% sure?");
+    if (!check) return;
+
+    const btn = event.target;
+    btn.innerText = "WIPING DATA...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API_V2}/api/duo/tournament/${tourId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            alert("🔥 TOURNAMENT PURGED SUCCESSFULLY.");
+            location.reload(); // Refresh to clear all selectors
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (e) {
+        alert("Failed to connect to Duo Server.");
+    } finally {
+        btn.innerText = "CONFIRM PERMANENT DELETE";
+        btn.disabled = false;
+    }
+}
+        async function markWalkover(fixtureId, winnerSide) {
+    const winnerName = winnerSide === 'A' ? "Player A" : "Player B";
+    if(!confirm(`Award Walkover (3-0) to ${winnerName}? This will update BDR and Standings immediately.`)) return;
+
+    try {
+        const res = await fetch(`${API}/api/smart/walkover/${fixtureId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ winner: winnerSide })
+        });
+
+        if (res.ok) {
+            alert("Walkover Processed! ✅");
+            loadTourFixtures(); // Refresh list
+        } else {
+            alert("Error processing walkover.");
+        }
+    } catch (e) {
+        alert("Server connection failed.");
+    }
+        }
+        // 1. Function to load players filtered by the selected team
+async function loadPlayersForRelease(teamName) {
+    const playerSelect = document.getElementById('relPlayerSelect');
+    if (!teamName) {
+        playerSelect.innerHTML = '<option value="">Select Team First...</option>';
+        return;
+    }
+
+    playerSelect.innerHTML = '<option>Loading squad...</option>';
+
+    try {
+        const res = await fetch(`${API}/api/players`);
+        const allPlayers = await res.json();
+        
+        // Filter players who belong to the selected team
+        const squad = allPlayers.filter(p => p.teamName === teamName);
+
+        if (squad.length === 0) {
+            playerSelect.innerHTML = '<option value="">No players in this team</option>';
+        } else {
+            playerSelect.innerHTML = squad.map(p => 
+                `<option value="${p._id}">${p.name}</option>`
+            ).join('');
+        }
+    } catch (e) {
+        playerSelect.innerHTML = '<option>Error loading players</option>';
+    }
+}
+
+// 2. Function to trigger the backend release
+async function executeRelease() {
+    const playerId = document.getElementById('relPlayerSelect').value;
+    const teamName = document.getElementById('relTeamSelect').value;
+
+    if (!playerId || !teamName) return alert("Please select both Team and Player!");
+
+    const confirmCheck = confirm(`Are you sure you want to release this player from ${teamName}?`);
+    if (!confirmCheck) return;
+
+    try {
+        const res = await fetch(`${API}/api/players/${playerId}/release`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.ok) {
+            alert("Player has been released! ✅");
+            // Refresh dropdown
+            loadPlayersForRelease(teamName);
+        }
+    } catch (e) {
+        alert("Server communication error.");
+    }
+}
+        // Function for Feature 1: Inject Stats
+async function injectDuoStats() {
+    const tourId = document.getElementById('siTourSelect').value;
+    if(!tourId) return alert("Select Tour!");
+    
+    const btn = event.target;
+    btn.innerText = "INJECTING...";
+    
+    const res = await fetch(`${API_V2}/api/duo/sync-stats/${tourId}`);
+    const data = await res.json();
+    if(data.success) alert("✅ " + data.message);
+    btn.innerText = "INJECT MATCH DATA";
+}
+
+// Function for Feature 2: Load Internal Teams
+let internalTeamsCache = [];
+async function loadInternalDuoTeams(tourId) {
+    if(!tourId) return;
+    const res = await fetch(`${API_V2}/api/duo/participants/${tourId}`);
+    const teams = await res.json();
+    internalTeamsCache = teams; // Save for group lookup later
+
+    const opts = teams.map(t => `<option value="${t.participant}">${t.participant} (${t.group})</option>`).join('');
+    document.getElementById('ieTeamA').innerHTML = opts;
+    document.getElementById('ieTeamB').innerHTML = opts;
+}
+
+// Create Fixture v2 (Auto-detects Group)
+async function createInternalFixture() {
+    const tourId = document.getElementById('ieTourSelect').value;
+    const teamA = document.getElementById('ieTeamA').value;
+    const teamB = document.getElementById('ieTeamB').value;
+    const stage = document.getElementById('ieStage').value || "League";
+
+    // Lookup group for Team A (Assuming Team A and B must be in same group)
+    const teamData = internalTeamsCache.find(t => t.participant === teamA);
+    const group = teamData ? teamData.group : "Group A";
+
+    const res = await fetch(`${API_V2}/api/duo/create-fixture`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ tourId, playerA: teamA, playerB: teamB, stage, group })
+    });
+    
+    if(res.ok) alert(`Match generated in ${group}! ✅`);
+}
+        async function setLive(status) {
+    const data = {
+        title: document.getElementById('liveTitle').value,
+        url: document.getElementById('liveUrl').value,
+        isActive: status
+    };
+
+    const res = await fetch(`${API_V2}/api/live/update`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    if(res.ok) alert(status ? "BROADCAST IS LIVE!" : "Stream Ended.");
+        }
+        // 1. Load Free Agents into the dropdown
+async function loadFreeAgentsDropdown() {
+    const select = document.getElementById('faPlayerSelect');
+    if (!select) return;
+
+    try {
+        const res = await fetch(`${API}/api/players`);
+        const players = await res.json();
+
+        // Filter players who have no team or are marked Free Agent
+        const freeAgents = players.filter(p => 
+            !p.teamName || 
+            p.teamName.trim() === "" || 
+            p.teamName.toLowerCase() === "free agent"
+        );
+
+        if (freeAgents.length === 0) {
+            select.innerHTML = '<option value="">No Free Agents available</option>';
+        } else {
+            select.innerHTML = '<option value="">Select a Player...</option>' + 
+                freeAgents.map(p => `<option value="${p._id}">${p.name} (BDR: ${p.bdrPoints || 0})</option>`).join('');
+        }
+    } catch (e) {
+        select.innerHTML = '<option value="">Error loading players</option>';
+    }
+}
+
+// 2. Submit the assignment
+async function executeSignFreeAgent() {
+    const playerId = document.getElementById('faPlayerSelect').value;
+    const teamName = document.getElementById('faTargetTeamSelect').value;
+    const fee = document.getElementById('faSigningFee').value || 0;
+
+    if (!playerId || !teamName) {
+        return alert("Please select both a Free Agent and a Target Team!");
+    }
+
+    const btn = event.target;
+    btn.innerText = "ASSIGNING...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/players/${playerId}/sign-free-agent`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ teamName, signingFee: fee })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            alert(data.message);
+            // Refresh dropdown so signed player disappears from Free Agent list
+            loadFreeAgentsDropdown();
+            document.getElementById('faSigningFee').value = "";
+        } else {
+            alert("❌ " + (data.error || "Failed to sign player"));
+        }
+    } catch (err) {
+        alert("Server connection failed.");
+    } finally {
+        btn.innerText = "ASSIGN PLAYER TO SQUAD";
+        btn.disabled = false;
+    }
+}
+        async function separateBDR() {
+    if (!confirm("This will clean and isolate Auction BDR from Solo BDR. Continue?")) return;
+    const btn = event.target;
+    btn.innerText = "ISOLATING...";
+    try {
+        const res = await fetch(`${API}/api/bdr/isolate-auction`);
+        const data = await res.json();
+        alert(data.message || "BDR Successfully separated!");
+    } catch(e) {
+        alert("Failed to communicate with server.");
+    } finally {
+        btn.innerText = "ISOLATE AUCTION BDR";
+    }
+        }
+        // 1. Fetch participants of the chosen tournament to populate the "Current Player" dropdown
+async function loadReplaceParticipants(tourId) {
+    const oldSelect = document.getElementById('repOldPlayerSelect');
+    if (!tourId) {
+        oldSelect.innerHTML = '<option value="">Select Tournament First...</option>';
+        return;
+    }
+
+    oldSelect.innerHTML = '<option value="">Loading tournament participants...</option>';
+
+    try {
+        const res = await fetch(`${API}/api/smart/participants/${tourId}`);
+        const participants = await res.json();
+
+        if (!participants || participants.length === 0) {
+            oldSelect.innerHTML = '<option value="">No participants found in this tour</option>';
+        } else {
+            oldSelect.innerHTML = '<option value="">Select Player to Remove...</option>' + 
+                participants.map(name => `<option value="${name}">${name}</option>`).join('');
+        }
+    } catch (e) {
+        oldSelect.innerHTML = '<option value="">Error loading participants</option>';
+    }
+}
+
+// 2. Submit the replacement to the backend
+async function executePlayerReplacement() {
+    const tourId = document.getElementById('repTourSelect').value;
+    const oldPlayer = document.getElementById('repOldPlayerSelect').value;
+    
+    // 👉 FIX: Grab the actual Name text from the dropdown
+    const newSelect = document.getElementById('repNewPlayerSelect');
+    let newPlayer = newSelect.options[newSelect.selectedIndex]?.text?.trim() || newSelect.value;
+
+    // Clean up if text contains extra labels like "(BDR: 10)"
+    if (newPlayer.includes('(')) {
+        newPlayer = newPlayer.split('(')[0].trim();
+    }
+
+    if (!tourId || !oldPlayer || !newPlayer) {
+        return alert("Please select the Tournament, Current Player, and Replacement Player!");
+    }
+
+    const check = confirm(`Replace "${oldPlayer}" with "${newPlayer}"?`);
+    if (!check) return;
+
+    try {
+        const res = await fetch(`${API}/api/smart/replace-player`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                tourId: tourId,
+                oldPlayerName: oldPlayer,
+                newPlayerName: newPlayer
+            })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert("❌ " + (data.error || "Failed"));
+        }
+    } catch (e) {
+        alert("Server error");
+    }
+}
+        // --- UCL DASHBOARD FUNCTIONS ---
+async function loadUclAdminData() {
+    try {
+        const res = await fetch(`${API}/api/ucl/hub`);
+        const data = await res.json();
+        
+        // 1. Populate Connected Leagues Pills
+        const container = document.getElementById('uclConnectedTours');
+        if (container) {
+            if (data.qualifyingTours && data.qualifyingTours.length > 0) {
+                container.innerHTML = data.qualifyingTours.map(t => `
+                    <div style="background:rgba(0, 85, 255, 0.2); border:1px solid #0055ff; color:#38bdf8; padding:5px 12px; border-radius:50px; font-size:0.72rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+                        <span>${t.name}</span>
+                        <i class="fa-solid fa-xmark" style="cursor:pointer; color:#ef4444;" onclick="removeSoloTourFromUcl('${t._id}', '${t.name}')"></i>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<span style="font-size:0.75rem; color:#64748b;">No solo tours added yet.</span>';
+            }
+        }
+    } catch (e) {
+        console.error("UCL Admin load error:", e);
+    }
+}
+
+async function addSoloTourToUcl() {
+    const tourId = document.getElementById('uclSoloTourSelect').value;
+    if (!tourId) return alert("Select a Solo Tour first!");
+
+    const res = await fetch(`${API}/api/ucl/admin/manage-pool`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tourId, action: 'add' })
+    });
+    if (res.ok) {
+        alert("League connected to UCL Pool! 🏆");
+        loadUclAdminData();
+    }
+}
+
+async function removeSoloTourFromUcl(tourId, tourName) {
+    if (!confirm(`Disconnect "${tourName}" from UCL?`)) return;
+
+    const res = await fetch(`${API}/api/ucl/admin/manage-pool`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tourId, action: 'remove' })
+    });
+    if (res.ok) {
+        loadUclAdminData();
+    }
+}
+
+async function setMainUclTournament() {
+    const tourId = document.getElementById('uclMainTourSelect').value;
+    if (!tourId) return alert("Select a tournament to set as Main UCL!");
+
+    const res = await fetch(`${API}/api/ucl/admin/set-main-tour`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uclTourId: tourId })
+    });
+    if (res.ok) alert("Main UCL linked successfully! ✅");
+}
+
+async function snapshotUclRanks() {
+    if (!confirm("This will lock the current Top 36 standings as the baseline to show ▲ / ▼ movement indicators. Proceed?")) return;
+
+    const res = await fetch(`${API}/api/ucl/admin/snapshot-ranks`, { method: 'POST' });
+    const data = await res.json();
+    alert(data.message || "Snapshot saved!");
+}
+        // Standalone loader: Fetches all tournaments directly for UCL
+async function syncUclDropdownsDirectly() {
+    try {
+        const res = await fetch(`${API}/api/smart/tournaments`);
+        const tours = await res.json();
+
+        if (Array.isArray(tours) && tours.length > 0) {
+            const opts = tours.map(t => 
+                `<option value="${t._id}">${t.name} (${t.type || 'Tour'})</option>`
+            ).join('');
+
+            const soloSel = document.getElementById('uclSoloTourSelect');
+            if (soloSel) soloSel.innerHTML = '<option value="">Select Tour to Add to Pool...</option>' + opts;
+
+            const mainSel = document.getElementById('uclMainTourSelect');
+            if (mainSel) mainSel.innerHTML = '<option value="">Select Main UCL Tournament...</option>' + opts;
+        }
+    } catch (err) {
+        console.error("Direct UCL dropdown sync failed:", err);
+    }
+}
+
+// Trigger directly on page load
+syncUclDropdownsDirectly();
+        let cachedCelebrationPlayers = [];
+async function loadCelebrationPlayers() {
+    try {
+        const res = await fetch(`${API}/api/players`);
+        const players = await res.json();
+        cachedCelebrationPlayers = players;
+
+        const sel = document.getElementById('celPlayerSelect');
+        if (sel) {
+            sel.innerHTML = '<option value="">Select Winning Player...</option>' + 
+                players.map(p => `<option value="${p.name}">${p.name} (${p.teamName || 'Free Agent'})</option>`).join('');
+        }
+    } catch (e) {}
+}
+
+function autoFillCelebrationPlayer(pName) {
+    const p = cachedCelebrationPlayers.find(x => x.name === pName);
+    if (!p) return;
+
+    document.getElementById('celTeamIn').value = p.teamName || "";
+    // Default matching team color
+    const colors = { "ADRENALINE": "#ef4444", "BAYERN MUNICH": "#dc2626", "REAL MADRID": "#f59e0b", "BARCELONA": "#2563eb", "NIGHT OWLS": "#a855f7" };
+    document.getElementById('celThemeColorIn').value = colors[p.teamName?.toUpperCase()] || "#ff003c";
+}
+
+async function publishCelebrationCard() {
+    const pName = document.getElementById('celPlayerSelect').value;
+    if (!pName) return alert("Select a player!");
+
+    const p = cachedCelebrationPlayers.find(x => x.name === pName);
+
+    const payload = {
+        trophyTitle: document.getElementById('celTitleIn').value || "WEEKLY WINNER",
+        trophyImage: document.getElementById('celTrophyIn').value,
+        playerName: pName,
+        playerImage: p ? p.image : "",
+        teamName: document.getElementById('celTeamIn').value || (p ? p.teamName : ""),
+        teamLogo: p ? p.teamLogo : "",
+        themeColor: document.getElementById('celThemeColorIn').value || "#ff003c",
+        scorerStats: document.getElementById('celScorerIn').value || ""
+    };
+
+    const res = await fetch(`${API}/api/celebration/publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+        alert("🎉 Champion Banner Published! Visitors will see it with fireworks.");
+    }
+}
+        async function syncOldSoloMatches() {
+    if (!confirm("This will scan all past Solo Tour matches and sync them into player profile histories. Continue?")) return;
+
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SYNCING MATCHES...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/sync/solo-to-player-history`);
+        const data = await res.json();
+        alert(data.message || "Match history synchronized successfully! ✅");
+        location.reload();
+    } catch (e) {
+        alert("Failed to communicate with server.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+        }
+        // --- GLORY GALLERY DASHBOARD LOGIC ---
+async function loadGloryAdminList() {
+    try {
+        const res = await fetch(`${API_V2}/api/glory/posters`);
+        const posters = await res.json();
+        const container = document.getElementById('gloryAdminList');
+
+        if (!posters || posters.length === 0) {
+            container.innerHTML = '<p style="text-align:center; font-size:0.75rem; color:#64748b;">No posters published yet.</p>';
+            return;
+        }
+
+        container.innerHTML = posters.map(p => `
+            <div class="row-item" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.05);">
+                <div>
+                    <span style="font-weight:700; color:#fff;">${p.playerName}</span>
+                    <small style="color:var(--gold); margin-left:6px;">[${p.status}]</small>
+                    <div style="font-size:0.65rem; color:var(--text-dim);">${p.tourName} • ${p.season}</div>
+                </div>
+                <button type="button" class="delete-btn" onclick="deleteGloryPoster('${p._id}')" style="padding:4px 8px; font-size:0.65rem;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.warn("Glory admin fetch failed:", e);
+    }
+}
+
+async function publishGloryPoster() {
+    const playerName = document.getElementById('gloryPlayerIn').value.trim();
+    const tourName = document.getElementById('gloryTourIn').value.trim();
+    const status = document.getElementById('gloryStatusIn').value;
+    const season = document.getElementById('glorySeasonIn').value.trim() || 'Season 1';
+    const imageUrl = document.getElementById('gloryImageIn').value.trim();
+
+    if (!playerName || !tourName || !imageUrl) {
+        return alert("Please enter Player Name, Tournament Name, and Image URL!");
+    }
+
+    try {
+        const res = await fetch(`${API_V2}/api/glory/posters`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playerName, tourName, status, season, imageUrl })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            alert("Victory Poster Live in Gallery! 🏆");
+            document.getElementById('gloryPlayerIn').value = "";
+            document.getElementById('gloryTourIn').value = "";
+            document.getElementById('gloryImageIn').value = "";
+            loadGloryAdminList();
+        } else {
+            alert("Error: " + (data.error || "Failed to publish"));
+        }
+    } catch (err) {
+        alert("Server connection failed.");
+    }
+}
+
+async function deleteGloryPoster(id) {
+    if (!confirm("Remove this poster from the Glory Gallery?")) return;
+
+    try {
+        const res = await fetch(`${API_V2}/api/glory/posters/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            loadGloryAdminList();
+        }
+    } catch (err) {
+        alert("Delete failed.");
+    }
+}
+    async function triggerSoloBdrSync() {
+    if (!confirm("This will scan all Solo Tour matches and rebuild the Global Solo BDR rankings from scratch. Proceed?")) return;
+
+    const btn = event.target.closest('button');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SYNCING SOLO BDR...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/bdr/sync-solo`);
+        const data = await res.json();
+
+        if (data.success) {
+            alert("✅ " + data.message);
+        } else {
+            alert("❌ Sync failed: " + (data.error || "Unknown error"));
+        }
+    } catch (e) {
+        alert("❌ Failed to communicate with server.");
+    } finally {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    }
+}
+        // --- CSV PARSING & IMPORT ENGINE ---
+let parsedCsvPlayers = [];
+
+// --- SMART RFC-4180 CSV LINE PARSER (Handles commas inside quotes & feedbacks) ---
+function parseCSVLine(text) {
+    let p = '', inQuotes = false, row = [];
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i], nextChar = text[i + 1];
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') { p += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+        } else if (char === ',' && !inQuotes) {
+            row.push(p.trim());
+            p = '';
+        } else {
+            p += char;
+        }
+    }
+    row.push(p.trim());
+    return row;
+}
+
+// --- SMART SURVEYHEART / GOOGLE FORMS CSV PARSER ---
+function parseUploadedCsv() {
+    const fileInput = document.getElementById('csvFileInput');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        return alert("Please select a .csv file first!");
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const text = e.target.result;
+        const lines = text.split(/\r\n|\n/);
+
+        if (lines.length < 2) {
+            return alert("CSV file appears to be empty.");
+        }
+
+        // 1. Analyze Headers from Row 1
+        const headers = parseCSVLine(lines[0]);
+
+        // Auto-detect Name column (looks for "Name" or defaults to Column 3 / Index 2)
+        let nameIdx = headers.findIndex(h => h.toLowerCase().includes('name'));
+        if (nameIdx === -1) nameIdx = 2; // SurveyHeart Default
+
+        // Auto-detect Image column (looks for "Screenshot", "Team", "Squad" or defaults to Index 7)
+        let imageIdx = headers.findIndex(h => {
+            const s = h.toLowerCase();
+            return s.includes('screenshot') || s.includes('squad') || s.includes('image');
+        });
+        if (imageIdx === -1) imageIdx = 7; // SurveyHeart Default
+
+        parsedCsvPlayers = [];
+
+        // 2. Parse Data Rows
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            const cols = parseCSVLine(line);
+
+            // Extract Name
+            let rawName = cols[nameIdx] || "";
+            if (!rawName || rawName.toLowerCase().includes('your full name')) continue;
+
+            // Extract Nickname if present in brackets: e.g. "Debargha Pathak (XeNo)"
+            let playerName = rawName;
+            let nickname = "";
+            const nickMatch = rawName.match(/^(.*?)\s*\((.*?)\)$/);
+            if (nickMatch) {
+                playerName = nickMatch[1].trim();
+                nickname = nickMatch[2].trim();
+            }
+
+            // Extract Image (with fallback: scan row for any cell starting with http/https)
+            let squadImageUrl = cols[imageIdx] || "";
+            if (!squadImageUrl.startsWith("http")) {
+                const foundUrl = cols.find(c => c && c.startsWith("http"));
+                if (foundUrl) squadImageUrl = foundUrl;
+            }
+
+            parsedCsvPlayers.push({
+                name: playerName,
+                nickname: nickname,
+                squadImage: squadImageUrl
+            });
+        }
+
+        console.log(`Parsed ${parsedCsvPlayers.length} players from registration CSV:`, parsedCsvPlayers);
+        renderCsvPreview();
+    };
+
+    reader.readAsText(file);
+}
+
+// 2. Render parsed players with Checkboxes
+function renderCsvPreview() {
+    const previewBox = document.getElementById('csvPreviewBox');
+    const listContainer = document.getElementById('csvPlayerList');
+    const countDisplay = document.getElementById('csvParsedCount');
+
+    if (parsedCsvPlayers.length === 0) {
+        alert("No valid player rows found in this CSV.");
+        previewBox.style.display = "none";
+        return;
+    }
+
+    countDisplay.innerText = `${parsedCsvPlayers.length} Registrations Found`;
+
+    listContainer.innerHTML = parsedCsvPlayers.map((p, idx) => `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
+                <input type="checkbox" class="csv-check" data-index="${idx}" checked style="width:20px; height:20px; margin:0; cursor:pointer;">
+                
+                <!-- Squad Screenshot from SurveyHeart S3 -->
+                <img src="${p.squadImage}" 
+                     style="width:48px; height:48px; border-radius:8px; object-fit:cover; background:#1e293b; border:1px solid var(--border);" 
+                     onerror="this.src='https://via.placeholder.com/48?text=No+Img'">
+                
+                <div style="min-width:0;">
+                    <div style="font-size:0.9rem; font-weight:700; color:white;">
+                        ${p.name} ${p.nickname ? `<span style="font-size:0.75rem; color:var(--gold); font-style:italic;">"${p.nickname}"</span>` : ''}
+                    </div>
+                    <div style="font-size:0.65rem; color:var(--text-dim); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:220px;">
+                        ${p.squadImage ? p.squadImage : 'No screenshot uploaded'}
+                    </div>
+                </div>
+            </div>
+            <span style="font-size:0.65rem; color:var(--accent); font-weight:800; margin-left:8px;">APPROVED</span>
+        </div>
+    `).join('');
+
+    previewBox.style.display = "block";
+}
+
+// 3. Select / Deselect All Checkboxes
+function toggleAllCsv(selectAll) {
+    const checkboxes = document.querySelectorAll('.csv-check');
+    checkboxes.forEach(cb => {
+        cb.checked = selectAll;
+    });
+}
+
+// 4. Send ONLY the Checked Players to Backend
+async function submitSelectedCsvPlayers() {
+    const checkboxes = document.querySelectorAll('.csv-check:checked');
+
+    if (checkboxes.length === 0) {
+        return alert("Please checkmark at least one player to import!");
+    }
+
+    // Filter only checked players
+    const selectedPlayers = Array.from(checkboxes).map(cb => {
+        const index = parseInt(cb.getAttribute('data-index'));
+        return parsedCsvPlayers[index];
+    });
+
+    const check = confirm(`Import ${selectedPlayers.length} selected player(s) into database? Unchecked players will be rejected.`);
+    if (!check) return;
+
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> IMPORTING TO DATABASE...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API_V2}/api/players/bulk-import`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ players: selectedPlayers })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            alert(`✅ ${data.message}`);
+            // Reset input and hide preview
+            document.getElementById('csvFileInput').value = "";
+            document.getElementById('csvPreviewBox').style.display = "none";
+            location.reload(); // Refreshes dropdowns with new players
+        } else {
+            alert("❌ " + (data.error || "Import failed"));
+        }
+    } catch (err) {
+        console.error("Bulk Import Error:", err);
+        alert("Failed to communicate with the server.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+            }
+            // --- DANGER ZONE SECURITY GATEKEEPER ---
+// ⚠️ CHANGE THIS PIN TO WHATEVER CODE YOU WANT:
+// --- DANGER ZONE SECURITY GATEKEEPER ---
+const MASTER_DANGER_PIN = "5355"; // 👈 You can change this PIN anytime
+
+function requestDangerAccess(btn) {
+    // If already unlocked this session, open directly
+    if (sessionStorage.getItem('nexus_danger_unlocked') === 'true') {
+        showSection('sec-danger', btn);
+        return;
+    }
+
+    // Otherwise, show the PIN popup
+    document.getElementById('dangerPinInput').value = "";
+    document.getElementById('dangerModal').style.display = 'flex';
+}
+
+function closeDangerModal() {
+    document.getElementById('dangerModal').style.display = 'none';
+}
+
+function verifyDangerPin() {
+    const pin = document.getElementById('dangerPinInput').value.trim();
+    
+    if (pin === MASTER_DANGER_PIN) {
+        sessionStorage.setItem('nexus_danger_unlocked', 'true');
+        closeDangerModal();
+
+        // Find the danger tab button in the nav
+        const tabs = document.querySelectorAll('.admin-nav .nav-tab');
+        let dangerBtn = null;
+        tabs.forEach(t => {
+            if (t.textContent.includes('Danger')) dangerBtn = t;
+        });
+
+        showSection('sec-danger', dangerBtn);
+        alert("🔓 Danger Zone Unlocked for this session.");
+    } else {
+        alert("❌ ACCESS DENIED: Incorrect Security PIN.");
+        document.getElementById('dangerPinInput').value = "";
+        document.getElementById('dangerPinInput').focus();
+    }
+}
+        async function triggerAuctionMasterSync() {
+    if (!confirm("⚠️ DANGER: This will reset all player auction stats and rebuild them from scratch using ALL auction matches. Proceed?")) return;
+
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> REBUILDING MASTER DATA...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/auction/sync-master`);
+        const data = await res.json();
+        if (data.success) {
+            alert("✅ " + data.message);
+            location.reload();
+        } else {
+            alert("❌ Error: " + data.error);
+        }
+    } catch (e) {
+        alert("Server connection failed.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function triggerAuctionIncrementalSync() {
+    if (!confirm("Scan for newly completed auction matches and add/increment their stats?")) return;
+
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> SYNCING NEW MATCHES...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/auction/sync-incremental`);
+        const data = await res.json();
+        if (data.success) {
+            alert("✅ " + data.message);
+        } else {
+            alert("❌ Error: " + data.error);
+        }
+    } catch (e) {
+        alert("Server connection failed.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+    // --- UNIFIED INITIALIZATION ---
+window.onload = async () => {
+    console.log("Nexus Command System Initializing...");
+    try {
+        await loadAllDashboardData();
+        await populateHofDropdowns();
+        await refreshParticipantList();
+        await loadCapTeams();
+        await loadTrophyList();
+        console.log("All systems online.");
+    } catch (err) {
+        console.error("Boot sequence failed:", err);
+    }
+};
+    </script>
+            <!-- BULLETPROOF DANGER PIN MODAL -->
+<div id="dangerModal" style="position: fixed; inset: 0; background: rgba(3, 7, 18, 0.92); backdrop-filter: blur(8px); z-index: 999999; display: none; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #101926; border: 2px solid #ef4444; border-radius: 22px; width: 100%; max-width: 380px; padding: 25px; text-align: center; box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);">
+        <h3 style="color: #ef4444; margin-top: 0; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;">RESTRICTED ACCESS</h3>
+        <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 20px; line-height: 1.4;">
+            This section contains core database wipe and reset functions. Enter the Master Security PIN to unlock.
+        </p>
+        <input type="password" id="dangerPinInput" placeholder="••••" style="text-align: center; font-size: 1.5rem; letter-spacing: 10px; margin-bottom: 15px; background: #060b13; border: 1px solid #1e293b; color: white; padding: 12px; border-radius: 10px; width: 100%; box-sizing: border-box; outline: none;" autofocus>
+        
+        <button type="button" onclick="verifyDangerPin()" class="delete-btn" style="width: 100%; padding: 14px; font-weight: 900; font-family: 'Orbitron', sans-serif; cursor: pointer;">
+            UNLOCK DANGER ZONE
+        </button>
+        <button type="button" onclick="closeDangerModal()" style="background: transparent; border: none; color: #64748b; margin-top: 15px; cursor: pointer; font-size: 0.8rem; font-weight: 700;">
+            Cancel
+        </button>
+    </div>
+</div>
+</body>
+</html>

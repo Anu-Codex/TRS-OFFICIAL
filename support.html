@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1024">
+    <title>CONTACT | NEXUS LEGENDS eSPORTS</title>
+    
+    <!-- Typography & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #030712;
+            --card-bg: #0f172a;
+            --accent: #ff3147; /* Vibrant Red from Image */
+            --input-bg: #020617;
+            --border: #1e293b;
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, rgba(255, 49, 71, 0.05), transparent),
+                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* --- HEADER NAVIGATION --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        .logo i { color: var(--accent); font-size: 2rem; }
+
+        nav { display: flex; gap: 25px; }
+        nav a { text-decoration: none; color: var(--text-dim); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; transition: 0.3s; }
+        nav a:hover { color: var(--accent); }
+
+        .btn-merch {
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-merch:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 49, 71, 0.4); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .hero h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #fff 40%, #64748b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            max-width: 600px;
+            margin: 20px auto;
+            color: var(--text-dim);
+            font-size: 1rem;
+        }
+
+        /* --- CONTACT FORM CARD --- */
+        .contact-wrapper {
+            max-width: 800px;
+            margin: 0 auto 100px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 50px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .form-group.full { grid-column: span 2; }
+
+        label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-main);
+        }
+
+        input, select, textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(255, 49, 71, 0.1);
+        }
+
+        .btn-send {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn-send:hover {
+            letter-spacing: 4px;
+            background: #e62e40;
+        }
+
+        /* --- FOOTER INFO --- */
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            padding: 40px;
+            border-top: 1px solid var(--border);
+            background: #020617;
+        }
+
+        .info-item { display: flex; align-items: center; gap: 15px; }
+        .info-item i { color: var(--accent); font-size: 1.5rem; }
+        .info-item span { font-weight: 700; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: span 1; }
+            .hero h1 { font-size: 3rem; }
+            .contact-wrapper { padding: 30px; margin: 0 15px 50px; }
+            nav { display: none; } /* Mobile Menu would go here */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-bolt-lightning"></i>
+            <span>Nexus Legends</span>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="admins.html">Team</a>
+            <a href="partners.html">Partners</a>
+            <a href="#">Shop</a>
+        </nav>
+        <a href="https://chat.whatsapp.com/Idtmr2beKY48zXvjVo6fNl?s=cl&p=a&mlu=4" class="btn-merch">Join Us</a>
+    </header>
+
+    <section class="hero">
+        <h1>CONTACT</h1>
+        <p>Facing a technical glitch or need help with your account? Our tactical support team is on standby to assist you.</p>
+    </section>
+
+    <div class="contact-wrapper">
+        <!-- Replace 'YOUR_FORM_ID' with the ID you get from Formspree.io -->
+        <form action="https://formspree.io/f/xrejzzlr" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" placeholder="YOUR NAME" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="EMAIL@EXAMPLE.COM" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" placeholder="(123) 456 -7890">
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <select name="subject" required>
+                        <option value="" disabled selected>SELECT OPTION</option>
+                        <option value="Technical Issue">Technical Issue</option>
+                        <option value="Account Help">Account Help</option>
+                        <option value="Partnership">Partnership Inquiry</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Message</label>
+                    <textarea name="message" rows="6" placeholder="WHAT CAN WE HELP YOU WITH?" required></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-send">SEND MESSAGE</button>
+        </form>
+    </div>
+
+    <div class="footer-info">
+        <div class="info-item">
+            <i class="fa-solid fa-envelope"></i>
+            <span>mysticfcmlegends@gmail.com</span>
+        </div>
+        <div class="info-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>+91 99030 99178</span>
+        </div>
+    </div>
+
+</body>
+</html>

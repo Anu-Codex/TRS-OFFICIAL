@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Season Calendar | NEXUS LEGENDS</title>
+    
+    <!-- External Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #060b13;
+            --card: #0d121f;
+            --accent: #10b981;
+            --border: #1e293b;
+            --dim: #94a3b8;
+            --gold: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px; /* Mobile-first container */
+        }
+
+        /* Back Button */
+        .back-btn {
+            color: var(--dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .back-btn:hover { color: var(--accent); }
+
+        /* Header Styling */
+        .cal-header { margin-bottom: 30px; }
+        .cal-header h1 { 
+            font-family: 'Rajdhani'; 
+            font-size: 2.2rem; 
+            margin: 0; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        } 
+        .cal-header p { 
+            color: var(--dim); 
+            font-size: 0.8rem; 
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* Calendar Card */
+        .glass-card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 28px; 
+            padding: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .month-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+        .month-nav h2 { 
+            font-size: 1.3rem; 
+            margin: 0; 
+            font-family: 'Rajdhani'; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            color: white;
+        }
+        .nav-btn { 
+            color: var(--dim); 
+            cursor: pointer; 
+            padding: 10px;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+        .nav-btn:hover { color: var(--accent); }
+
+        /* Grid Layouts */
+        .weekdays { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            text-align: center; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 12px; 
+            margin-bottom: 15px; 
+        }
+        .weekdays div { 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            color: var(--dim); 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        .days-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 12px; 
+        }
+        
+        .day { 
+            aspect-ratio: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            position: relative; 
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+        .day:hover { background: rgba(255,255,255,0.05); }
+        
+        /* Highlighting Logic */
+        .day.active { 
+            background: rgba(16, 185, 129, 0.1); 
+            border: 1.5px solid var(--accent); 
+            color: var(--accent); 
+            font-weight: 800;
+        }
+
+        /* Event Dots */
+        .dots-container {
+            position: absolute;
+            bottom: 6px;
+            display: flex;
+            gap: 3px;
+        }
+        .event-dot { 
+            width: 5px; 
+            height: 5px; 
+            border-radius: 50%; 
+        }
+        
+        /* Dot Colors matched to Legend */
+        .dot-league { background: var(--gold); box-shadow: 0 0 5px var(--gold); }
+        .dot-weekly { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; }
+        .dot-ucl { background: #a855f7; box-shadow: 0 0 5px #a855f7; }
+        .dot-playoff { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+        .dot-auction { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+
+        /* Legend Area */
+        .legend { 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px; 
+            margin-top: 30px; 
+            padding: 0 10px;
+        }
+        .leg-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 0.75rem; 
+            color: var(--dim); 
+            font-weight: 600; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* Loading Spinner */
+        #loader {
+            text-align: center;
+            padding: 20px;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Back Navigation -->
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-chevron-left"></i> BACK TO DASHBOARD
+    </a>
+    
+    <!-- Page Header -->
+    <div class="cal-header">
+        <h1>Season Calendar</h1>
+        <p>Dynamic schedule & tournament roadmap</p>
+    </div>
+
+    <!-- Calendar Main Card -->
+    <div class="glass-card">
+        <div class="month-nav">
+            <i class="fa-solid fa-chevron-left nav-btn" onclick="changeMonth(-1)"></i>
+            <h2 id="monthYear">-- 2026</h2>
+            <i class="fa-solid fa-chevron-right nav-btn" onclick="changeMonth(1)"></i>
+        </div>
+
+        <div class="weekdays">
+            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+        
+        <div id="loader"><i class="fas fa-circle-notch fa-spin"></i> SYNCING...</div>
+        <div id="daysGrid" class="days-grid"></div>
+    </div>
+
+    <!-- Legend Section -->
+    <div class="legend">
+        <div class="leg-item"><div class="dot" style="background:var(--gold)"></div> Team League</div>
+        <div class="leg-item"><div class="dot" style="background:#3b82f6"></div> Weekly</div>
+        <div class="leg-item"><div class="dot" style="background:#a855f7"></div> UCL</div>
+        <div class="leg-item"><div class="dot" style="background:#ef4444"></div> Playoff</div>
+        <div class="leg-item"><div class="dot" style="background:var(--accent)"></div> Auction</div>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+    let currDate = new Date();
+    let events = [];
+
+    // 1. Load events from your database
+    async function loadEvents() {
+        try {
+            const res = await fetch(`${API}/api/calendar/events`);
+            events = await res.json();
+        } catch (e) {
+            console.error("Calendar Sync Error:", e);
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+            renderCalendar();
+        }
+    }
+
+    // 2. Calendar Engine Logic
+    function renderCalendar() {
+        const grid = document.getElementById('daysGrid');
+        const my = document.getElementById('monthYear');
+        grid.innerHTML = '';
+
+        const year = currDate.getFullYear();
+        const month = currDate.getMonth();
+        
+        // Set Header Text
+        my.innerText = currDate.toLocaleString('default', { month: 'long' }) + " " + year;
+
+        // Calculate First Day and Days in Month
+        // (Date objects use 0 for Sunday, so we adjust to start on Monday)
+        let firstDay = new Date(year, month, 1).getDay(); 
+        let dayAdjustment = (firstDay === 0) ? 6 : firstDay - 1; 
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // 1. Add Padding for Previous Month
+        for (let i = 0; i < dayAdjustment; i++) { 
+            grid.innerHTML += '<div></div>'; 
+        }
+
+        // 2. Generate Days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            const dayEvents = events.filter(e => e.date === dateStr);
+            
+            // Check if this day is TODAY
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const isToday = todayStr === dateStr;
+
+            // Generate Event Dots
+            let dotsHtml = '';
+            if(dayEvents.length > 0) {
+                dotsHtml = `<div class="dots-container">` + 
+                    dayEvents.map(e => `<div class="event-dot dot-${e.type}"></div>`).join('') + 
+                    `</div>`;
+            }
+            
+            grid.innerHTML += `
+                <div class="day ${isToday ? 'active' : ''}" onclick="showEventDetails('${dateStr}')">
+                    ${day}
+                    ${dotsHtml}
+                </div>
+            `;
+        }
+    }
+
+    // Navigation Controls
+    function changeMonth(step) { 
+        currDate.setMonth(currDate.getMonth() + step); 
+        renderCalendar(); 
+    }
+
+    // Optional: Interactive click for players
+    function showEventDetails(date) {
+        const dayEvents = events.filter(e => e.date === date);
+        if(dayEvents.length > 0) {
+            alert("Nexus Events for " + date + ":\n" + dayEvents.map(e => "• " + e.title).join("\n"));
+        }
+    }
+
+    // Start
+    window.onload = loadEvents;
+</script>
+
+</body>
+</html>

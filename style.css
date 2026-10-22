@@ -1,0 +1,160 @@
+:root {
+    --bg-color: #060b13;
+    --card-bg: #101926;
+    --item-bg: #162130;
+    --text-main: #ffffff;
+    --text-dim: #94a3b8;
+    --accent-green: #10b981;
+    --border-color: #1e293b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px; /* Mobile first approach */
+}
+
+/* Header Styles */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.top-nav {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #94a3b8; /* Dim color for inactive icons */
+    font-size: 20px;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+/* The Green Highlighted Box (1st Icon in your image) */
+.nav-item.active {
+    background-color: rgba(16, 185, 129, 0.15); /* Dark green tint */
+    border: 1.5px solid rgba(16, 185, 129, 0.3);
+    color: #10b981; /* Bright green icon */
+}
+
+.nav-item:hover:not(.active) {
+    background-color: #1e293b;
+    color: white;
+}
+
+.logo-area { display: flex; align-items: center; gap: 10px; }
+.logo { border-radius: 8px; border: 1px solid gold; }
+.site-title { font-size: 1.1rem; line-height: 1; }
+.site-subtitle { font-size: 0.7rem; color: var(--accent-green); letter-spacing: 1px; font-weight: bold; }
+
+.header-actions { display: flex; gap: 10px; }
+.icon-btn {
+    background: #162130;
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.icon-btn.active { background: #064e3b; color: #10b981; }
+
+/* Main Card */
+.league-card {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 25px;
+    border: 1px solid var(--border-color);
+}
+
+/* Dropdowns Styling */
+.filter-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.custom-dropdown {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.league-name { font-size: 1.8rem; margin-bottom: 5px; }
+.league-meta { color: var(--text-dim); margin-bottom: 20px; font-size: 0.9rem; }
+
+.leader-badge {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid #064e3b;
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 30px;
+}
+
+.badge-text { color: white; font-weight: bold; margin-left: 5px; }
+
+/* Stats Grid (The Blue Section) */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-item {
+    background: var(--item-bg);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+/* Icon Colors */
+.icon-gold { background: rgba(255, 215, 0, 0.1); }
+.icon-green { background: rgba(16, 185, 129, 0.1); }
+.icon-purple { background: rgba(168, 85, 247, 0.1); }
+.icon-blue { background: rgba(59, 130, 246, 0.1); }
+
+.stat-info .label { display: block; color: var(--text-dim); font-size: 0.8rem; }
+.stat-info .value { display: block; font-size: 1.5rem; font-weight: bold; margin: 2px 0; }
+.stat-info .sub-value { display: block; color: var(--text-dim); font-size: 0.75rem; }

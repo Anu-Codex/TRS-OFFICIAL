@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Market Hub | Fabrizio Romano Style</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #040813; 
+            --card: #0f172a; 
+            --sky-blue: #00d1ff; 
+            --sky-red: #ff0000;
+            --fabrizio-gold: #f59e0b;
+            --nexus-green: #10b981;
+            --border: #1e293b; 
+        }
+
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden;
+        }
+
+        /* Sky Sports Navbar */
+        .sky-nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 25px; 
+            background: #000; 
+            border-bottom: 3px solid var(--sky-red); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+        }
+        .live-dot { height: 10px; width: 10px; background: var(--sky-red); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* News Ticker */
+        .ticker-wrap { background: #111; border-bottom: 1px solid var(--border); overflow: hidden; padding: 12px 0; }
+        .ticker { display: flex; animation: ticker 40s linear infinite; white-space: nowrap; font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 1px; }
+        .ticker span { color: var(--fabrizio-gold); font-weight: 900; margin-right: 50px; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+
+        /* Breaking News Hero */
+        .hero-news { 
+            position: relative; 
+            border-radius: 4px; 
+            overflow: hidden; 
+            margin-bottom: 30px; 
+            border: 1px solid var(--border);
+            background: #000;
+        }
+        .hero-img { width: 100%; height: 280px; object-fit: cover; opacity: 0.7; }
+        .hero-overlay { 
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            padding: 20px; 
+            background: linear-gradient(transparent, #000); 
+        }
+        .tag-breaking { background: var(--sky-red); padding: 5px 12px; font-weight: 900; font-size: 0.7rem; border-radius: 2px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+
+        /* News Cards */
+        .card { 
+            background: var(--card); 
+            border-radius: 4px; 
+            margin-bottom: 15px; 
+            border-left: 5px solid var(--sky-blue); 
+            position: relative;
+            transition: 0.3s;
+        }
+        .card:hover { transform: scale(1.02); background: #1e293b; }
+        
+        .card-header { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 15px; }
+        
+        .status-tag { font-size: 0.6rem; font-weight: 900; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; }
+        .transfer-tag { background: var(--nexus-green); color: #000; }
+        .trade-tag { background: var(--fabrizio-gold); color: #000; }
+        .private-tag { background: #475569; color: #fff; }
+
+        .player-name { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 900; color: #fff; margin: 5px 0; }
+        .fee-label { color: var(--sky-blue); font-family: 'Orbitron'; font-weight: 900; font-size: 1.4rem; }
+
+        /* Trending Grid */
+        .trending-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .trend-box { 
+            background: #000; padding: 15px; border: 1px solid var(--border); border-radius: 4px; text-align: center;
+            box-shadow: 0 0 10px rgba(0, 209, 255, 0.1);
+        }
+        .trend-box img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--sky-blue); padding: 2px; margin-bottom: 8px; }
+
+        .btn-login { 
+            background: var(--sky-red); color: white; padding: 10px 20px; 
+            font-weight: 900; text-decoration: none; font-size: 0.75rem; 
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sky-nav">
+        <div style="font-family:'Orbitron'; font-weight:900;">
+            <span style="color:var(--sky-red)">NEXUS</span> LEGENDS <span style="color:var(--sky-blue)">NEWS</span>
+        </div>
+        <a href="captain-login.html" class="btn-login">CAPTAIN LOGIN </a>
+    </nav>
+
+    <div class="ticker-wrap">
+        <div class="ticker" id="liveTicker">
+            <span><div class="live-dot"></div> LIVE MARKET UPDATES...</span>
+            <span>WAITING FOR NEXT BIG MOVE...</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Hero Fabrizio Style -->
+        <div class="hero-news">
+            <img src="https://i.postimg.cc/nrhTJDvJ/file-00000000821c81fa910ce8a16bdab123.png" class="hero-img">
+            <div class="hero-overlay">
+                <span class="tag-breaking">TRANSFERS LIVE</span>
+                <h2 style="font-family:'Orbitron'; margin:0; font-size:1.5rem;">HERE WE GO!</h2>
+                <p style="color:#cbd5e1; font-size:0.9rem; margin:10px 0;">The transfer window is heating up. Negotiate, Swap or Sell players now.</p>
+            </div>
+        </div>
+
+        <h3 style="font-family:'Orbitron'; border-bottom: 2px solid var(--sky-red); padding-bottom: 5px; font-size: 1rem; margin-bottom: 20px;">LATEST MARKET ACTIVITY</h3>
+        
+        <div id="marketFeed">
+            <!-- Dynamic feed goes here -->
+        </div>
+
+        <h3 style="font-family:'Orbitron'; border-bottom: 2px solid var(--nexus-green); padding-bottom: 5px; font-size: 1rem; margin: 40px 0 20px;">MOST VALUABLE ASSETS</h3>
+        <div class="trending-grid" id="trendingPlayers">
+            <!-- Trending players -->
+        </div>
+    </div>
+
+    <script>
+        const API = "https://pes-park-backend.onrender.com";
+
+        async function loadMarket() {
+            try {
+                // Fetch Listings & Trending Data
+                const resListings = await fetch(`${API}/api/market/listings`);
+                const listings = await resListings.json();
+
+                const resNews = await fetch(`${API}/api/market/news`);
+                const newsData = await resNews.json();
+
+                // 1. UPDATE TICKER (Fabrizio Style)
+                const ticker = document.getElementById('liveTicker');
+                if(listings.length > 0) {
+                    ticker.innerHTML = listings.map(l => `
+                        <span><div class="live-dot"></div> HERE WE GO: ${l.playerName} is officially on the market for ${l.releaseFee}M! • </span>
+                    `).join('');
+                }
+
+                // 2. RENDER FEED (Sky Sports Style)
+                const feed = document.getElementById('marketFeed');
+                if(listings.length === 0) {
+                    feed.innerHTML = `<p style="text-align:center; color:#64748b;">No active deals at the moment.</p>`;
+                } else {
+                    feed.innerHTML = listings.map(l => {
+                        let typeTag = `<span class="status-tag transfer-tag">Transfer Listed</span>`;
+                        let detailText = `Official offer from <b>${l.fromTeam}</b> for all interested clubs.`;
+                        
+                        if(l.type === "TRADE") {
+                            typeTag = `<span class="status-tag trade-tag">Trade Proposal</span>`;
+                            detailText = `<b>${l.fromTeam}</b> wants to swap for <b>${l.tradePlayerWanted}</b>.`;
+                        } else if(l.targetTeam !== "General") {
+                            typeTag = `<span class="status-tag private-tag">Exclusive Offer</span>`;
+                            detailText = `Private talks ongoing with <b>${l.targetTeam}</b>.`;
+                        }
+
+                        return `
+                        <div class="card" style="border-left-color: ${l.type === 'TRADE' ? 'var(--fabrizio-gold)' : 'var(--sky-blue)'}">
+                            <div class="card-header">
+                                ${typeTag}
+                                <span style="font-size:0.7rem; color:#64748b;"><i class="fa-regular fa-clock"></i> JUST NOW</span>
+                            </div>
+                            <div class="card-body">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <div class="player-name">${l.playerName.toUpperCase()}</div>
+                                        <div style="font-size:0.8rem; color:#94a3b8;">${detailText}</div>
+                                    </div>
+                                    <div class="fee-label">${l.releaseFee}M</div>
+                                </div>
+                                ${l.addons ? `<div style="margin-top:10px; font-size:0.75rem; color:var(--sky-blue); font-style:italic;">Terms: ${l.addons}</div>` : ''}
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                }
+
+                // 3. RENDER TRENDING (Valuation Grid)
+                document.getElementById('trendingPlayers').innerHTML = newsData.trending.map(p => `
+                    <div class="trend-box">
+                        <img src="${p.image || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">
+                        <div style="font-family:'Orbitron'; font-size:0.8rem; font-weight:900;">${p.marketValue}M</div>
+                        <div style="font-size:0.6rem; color:#94a3b8; margin-top:5px;">${p.name.split(' ')[0]}</div>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                console.log("Error loading market:", e);
+            }
+        }
+
+        // Auto Refresh every 30 seconds
+        loadMarket();
+        setInterval(loadMarket, 30000);
+    </script>
+</body>
+</html>
