@@ -647,7 +647,7 @@
         };
 
         // 1. Try sending to your primary backend
-        let res = await fetch(`${API}/auth/firebase-google`, {
+        let res = await fetch(`${API}/api/auth/firebase-google`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -655,7 +655,7 @@
 
         // 2. Fallback to API_V2 if primary fails
         if (!res || !res.ok) {
-            res = await fetch(`${API_V2}/auth/firebase-google`, {
+            res = await fetch(`${API_V2}/api/auth/firebase-google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
