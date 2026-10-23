@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Dashboard | The Rising Stars Clan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #040711;
+            --card-bg: #070d1d;
+            --input-bg: #050a18;
+            --border: #131e36;
+            --border-neon: rgba(0, 243, 255, 0.28);
+            --accent: #00f3ff;
+            --electric: #0077fe;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --purple: #a855f7;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% -10%, rgba(0, 243, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 100% 40%, rgba(0, 119, 254, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 0% 80%, rgba(0, 243, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 15px 15px 105px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .profile-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        /* --- CLAN TOP BANNER / IDENTIFIER --- */
+        .clan-mini-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .clan-logo-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .clan-logo-tag span {
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+
+        .clan-status-badge {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 2px 8px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-transform: uppercase;
+        }
+
+        .pulse-dot {
+            width: 5px;
+            height: 5px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        /* --- USER HEADER CARD WITH OVR BADGE & CREDENTIALS --- */
+        .user-header-card {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border-neon);
+            border-radius: 22px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 243, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-profile-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .user-avatar-frame {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            overflow: hidden;
+            background: #0e182e;
+            flex-shrink: 0;
+            box-shadow: 0 0 18px rgba(0, 243, 255, 0.35);
+        }
+
+        .user-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .user-info-col {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .user-name-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .captain-crown {
+            color: var(--gold);
+            font-size: 0.95rem;
+            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
+        }
+
+        .edit-profile-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #f43f5e;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: 3px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .edit-profile-btn:hover {
+            color: #ff6482;
+        }
+
+        .team-badge-pill {
+            display: inline-block;
+            font-size: 0.62rem;
+            color: var(--accent);
+            background: rgba(0, 243, 255, 0.08);
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-weight: 800;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* Professional OVR Badge */
+        .ovr-badge-box {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 8px 12px;
+            text-align: center;
+            box-shadow: 0 0 16px rgba(0, 243, 255, 0.25);
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .ovr-num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .ovr-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.55rem;
+            color: var(--accent);
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* --- CREDENTIALS BAR: GAMER TAG & eFOOTBALL USER ID --- */
+        .credentials-bar {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .cred-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            min-width: 0;
+        }
+
+        .cred-item i {
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        .cred-item b {
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.88rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .efid-copy-btn {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid rgba(0, 243, 255, 0.35);
+            color: var(--accent);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .efid-copy-btn:hover {
+            background: var(--accent);
+            color: #040711;
+        }
+
+        /* --- 4-METRIC STATS GRID --- */
+        .stats-telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-widget {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .stat-widget:hover {
+            border-color: rgba(0, 243, 255, 0.35);
+        }
+
+        .stat-icon-wrap {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .icon-mv { background: rgba(0, 243, 255, 0.12); color: var(--accent); }
+        .icon-bdr { background: rgba(251, 191, 36, 0.12); color: var(--gold); }
+        .icon-solo { background: rgba(168, 85, 247, 0.12); color: var(--purple); }
+        .icon-wr { background: rgba(16, 185, 129, 0.12); color: var(--green); }
+
+        .stat-widget-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .stat-widget-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+
+        .stat-widget-lbl {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* --- RECENT MATCH HISTORY STRIP --- */
+        .match-history-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 18px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .section-header-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .career-summary-tag {
+            font-size: 0.65rem;
+            color: #94a3b8;
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .recent-matches-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mini-match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 10px 14px;
+        }
+
+        .match-opp-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .opp-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .match-score-pill {
+            background: #060b13;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 0.82rem;
+            color: #ffffff;
+            margin: 0 10px;
+        }
+
+        .res-badge {
+            font-size: 0.62rem;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 6px;
+            width: 44px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .res-win { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .res-draw { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .res-loss { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        /* --- MENU SECTION CARDS (BOOKMYSHOW STYLE) --- */
+        .menu-card-group {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-row-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-row-item:last-child { border-bottom: none; }
+        .menu-row-item:hover { background: rgba(255, 255, 255, 0.03); }
+
+        .row-left { display: flex; align-items: center; gap: 16px; }
+        .row-icon-box { width: 24px; text-align: center; color: var(--text-dim); font-size: 1.1rem; }
+        .menu-row-item:hover .row-icon-box { color: var(--accent); }
+        .row-title { font-size: 0.92rem; font-weight: 600; color: #e2e8f0; }
+        .row-tag { font-size: 0.62rem; background: rgba(251, 191, 36, 0.15); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-left: 6px; }
+        .row-chevron { color: #334155; font-size: 0.75rem; }
+
+        /* --- LOGOUT BUTTON --- */
+        .btn-logout {
+            width: 100%;
+            padding: 14px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger);
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.2s;
+            margin-top: 5px;
+        }
+        .btn-logout:hover { background: var(--danger); color: #fff; }
+
+        /* --- EDIT PROFILE MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.92);
+            backdrop-filter: blur(10px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #070d1d;
+            border: 1px solid var(--border-neon);
+            border-top: 3px solid var(--accent);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px 20px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.85);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h3 { 
+            margin: 0; 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1rem; 
+            color: #fff; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-modal-btn { background: none; border: none; color: #64748b; font-size: 1.5rem; cursor: pointer; }
+
+        .form-group { margin-bottom: 14px; text-align: left; }
+        .form-group label { 
+            display: block; 
+            font-size: 0.7rem; 
+            color: var(--text-dim); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            margin-bottom: 6px; 
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .form-group input { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 10px; 
+            color: white; 
+            box-sizing: border-box; 
+            outline: none; 
+            font-family: inherit;
+            font-size: 0.88rem;
+        }
+        .form-group input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0, 243, 255, 0.15); }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .upload-row { display: flex; gap: 8px; align-items: center; }
+        .btn-upload-file { 
+            background: #101c33; 
+            border: 1px solid var(--border); 
+            color: var(--accent); 
+            padding: 11px 14px; 
+            border-radius: 10px; 
+            font-size: 0.75rem; 
+            cursor: pointer; 
+            white-space: nowrap; 
+            font-weight: 700; 
+            font-family: 'Rajdhani', sans-serif;
+            transition: 0.2s;
+        }
+        .btn-upload-file:hover { background: rgba(0, 243, 255, 0.15); border-color: var(--accent); }
+
+        .btn-save-profile { 
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(90deg, #00d2ff 0%, #00f3ff 50%, #0077fe 100%); 
+            color: #040711; 
+            border: none; 
+            border-radius: 12px; 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 900; 
+            font-size: 0.82rem; 
+            letter-spacing: 1px;
+            cursor: pointer; 
+            margin-top: 10px; 
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            transition: 0.2s;
+        }
+        .btn-save-profile:hover { filter: brightness(1.1); }
+
+        /* --- BOTTOM NAVIGATION BAR --- */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: rgba(4, 7, 17, 0.95);
+            backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(0, 243, 255, 0.15);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+        }
+
+        .bottom-nav-inner {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 10px 10px;
+            box-sizing: border-box;
+        }
+
+        .b-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 8px 4px 6px;
+            cursor: pointer;
+            text-decoration: none;
+            border-radius: 14px;
+            transition: 0.2s;
+        }
+
+        .b-nav-item i { font-size: 1.15rem; margin-bottom: 4px; }
+        .b-nav-item span { font-family: 'Rajdhani', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: capitalize; }
+
+        .b-nav-item.active {
+            color: #00f3ff;
+            background: linear-gradient(180deg, rgba(0, 229, 255, 0.12) 0%, rgba(4, 7, 17, 0) 100%);
+            border-top: 2.5px solid #00f3ff;
+            border-radius: 12px 12px 6px 6px;
+            box-shadow: 0 -4px 15px rgba(0, 229, 255, 0.25);
+        }
+
+        .b-nav-item.active i { color: #00f3ff; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); }
+        .b-nav-item.active span { color: #00f3ff; font-weight: 800; }
+    </style>
+</head>
+<body>
+
+<div class="profile-container">
+
+    <!-- CLAN TOP BRANDING -->
+    <div class="clan-mini-header">
+        <div class="clan-logo-tag">
+            <i class="fa-solid fa-bolt" style="color:var(--accent);"></i>
+            THE RISING <span>STARS</span>
+        </div>
+        <div class="clan-status-badge">
+            <span class="pulse-dot"></span> CLAN ACTIVE
+        </div>
+    </div>
+
+    <!-- 1. USER HEADER CARD WITH OVR BADGE, GAMER TAG, & eFOOTBALL USER ID -->
+    <div class="user-header-card">
+        <div class="user-header-top">
+            <div class="user-profile-left">
+                <div class="user-avatar-frame">
+                    <img id="uAvatar" src="" onerror="handleAvatarError(this)">
+                </div>
+                <div class="user-info-col">
+                    <h2 class="user-name-title">
+                        <span id="uName">Loading...</span>
+                        <i id="uCrown" class="fa-solid fa-crown captain-crown" style="display:none;" title="Official Clan Captain"></i>
+                    </h2>
+                    <button type="button" onclick="openEditModal()" class="edit-profile-btn">
+                        Edit Profile <i class="fa-solid fa-pen" style="font-size:0.65rem;"></i>
+                    </button>
+                    <br>
+                    <div id="uTeam" class="team-badge-pill">Free Agent</div>
+                </div>
+            </div>
+
+            <!-- FIFA/eFootball OVR BADGE -->
+            <div class="ovr-badge-box">
+                <div class="ovr-num" id="uOvr">--</div>
+                <div class="ovr-label">OVR</div>
+            </div>
+        </div>
+
+        <!-- GAMER TAG & eFOOTBALL USER ID PILL ROW -->
+        <div class="credentials-bar">
+            <div class="cred-item">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>Tag:</span>
+                <b id="uGamerTag">--</b>
+            </div>
+            <div class="cred-item">
+                <i class="fa-solid fa-id-card"></i>
+                <span>ID:</span>
+                <b id="uEfId">--</b>
+                <button type="button" class="efid-copy-btn" onclick="copyEfootballId()" title="Copy eFootball ID to clipboard">
+                    <i class="fa-regular fa-copy"></i> Copy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 4-METRIC TELEMETRY GRID -->
+    <div class="stats-telemetry-grid">
+        <!-- Market Value -->
+        <div class="stat-widget">
+            <div class="stat-icon-wrap icon-mv"><i class="fa-solid fa-gem"></i></div>
+            <div class="stat-widget-info">
+                <span class="stat-widget-val" id="statMv">0M</span>
+                <span class="stat-widget-lbl">Market Value</span>
+            </div>
+        </div>
+
+        <!-- Auction BDR -->
+        <div class="stat-widget">
+            <div class="stat-icon-wrap icon-bdr"><i class="fa-solid fa-trophy"></i></div>
+            <div class="stat-widget-info">
+                <span class="stat-widget-val" id="statBdr">0</span>
+                <span class="stat-widget-lbl">Auction BDR</span>
+            </div>
+        </div>
+
+        <!-- Solo BDR -->
+        <div class="stat-widget">
+            <div class="stat-icon-wrap icon-solo"><i class="fa-solid fa-globe"></i></div>
+            <div class="stat-widget-info">
+                <span class="stat-widget-val" id="statSoloBdr">0</span>
+                <span class="stat-widget-lbl">Solo BDR</span>
+            </div>
+        </div>
+
+        <!-- Career Win Rate -->
+        <div class="stat-widget">
+            <div class="stat-icon-wrap icon-wr"><i class="fa-solid fa-bolt-lightning"></i></div>
+            <div class="stat-widget-info">
+                <span class="stat-widget-val" id="statWinRate">0%</span>
+                <span class="stat-widget-lbl">Career Win Rate</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. RECENT MATCH HISTORY STRIP -->
+    <div class="match-history-card">
+        <div class="section-header-row">
+            <div class="section-header-title">
+                <i class="fa-solid fa-clock-rotate-left"></i> Recent Form & Matches
+            </div>
+            <span class="career-summary-tag" id="careerRecordTag">0W · 0D · 0L</span>
+        </div>
+
+        <div class="recent-matches-list" id="recentMatchesList">
+            <p style="text-align:center; color:var(--text-dim); font-size:0.75rem; padding:10px 0;">Syncing match telemetry...</p>
+        </div>
+    </div>
+
+    <!-- 4. CAREER & TOURNAMENT MENU -->
+    <div class="menu-card-group">
+        <a id="lnkPublicProfile" href="player.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box"><i class="fa-solid fa-id-card"></i></div>
+                <span class="row-title">Full Tactical Dossier & Calendar</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <a id="lnkDressingRoom" href="#" class="menu-row-item" style="display:none;">
+            <div class="row-left">
+                <div class="row-icon-box" style="color:var(--gold);"><i class="fa-solid fa-door-open"></i></div>
+                <span class="row-title">Club Dressing Room <span class="row-tag">CAPTAIN</span></span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <a href="transfer.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box"><i class="fa-solid fa-handshake"></i></div>
+                <span class="row-title">Transfer Market & Release Offers</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <a href="trending.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box" style="color:#f59e0b;"><i class="fa-solid fa-fire"></i></div>
+                <span class="row-title">Trending Players of the Week</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <a href="bdr-global.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box" style="color:#a855f7;"><i class="fa-solid fa-trophy"></i></div>
+                <span class="row-title">Global Solo BDR Leaderboard</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <a href="glory.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box" style="color:var(--green);"><i class="fa-solid fa-award"></i></div>
+                <span class="row-title">Glory Gallery Showcase</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+    </div>
+
+    <!-- 5. COMMUNITY & SETTINGS -->
+    <div class="menu-card-group">
+        <a href="media.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box"><i class="fa-solid fa-tv"></i></div>
+                <span class="row-title">TRS Media Hub (Streams & Replays)</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <a href="index.html" class="menu-row-item">
+            <div class="row-left">
+                <div class="row-icon-box"><i class="fa-solid fa-headset"></i></div>
+                <span class="row-title">Help Centre & Admin Modmail</span>
+            </div>
+            <i class="fa-solid fa-chevron-right row-chevron"></i>
+        </a>
+
+        <div class="menu-row-item" style="cursor:default;">
+            <div class="row-left">
+                <div class="row-icon-box"><i class="fa-brands fa-google"></i></div>
+                <span class="row-title">Linked Google Account</span>
+            </div>
+            <span id="uGoogleEmail" style="font-size:0.75rem; color:var(--text-dim);">Signed in</span>
+        </div>
+    </div>
+
+    <!-- 6. LOGOUT BUTTON -->
+    <div class="btn-logout-wrap">
+        <button class="btn-logout" onclick="logoutUser()">
+            <i class="fa-solid fa-power-off"></i> LOG OUT OF TRS CLAN
+        </button>
+    </div>
+
+</div>
+
+<!-- EDIT PROFILE MODAL (WITH GAMER TAG & eFOOTBALL USER ID) -->
+<div id="editModal" class="modal-overlay" style="display:none;" onclick="closeEditModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user-pen" style="color:var(--accent);"></i> Edit Player Profile</h3>
+            <button type="button" class="close-modal-btn" onclick="closeEditModal()">&times;</button>
+        </div>
+
+        <form id="editProfileForm" onsubmit="saveProfileChanges(event)">
+            <div class="form-group">
+                <label>Player Full Name</label>
+                <input type="text" id="epName" placeholder="Enter Full Name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Nickname / Gaming Handle</label>
+                <input type="text" id="epNick" placeholder="e.g. 'XeNo'">
+            </div>
+
+            <!-- GAMER TAG & eFOOTBALL ID INPUTS -->
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>Gamer Tag</label>
+                    <input type="text" id="epGamerTag" placeholder="e.g. TRS_Matrix">
+                </div>
+                <div class="form-group">
+                    <label>eFootball User ID</label>
+                    <input type="text" id="epEfId" placeholder="e.g. 748-291-002">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Profile Avatar Image</label>
+                <div class="upload-row">
+                    <input type="text" id="epAvatar" placeholder="Avatar Image URL" style="margin:0; flex:1;">
+                    <button type="button" class="btn-upload-file" onclick="document.getElementById('fileAvatarInput').click()">
+                        <i class="fa-solid fa-upload"></i> Upload
+                    </button>
+                </div>
+                <input type="file" id="fileAvatarInput" accept="image/*" style="display:none;" onchange="uploadImageToImgBB(this, 'epAvatar')">
+            </div>
+
+            <div class="form-group">
+                <label>Squad Screenshot Image</label>
+                <div class="upload-row">
+                    <input type="text" id="epSquad" placeholder="Squad Screenshot URL" style="margin:0; flex:1;">
+                    <button type="button" class="btn-upload-file" onclick="document.getElementById('fileSquadInput').click()">
+                        <i class="fa-solid fa-upload"></i> Upload
+                    </button>
+                </div>
+                <input type="file" id="fileSquadInput" accept="image/*" style="display:none;" onchange="uploadImageToImgBB(this, 'epSquad')">
+            </div>
+
+            <button type="submit" id="btnSaveProfile" class="btn-save-profile">
+                SAVE CHANGES TO DATABASE
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- BOTTOM NAVIGATION BAR -->
+<nav class="bottom-nav-bar">
+    <div class="bottom-nav-inner">
+        <a href="index.html" class="b-nav-item">
+            <i class="fa-solid fa-users"></i>
+            <span>Players</span>
+        </a>
+        <a href="index.html" class="b-nav-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Teams</span>
+        </a>
+        <a href="index.html" class="b-nav-item">
+            <i class="fa-solid fa-headset"></i>
+            <span>Support</span>
+        </a>
+        <a href="profile.html" class="b-nav-item active">
+            <i class="fa-solid fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+</nav>
+
+<script>
+    const API = "https://trs-backend-qumj.onrender.com";
+    const IMGBB_API_KEY = "f7efe3b052585cd233d08aa371c043bc";
+
+    let currentPlayerData = null;
+
+    function handleAvatarError(img) {
+        const name = currentPlayerData?.name || "Player";
+        img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00f3ff&color=040711&bold=true`;
+    }
+
+    // 1. Unified Loader: Instant Local Render + Live DB Sync
+    async function loadUserProfile() {
+        const rawUser = localStorage.getItem('nexus_player_user');
+        if (!rawUser) {
+            window.location.href = "login2.html";
+            return;
+        }
+
+        try {
+            const sessionUser = JSON.parse(rawUser);
+            currentPlayerData = sessionUser;
+
+            // Instant render from local cache
+            renderUserData(sessionUser, []);
+
+            // Live Fetch from Backend: Pulls fresh player details + match history in parallel!
+            const res = await fetch(`${API}/api/players/profile/${sessionUser._id}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.player) {
+                    currentPlayerData = { ...sessionUser, ...data.player };
+                    localStorage.setItem('nexus_player_user', JSON.stringify(currentPlayerData));
+                    renderUserData(data.player, data.matches || []);
+                }
+            }
+        } catch (err) {
+            console.warn("Live DB profile sync failed:", err);
+        }
+    }
+
+    function renderUserData(p, matches) {
+        // --- 1. Header Details ---
+        document.getElementById('uName').innerText = p.name || "Agent";
+        
+        let avatarSrc = p.image ? p.image.trim() : "";
+        if (avatarSrc.startsWith("http://")) avatarSrc = avatarSrc.replace("http://", "https://");
+        
+        const avatarEl = document.getElementById('uAvatar');
+        if (avatarSrc && avatarSrc !== "" && avatarSrc !== "null") {
+            avatarEl.src = avatarSrc;
+        } else {
+            handleAvatarError(avatarEl);
+        }
+
+        document.getElementById('uTeam').innerText = p.teamName || "Free Agent";
+        document.getElementById('uGoogleEmail').innerText = p.googleEmail || "Google Linked";
+
+        // Gamer Tag & eFootball ID
+        document.getElementById('uGamerTag').innerText = p.gamerTag || p.gamertag || "Not Set";
+        document.getElementById('uEfId').innerText = p.efootballId || p.efootballID || "Not Set";
+
+        // Captain Status
+        if (p.isCaptain) {
+            document.getElementById('uCrown').style.display = 'inline-block';
+            if (p.teamName && p.teamName !== "Free Agent") {
+                const drLink = document.getElementById('lnkDressingRoom');
+                drLink.href = `dressing-room.html?id=${encodeURIComponent(p.teamName)}`;
+                drLink.style.display = 'flex';
+            }
+        }
+
+        // --- 2. Telemetry Metrics ---
+        document.getElementById('statMv').innerText = (p.marketValue || 0) + "M";
+        document.getElementById('statBdr').innerText = (p.bdrPoints || 0) + " pts";
+        document.getElementById('statSoloBdr').innerText = (p.soloBdrPoints || 0) + " pts";
+
+        // Calculate Career Win Rate
+        const totalMatches = matches.length;
+        let wins = 0, draws = 0, losses = 0;
+
+        matches.forEach(m => {
+            const isA = m.playerA === p.name;
+            const myS = Number(isA ? m.scoreA : m.scoreB) || 0;
+            const oppS = Number(isA ? m.scoreB : m.scoreA) || 0;
+            if (myS > oppS) wins++;
+            else if (myS === oppS) draws++;
+            else losses++;
+        });
+
+        const winRate = totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 0;
+        document.getElementById('statWinRate').innerText = winRate + "%";
+        document.getElementById('careerRecordTag').innerText = `${wins}W · ${draws}D · ${losses}L (${totalMatches}m)`;
+
+        // --- 3. Professional OVR Rating Formula (50 to 99) ---
+        const bdrBonus = Math.min(25, ((p.bdrPoints || 0) + (p.soloBdrPoints || 0)) / 6);
+        const mvBonus = Math.min(20, (p.marketValue || 0) / 25);
+        const calcOvr = Math.round((winRate * 0.4) + bdrBonus + mvBonus + 20);
+        const finalOvr = Math.min(99, Math.max(50, calcOvr));
+        document.getElementById('uOvr').innerText = finalOvr;
+
+        // --- 4. Render Recent 5 Matches ---
+        const matchListEl = document.getElementById('recentMatchesList');
+        if (matches.length === 0) {
+            matchListEl.innerHTML = `<p style="text-align:center; color:var(--text-dim); font-size:0.75rem; padding:10px 0;">No official matches recorded yet.</p>`;
+        } else {
+            const recent5 = matches.slice(0, 5);
+            matchListEl.innerHTML = recent5.map(m => {
+                const isA = m.playerA === p.name;
+                const opp = isA ? m.playerB : m.playerA;
+                const myS = Number(isA ? m.scoreA : m.scoreB) || 0;
+                const oppS = Number(isA ? m.scoreB : m.scoreA) || 0;
+
+                let resLabel = "DRAW", resClass = "res-draw";
+                if (myS > oppS) { resLabel = "WIN"; resClass = "res-win"; }
+                else if (myS < oppS) { resLabel = "LOSS"; resClass = "res-loss"; }
+
+                return `
+                    <div class="mini-match-row">
+                        <div class="match-opp-wrap">
+                            <span style="font-size:0.7rem; color:var(--text-dim); font-weight:700;">vs</span>
+                            <span class="opp-name">${opp}</span>
+                        </div>
+                        <div class="match-score-pill">${myS} - ${oppS}</div>
+                        <div class="res-badge ${resClass}">${resLabel}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Links
+        document.getElementById('lnkPublicProfile').href = `player.html?id=${p._id}`;
+    }
+
+    // --- QUICK COPY eFOOTBALL USER ID ---
+    function copyEfootballId() {
+        const idText = document.getElementById('uEfId').innerText;
+        if (!idText || idText === "--" || idText === "Not Set") {
+            return alert("eFootball ID not set yet! Tap 'Edit Profile' to add yours.");
+        }
+        navigator.clipboard.writeText(idText).then(() => {
+            alert(`✅ eFootball ID copied: ${idText}`);
+        }).catch(() => {
+            prompt("Copy eFootball ID:", idText);
+        });
+    }
+
+    // --- EDIT PROFILE MODAL ---
+    function openEditModal() {
+        if (!currentPlayerData) return;
+        document.getElementById('epName').value = currentPlayerData.name || "";
+        document.getElementById('epNick').value = currentPlayerData.nickname || "";
+        document.getElementById('epGamerTag').value = currentPlayerData.gamerTag || currentPlayerData.gamertag || "";
+        document.getElementById('epEfId').value = currentPlayerData.efootballId || currentPlayerData.efootballID || "";
+        document.getElementById('epAvatar').value = currentPlayerData.image || "";
+        document.getElementById('epSquad').value = currentPlayerData.squadImage || "";
+
+        document.getElementById('editModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    async function uploadImageToImgBB(input, targetInputId) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const targetField = document.getElementById(targetInputId);
+        const originalVal = targetField.value;
+        targetField.value = "Uploading to Cloud...";
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        try {
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            if (data && data.data && data.data.url) {
+                targetField.value = data.data.url;
+                alert("Upload Successful! Click 'Save Changes' to apply.");
+            } else {
+                throw new Error("Invalid response");
+            }
+        } catch (e) {
+            alert("Image upload failed. You can paste a link manually.");
+            targetField.value = originalVal;
+        }
+    }
+
+    async function saveProfileChanges(e) {
+        e.preventDefault();
+        const targetId = currentPlayerData?._id || currentPlayerData?.id;
+        if (!targetId) return alert("Session expired. Please log out and sign in again.");
+
+        const btn = document.getElementById('btnSaveProfile');
+        btn.innerText = "SAVING TO DATABASE...";
+        btn.disabled = true;
+
+        const payload = {
+            name: document.getElementById('epName').value.trim(),
+            nickname: document.getElementById('epNick').value.trim(),
+            gamerTag: document.getElementById('epGamerTag').value.trim(),
+            efootballId: document.getElementById('epEfId').value.trim(),
+            image: document.getElementById('epAvatar').value.trim(),
+            squadImage: document.getElementById('epSquad').value.trim()
+        };
+
+        try {
+            const res = await fetch(`${API}/api/players/${targetId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (res.ok && (data.success || data.player)) {
+                const updated = { ...currentPlayerData, ...payload, ...(data.player || {}) };
+                currentPlayerData = updated;
+                localStorage.setItem('nexus_player_user', JSON.stringify(updated));
+                renderUserData(updated, []);
+                closeEditModal();
+                alert("✅ Profile updated successfully!");
+                location.reload();
+            } else {
+                alert("❌ " + (data.error || "Failed to update profile"));
+            }
+        } catch (err) {
+            alert("Connection error. Server unreachable.");
+        } finally {
+            btn.innerText = "SAVE CHANGES TO DATABASE";
+            btn.disabled = false;
+        }
+    }
+
+    function logoutUser() {
+        if (confirm("Log out of your The Rising Stars player account?")) {
+            localStorage.removeItem('nexus_player_user');
+            window.location.href = "login2.html";
+        }
+    }
+
+    window.onload = loadUserProfile;
+</script>
+
+</body>
+</html>
