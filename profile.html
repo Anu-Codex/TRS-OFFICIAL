@@ -483,38 +483,54 @@
 
     // --- 4. SIGN UP: REQUEST BREVO OTP ---
     async function handleSignUpRequest(e) {
-        e.preventDefault();
-        const playerId = document.getElementById('suPlayerSelect').value;
-        const email = document.getElementById('suEmail').value.trim();
-        const password = document.getElementById('suPassword').value;
+    e.preventDefault();
+    const playerId = document.getElementById('suPlayerSelect').value;
+    const email = document.getElementById('suEmail').value.trim();
+    const password = document.getElementById('suPassword').value;
 
-        if (!playerId) return alert("Please select a player profile to claim!");
+    if (!playerId) return alert("Please select a player profile to claim!");
 
-        const btn = document.getElementById('btnSignUpSubmit');
-        btn.innerText = "DISPATCHING OTP VIA BREVO...";
-        btn.disabled = true;
+    const btn = document.getElementById('btnSignUpSubmit');
+    btn.innerText = "DISPATCHING OTP VIA BREVO...";
+    btn.disabled = true;
 
-        try {
-            // Dispatch Brevo OTP from backend
-            const res = await fetch(`${API}/auth/brevo/request-signup-otp`, {
+    try {
+        const payload = { email, playerId };
+
+        // 1. Try sending to primary backend (API)
+        let res = await fetch(`${API}/auth/brevo/request-signup-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(() => null);
+
+        // 2. Fallback to API_V2 if primary is unreachable
+        if (!res || !res.ok) {
+            res = await fetch(`${API_V2}/auth/brevo/request-signup-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, playerId })
-            });
-
-            const data = await res.json();
-            if (res.ok && data.success) {
-                pendingAuthData = { email, password, playerId };
-                openOtpModal("CLAIM IDENTITY", `A 6-digit Brevo security code was sent to ${email}`);
-            } else {
-                alert("❌ " + (data.error || "Failed to dispatch verification code."));
-            }
-        } catch (err) {
-            alert("Authentication server unreachable.");
-        } finally {
-            btn.innerText = "REQUEST OTP VIA GMAIL";
-            btn.disabled = false;
+                body: JSON.stringify(payload)
+            }).catch(() => null);
         }
+
+        if (!res) {
+            throw new Error(`Cannot connect to backend server. Render may be waking up or offline.`);
+        }
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            pendingAuthData = { email, password, playerId };
+            openOtpModal("CLAIM IDENTITY", `A 6-digit Brevo security code was sent to ${email}`);
+        } else {
+            alert("❌ " + (data.error || "Failed to dispatch verification code."));
+        }
+    } catch (err) {
+        alert("Server Error: " + err.message);
+    } finally {
+        btn.innerText = "REQUEST OTP VIA BREVO";
+        btn.disabled = false;
+    }
     }
 
     // --- 5. SIGN IN: FIREBASE + 2FA BREVO OTP ---
