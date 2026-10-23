@@ -632,40 +632,57 @@
 
     // --- 7. GOOGLE FIREBASE AUTHENTICATION ---
     async function handleGoogleFirebase() {
-        const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new firebase.auth.GoogleAuthProvider();
 
-        try {
-            const result = await auth.signInWithPopup(provider);
-            const user = result.user;
-            const token = await user.getIdToken();
+    try {
+        const result = await auth.signInWithPopup(provider);
+        const user = result.user;
+        const token = await user.getIdToken();
 
-            const res = await fetch(`${API_V2}/auth/firebase-google`, {
+        const payload = {
+            email: user.email,
+            uid: user.uid,
+            displayName: user.displayName,
+            token
+        };
+
+        // 1. Try sending to your primary backend
+        let res = await fetch(`${API}/auth/firebase-google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(() => null);
+
+        // 2. Fallback to API_V2 if primary fails
+        if (!res || !res.ok) {
+            res = await fetch(`${API_V2}/auth/firebase-google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: user.email,
-                    uid: user.uid,
-                    displayName: user.displayName,
-                    token
-                })
-            });
-
-            const data = await res.json();
-
-            if (data.isLinked) {
-                finalizeSession(data.player);
-            } else {
-                // First-time Google user needs to claim an identity
-                alert("Google verification successful! Please select an unclaimed player identity to complete registration.");
-                switchAuthMode('signup');
-                document.getElementById('suEmail').value = user.email;
-                document.getElementById('suEmail').readOnly = true;
-                document.getElementById('suPassword').value = "GOOGLE_AUTH_" + user.uid.substring(0, 8);
-                document.getElementById('suPassword').parentElement.style.display = 'none';
-            }
-        } catch (err) {
-            alert("Google Sign-In Error: " + err.message);
+                body: JSON.stringify(payload)
+            }).catch(() => null);
         }
+
+        // 3. Safety check: Ensure the response is valid JSON, not an HTML 404 page
+        if (!res || !res.ok) {
+            throw new Error(`Backend route /api/auth/firebase-google not found (Status: ${res ? res.status : 'No response'}). Verify your Render URL in login2.html.`);
+        }
+
+        const data = await res.json();
+
+        if (data.isLinked) {
+            finalizeSession(data.player);
+        } else {
+            // First time Google user: Prompt them to claim a profile
+            alert("Google authentication verified! Please choose your player profile from the dropdown to finalize registration.");
+            switchAuthMode('signup');
+            document.getElementById('suEmail').value = user.email;
+            document.getElementById('suEmail').readOnly = true;
+            document.getElementById('suPassword').value = "GOOGLE_AUTH_" + user.uid.substring(0, 8);
+            document.getElementById('suPassword').parentElement.style.display = 'none';
+        }
+    } catch (err) {
+        alert("Google Sign-In Error: " + err.message);
+    }
     }
 
     function openOtpModal(title, notice) {
