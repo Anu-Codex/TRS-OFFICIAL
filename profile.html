@@ -496,7 +496,7 @@
 
         try {
             // Dispatch Brevo OTP from backend
-            const res = await fetch(`${API_V2}/auth/brevo/request-signup-otp`, {
+            const res = await fetch(`${API}/auth/brevo/request-signup-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, playerId })
@@ -512,7 +512,7 @@
         } catch (err) {
             alert("Authentication server unreachable.");
         } finally {
-            btn.innerText = "REQUEST OTP VIA BREVO";
+            btn.innerText = "REQUEST OTP VIA GMAIL";
             btn.disabled = false;
         }
     }
