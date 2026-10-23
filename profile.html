@@ -399,13 +399,14 @@
     // --- 1. FIREBASE CONFIGURATION ---
     // Replace with your Firebase Console Project credentials:
     const firebaseConfig = {
-        apiKey: "YOUR_FIREBASE_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
+  apiKey: "AIzaSyBCRHvaZEG4H4Q_4kevR6hvUF0WDqzaGcE",
+  authDomain: "the-rising-stars-clan.firebaseapp.com",
+  projectId: "the-rising-stars-clan",
+  storageBucket: "the-rising-stars-clan.firebasestorage.app",
+  messagingSenderId: "135673950987",
+  appId: "1:135673950987:web:776d4db92435061eece80e",
+  measurementId: "G-EHPMSSQYQB"
+};
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -435,32 +436,49 @@
 
     // --- 3. FETCH UNCLAIMED ROSTER ---
     async function loadUnclaimedPlayers() {
-        const select = document.getElementById('suPlayerSelect');
-        select.innerHTML = '<option value="">Syncing Unclaimed Players...</option>';
+    const select = document.getElementById('suPlayerSelect');
+    if (!select) return;
 
-        try {
-            let res = await fetch(`${API_V2}/api/players/unclaimed`).catch(() => null);
-            if (!res || !res.ok) {
-                res = await fetch(`${API}/api/players/unclaimed`).catch(() => null);
-            }
+    select.innerHTML = '<option value="">Syncing Unclaimed Roster...</option>';
 
-            if (!res || !res.ok) {
-                // Fallback to all players if separate unclaimed route is pending
-                res = await fetch(`${API}/api/players`);
-            }
-
-            const allPlayers = await res.json();
-            const unclaimed = allPlayers.filter(p => !p.isClaimed);
-
-            if (unclaimed.length === 0) {
-                select.innerHTML = '<option value="">All clan profiles are currently claimed</option>';
-            } else {
-                select.innerHTML = '<option value="">-- Choose Your Player Identity --</option>' + 
-                    unclaimed.map(p => `<option value="${p._id}">${p.name} (${p.teamName || 'Free Agent'})</option>`).join('');
-            }
-        } catch (err) {
-            select.innerHTML = '<option value="">⚠️ Server link error. Check backend connection.</option>';
+    try {
+        // Try route 1: /api/players/unclaimed
+        let res = await fetch(`${API_V2}/api/players/unclaimed`).catch(() => null);
+        
+        // Try route 2: fallback to /api/players
+        if (!res || !res.ok) {
+            res = await fetch(`${API}/api/players`).catch(() => null);
         }
+
+        if (!res || !res.ok) {
+            throw new Error(`Server status ${res ? res.status : 'No response (Server sleeping)'}`);
+        }
+
+        const data = await res.json();
+        const allPlayers = Array.isArray(data) ? data : (data.players || []);
+
+        if (allPlayers.length === 0) {
+            select.innerHTML = '<option value="">No players found in database</option>';
+            return;
+        }
+
+        // Filter players who have not been claimed yet
+        const unclaimed = allPlayers.filter(p => p.isClaimed !== true);
+
+        if (unclaimed.length === 0) {
+            select.innerHTML = '<option value="">All profiles are currently claimed (0 available)</option>';
+        } else {
+            select.innerHTML = '<option value="">-- Choose Your Player Identity --</option>' + 
+                unclaimed.map(p => `<option value="${p._id}">${p.name} (${p.teamName || 'Free Agent'})</option>`).join('');
+        }
+
+    } catch (err) {
+        console.error("❌ Failed to load players:", err);
+        select.innerHTML = '<option value="">⚠️ Server waking up. Tap here to retry</option>';
+        select.onchange = () => {
+            if (!select.value) loadUnclaimedPlayers();
+        };
+    }
     }
 
     // --- 4. SIGN UP: REQUEST BREVO OTP ---
