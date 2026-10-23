@@ -496,7 +496,7 @@
 
         try {
             // Dispatch Brevo OTP from backend
-            const res = await fetch(`${API_V2}/api/auth/brevo/request-signup-otp`, {
+            const res = await fetch(`${API_V2}/auth/brevo/request-signup-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, playerId })
@@ -534,7 +534,7 @@
 
             // 2. Request 2FA OTP via Brevo
             btn.innerText = "DISPATCHING 2FA OTP...";
-            const res = await fetch(`${API_V2}/api/auth/brevo/request-signin-otp`, {
+            const res = await fetch(`${API_V2}/auth/brevo/request-signin-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, uid: user.uid })
@@ -568,7 +568,7 @@
         try {
             if (currentMode === 'signup') {
                 // 1. Verify OTP and claim player in database
-                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signup-otp`, {
+                const res = await fetch(`${API_V2}/auth/brevo/verify-signup-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -604,7 +604,7 @@
 
             } else {
                 // Sign In verification
-                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signin-otp`, {
+                const res = await fetch(`${API_V2}/auth/brevo/verify-signin-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -639,7 +639,7 @@
             const user = result.user;
             const token = await user.getIdToken();
 
-            const res = await fetch(`${API_V2}/api/auth/firebase-google`, {
+            const res = await fetch(`${API_V2}/auth/firebase-google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
