@@ -443,7 +443,7 @@
 
     try {
         // Try route 1: /api/players/unclaimed
-        let res = await fetch(`${API_V2}/api/players/unclaimed`).catch(() => null);
+        let res = await fetch(`${API_V2}/players/unclaimed`).catch(() => null);
         
         // Try route 2: fallback to /api/players
         if (!res || !res.ok) {
