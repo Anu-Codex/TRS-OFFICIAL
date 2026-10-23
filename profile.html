@@ -598,7 +598,8 @@ async function handleOtpVerification(e) {
                 body: JSON.stringify({
                     email: pendingAuthData.email,
                     otp,
-                    playerId: pendingAuthData.playerId
+                    playerId: pendingAuthData.playerId,
+                    uid: auth.currentUser ? auth.currentUser.uid : (pendingAuthData.uid || null)
                 })
             }).catch(() => null);
 
