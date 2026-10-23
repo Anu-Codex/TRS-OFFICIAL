@@ -580,18 +580,31 @@
     }
 
     // --- 6. VERIFY BREVO OTP & FINALIZE ---
-    async function handleOtpVerification(e) {
-        e.preventDefault();
-        const otp = document.getElementById('otpCodeInput').value.trim();
-        const btn = document.getElementById('btnVerifyOtp');
+    // ✅ UPDATED RESILIENT OTP VERIFICATION
+async function handleOtpVerification(e) {
+    e.preventDefault();
+    const otp = document.getElementById('otpCodeInput').value.trim();
+    const btn = document.getElementById('btnVerifyOtp');
 
-        btn.innerText = "VALIDATING OTP...";
-        btn.disabled = true;
+    btn.innerText = "VALIDATING OTP...";
+    btn.disabled = true;
 
-        try {
-            if (currentMode === 'signup') {
-                // 1. Verify OTP and claim player in database
-                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signup-otp`, {
+    try {
+        if (currentMode === 'signup') {
+            // 1. Verify Brevo OTP on your backend & claim the player identity
+            let res = await fetch(`${API}/api/auth/brevo/verify-signup-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: pendingAuthData.email,
+                    otp,
+                    playerId: pendingAuthData.playerId
+                })
+            }).catch(() => null);
+
+            // Fallback if needed
+            if (!res || !res.ok) {
+                res = await fetch(`${API_V2}/api/auth/brevo/verify-signup-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -599,35 +612,65 @@
                         otp,
                         playerId: pendingAuthData.playerId
                     })
-                });
+                }).catch(() => null);
+            }
 
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                    throw new Error(data.error || "Invalid OTP code.");
-                }
+            if (!res) throw new Error("Could not reach backend verification server.");
 
-                // 2. Register secure credentials in Firebase Auth
-                let userCred;
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || "Invalid OTP code entered.");
+            }
+
+            // 2. Link with Firebase without crashing on Google accounts
+            let userUid = null;
+
+            // If already signed in via Google:
+            if (auth.currentUser && auth.currentUser.email.toLowerCase() === pendingAuthData.email.toLowerCase()) {
+                userUid = auth.currentUser.uid;
+            } else {
                 try {
-                    userCred = await auth.createUserWithEmailAndPassword(pendingAuthData.email, pendingAuthData.password);
-                } catch(fErr) {
-                    // In case already created on Firebase
-                    userCred = await auth.signInWithEmailAndPassword(pendingAuthData.email, pendingAuthData.password);
+                    const userCred = await auth.createUserWithEmailAndPassword(pendingAuthData.email, pendingAuthData.password);
+                    userUid = userCred.user.uid;
+                } catch (fErr) {
+                    // If account already exists in Firebase, attempt password sign-in safely
+                    if (fErr.code === 'auth/email-already-in-use') {
+                        try {
+                            const userCred = await auth.signInWithEmailAndPassword(pendingAuthData.email, pendingAuthData.password);
+                            userUid = userCred.user.uid;
+                        } catch (sErr) {
+                            console.warn("Account exists via Google or different password — continuing with verified OTP.");
+                        }
+                    }
                 }
+            }
 
-                // 3. Save Firebase UID to profile
-                await fetch(`${API_V2}/api/players/${pendingAuthData.playerId}`, {
+            // 3. Update profile with Firebase UID if available
+            if (userUid) {
+                await fetch(`${API}/api/players/${pendingAuthData.playerId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ firebaseUid: userCred.user.uid, claimedEmail: pendingAuthData.email })
-                });
+                    body: JSON.stringify({ firebaseUid: userUid, claimedEmail: pendingAuthData.email })
+                }).catch(() => null);
+            }
 
-                alert("✅ Profile successfully claimed and secured with Firebase!");
-                finalizeSession(data.player);
+            alert("✅ Identity successfully claimed and verified!");
+            finalizeSession(data.player);
 
-            } else {
-                // Sign In verification
-                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signin-otp`, {
+        } else {
+            // --- SIGN IN MODE ---
+            let res = await fetch(`${API}/api/auth/brevo/verify-signin-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: pendingAuthData.email,
+                    otp,
+                    uid: pendingAuthData.uid
+                })
+            }).catch(() => null);
+
+            if (!res || !res.ok) {
+                res = await fetch(`${API_V2}/api/auth/brevo/verify-signin-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -635,23 +678,24 @@
                         otp,
                         uid: pendingAuthData.uid
                     })
-                });
-
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    alert("✅ Welcome back to The Rising Stars!");
-                    finalizeSession(data.player);
-                } else {
-                    alert("❌ " + (data.error || "Incorrect OTP code."));
-                }
+                }).catch(() => null);
             }
-        } catch (err) {
-            alert("❌ " + err.message);
-        } finally {
-            btn.innerText = "CONFIRM & ENTER CLAN";
-            btn.disabled = false;
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                alert("✅ Welcome back to The Rising Stars!");
+                finalizeSession(data.player);
+            } else {
+                alert("❌ " + (data.error || "Incorrect OTP code entered."));
+            }
         }
+    } catch (err) {
+        alert("❌ " + err.message);
+    } finally {
+        btn.innerText = "CONFIRM & ENTER CLAN";
+        btn.disabled = false;
     }
+}
 
     // --- 7. GOOGLE FIREBASE AUTHENTICATION ---
     async function handleGoogleFirebase() {
