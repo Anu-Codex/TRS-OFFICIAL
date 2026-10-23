@@ -443,7 +443,7 @@
 
     try {
         // Try route 1: /api/players/unclaimed
-        let res = await fetch(`${API_V2}/players/unclaimed`).catch(() => null);
+        let res = await fetch(`${API_V2}/api/players/unclaimed`).catch(() => null);
         
         // Try route 2: fallback to /api/players
         if (!res || !res.ok) {
@@ -497,16 +497,16 @@
     try {
         const payload = { email, playerId };
 
-        // 1. Try sending to primary backend (API)
-        let res = await fetch(`${API}/auth/brevo/request-signup-otp`, {
+        // 1. Send request
+        let res = await fetch(`${API}/api/auth/brevo/request-signup-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         }).catch(() => null);
 
-        // 2. Fallback to API_V2 if primary is unreachable
+        // Fallback to API_V2 if primary fails
         if (!res || !res.ok) {
-            res = await fetch(`${API_V2}/auth/brevo/request-signup-otp`, {
+            res = await fetch(`${API_V2}/api/auth/brevo/request-signup-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -514,7 +514,14 @@
         }
 
         if (!res) {
-            throw new Error(`Cannot connect to backend server. Render may be waking up or offline.`);
+            throw new Error("Cannot reach Render backend. Check your internet or wait for Render to wake up.");
+        }
+
+        // 2. Prevent the <!DOCTYPE crash: Check if server returned HTML
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+            const htmlText = await res.text();
+            throw new Error(`Server returned HTML instead of JSON (Status ${res.status}). Route does not exist on: ${res.url}`);
         }
 
         const data = await res.json();
@@ -526,7 +533,7 @@
             alert("❌ " + (data.error || "Failed to dispatch verification code."));
         }
     } catch (err) {
-        alert("Server Error: " + err.message);
+        alert(err.message);
     } finally {
         btn.innerText = "REQUEST OTP VIA BREVO";
         btn.disabled = false;
@@ -550,7 +557,7 @@
 
             // 2. Request 2FA OTP via Brevo
             btn.innerText = "DISPATCHING 2FA OTP...";
-            const res = await fetch(`${API_V2}/auth/brevo/request-signin-otp`, {
+            const res = await fetch(`${API_V2}/api/auth/brevo/request-signin-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, uid: user.uid })
@@ -584,7 +591,7 @@
         try {
             if (currentMode === 'signup') {
                 // 1. Verify OTP and claim player in database
-                const res = await fetch(`${API_V2}/auth/brevo/verify-signup-otp`, {
+                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signup-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -620,7 +627,7 @@
 
             } else {
                 // Sign In verification
-                const res = await fetch(`${API_V2}/auth/brevo/verify-signin-otp`, {
+                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signin-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
