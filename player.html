@@ -898,6 +898,155 @@
     margin-right: 4px;
     font-weight: 700;
 }
+        /* Gamer Tag & eFootball ID */
+.player-credentials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.cred-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.cred-chip b {
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.ef-id-chip {
+    cursor: pointer;
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.08);
+    transition: 0.2s;
+}
+
+.ef-id-chip:hover {
+    border-color: var(--accent);
+    background: rgba(16, 185, 129, 0.18);
+}
+
+.ef-id-chip b {
+    color: var(--accent);
+    font-family: monospace;
+}
+
+.copy-icon {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-left: 2px;
+}
+
+/* Gameplay Highlights */
+.btn-add-clip {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-add-clip:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+.highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+@media (min-width: 640px) {
+    .highlights-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.highlight-card {
+    background: #020617;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-frame-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+.video-frame-wrap iframe,
+.video-frame-wrap video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.highlight-meta {
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.highlight-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+}
+
+.btn-delete-clip {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px;
+}
+
+.clip-input {
+    width: 100%;
+    padding: 12px;
+    background: #020617;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: white;
+    box-sizing: border-box;
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.clip-input:focus {
+    border-color: var(--accent);
+}
     </style>
 </head>
 <body>
@@ -942,6 +1091,20 @@
                     <h1 id="pName">Name</h1>
             <div id="teamPill" class="team-pill">Loading...</div>
                     <p id="pNick">"Nickname"</p>
+            <!-- GAMER TAG & eFOOTBALL ID CREDENTIALS -->
+<div class="player-credentials">
+    <div class="cred-chip">
+        <i class="fa-solid fa-gamepad"></i>
+        <span>Tag:</span>
+        <b id="pGamertag">--</b>
+    </div>
+    <div class="cred-chip ef-id-chip" onclick="copyEfootballId()" title="Click to copy ID">
+        <i class="fa-solid fa-id-card"></i>
+        <span>ID:</span>
+        <b id="pEfId">--</b>
+        <i class="fa-regular fa-copy copy-icon"></i>
+    </div>
+</div>
                 </div>
             </div>
             <div id="capBadgeContainer" style="display: none;">
@@ -1274,6 +1437,23 @@
         <canvas id="performanceChart"></canvas>
     </div>
 </div>
+        <!-- GAMEPLAY HIGHLIGHTS & CLIPS -->
+<div class="glass-card">
+    <div class="section-title" style="justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-clapperboard" style="color: var(--accent);"></i>
+            <span>Gameplay Highlights & Clips</span>
+        </div>
+        <button type="button" class="btn-add-clip" onclick="openAddClipModal()">
+            <i class="fa-solid fa-plus"></i> Add Clip
+        </button>
+    </div>
+
+    <!-- Highlights Grid -->
+    <div id="highlightsGrid" class="highlights-grid">
+        <!-- Clips injected by JS -->
+    </div>
+</div>
         <!-- AI SCOUTING DOSSIER -->
 <div class="glass-card scout-card">
     <div class="section-title">
@@ -1328,6 +1508,11 @@ initMatchActivityCalendar(playerMatches);
             document.getElementById('pAuction').innerText = (p.auctionPrice || 0) + "M";
             document.getElementById('pMarket').innerText = (p.marketValue || 0) + "M";
             document.getElementById('pBDR').innerText = p.bdrPoints || 0;
+            document.getElementById('pGamertag').innerText = p.gamerTag || p.gamertag || "Not Set";
+document.getElementById('pEfId').innerText = p.efootballId || p.efootballID || "Not Set";
+
+renderHighlights(p.highlights || []);
+            
             const squadDiv = document.getElementById('squadDisplay');
         if (squadDiv && p.squadImage) {
             squadDiv.innerHTML = `<img src="${p.squadImage}" style="width:100%; height:100%; object-fit:cover; border-radius:15px;">`;
@@ -2003,6 +2188,133 @@ function normalizeStageName(stage, isFinalWon) {
     // If custom named, return as capitalized words
     return stage;
 }
+        // 1. POPULATE CREDENTIALS & HIGHLIGHTS INSIDE loadProfile()
+// Place this inside loadProfile() right after "document.getElementById('pName').innerText = p.name;"
+
+// 2. 1-CLICK COPY FUNCTION
+function copyEfootballId() {
+    const idText = document.getElementById('pEfId').innerText;
+    if (!idText || idText === "--" || idText === "Not Set") return;
+    
+    navigator.clipboard.writeText(idText).then(() => {
+        alert(`eFootball ID: "${idText}" copied to clipboard!`);
+    }).catch(() => {
+        prompt("Copy eFootball ID:", idText);
+    });
+}
+
+// 3. CONVERT ANY YOUTUBE LINK (Standard, Shorts, youtu.be) TO EMBED
+function formatVideoEmbed(url) {
+    if (!url) return '';
+    
+    // YouTube Shorts: youtube.com/shorts/<id>
+    if (url.includes('youtube.com/shorts/')) {
+        const id = url.split('shorts/')[1].split('?')[0];
+        return `https://www.youtube.com/embed/${id}`;
+    }
+    // YouTube Watch: youtube.com/watch?v=<id>
+    if (url.includes('watch?v=')) {
+        const id = url.split('watch?v=')[1].split('&')[0];
+        return `https://www.youtube.com/embed/${id}`;
+    }
+    // YouTube Shortlink: youtu.be/<id>
+    if (url.includes('youtu.be/')) {
+        const id = url.split('youtu.be/')[1].split('?')[0];
+        return `https://www.youtube.com/embed/${id}`;
+    }
+    return url; // Return as-is if already an embed link or direct file
+}
+
+// 4. RENDER CLIPS
+function renderHighlights(clips) {
+    const container = document.getElementById('highlightsGrid');
+    if (!container) return;
+
+    if (!clips || clips.length === 0) {
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-dim); font-size: 0.8rem; padding: 20px;">No gameplay clips uploaded yet.</p>`;
+        return;
+    }
+
+    container.innerHTML = clips.map((clip, index) => {
+        const embedUrl = formatVideoEmbed(clip.url);
+        const isMp4 = clip.url.toLowerCase().endsWith('.mp4');
+
+        return `
+            <div class="highlight-card">
+                <div class="video-frame-wrap">
+                    ${isMp4 
+                        ? `<video src="${clip.url}" controls preload="metadata"></video>`
+                        : `<iframe src="${embedUrl}" allowfullscreen loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`
+                    }
+                </div>
+                <div class="highlight-meta">
+                    <h4 class="highlight-title" title="${clip.title}">${clip.title}</h4>
+                    <button type="button" class="btn-delete-clip" onclick="deleteClip(${index})" title="Delete Clip">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// 5. MODAL & SAVE CLIP LOGIC
+function openAddClipModal() {
+    document.getElementById('addClipModal').style.display = 'flex';
+}
+
+function closeAddClipModal() {
+    document.getElementById('addClipModal').style.display = 'none';
+}
+
+async function handleSaveClip(e) {
+    e.preventDefault();
+    const title = document.getElementById('clipTitle').value.trim();
+    const url = document.getElementById('clipUrl').value.trim();
+    const btn = document.getElementById('saveClipBtn');
+
+    if (!title || !url) return;
+
+    btn.innerText = "Saving...";
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API}/api/players/${playerId}/highlights`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, url })
+        });
+
+        if (res.ok) {
+            closeAddClipModal();
+            location.reload();
+        } else {
+            alert("Failed to save clip.");
+        }
+    } catch (err) {
+        alert("Server communication error.");
+    } finally {
+        btn.innerText = "Save Clip";
+        btn.disabled = false;
+    }
+}
+
+async function deleteClip(index) {
+    if (!confirm("Are you sure you want to remove this highlight clip?")) return;
+
+    try {
+        const res = await fetch(`${API}/api/players/${playerId}/highlights/${index}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            location.reload();
+        } else {
+            alert("Could not delete clip.");
+        }
+    } catch (e) {
+        alert("Server error deleting clip.");
+    }
+}
 
 // 3. Render Stages & Counts
 function renderTournamentHistory() {
@@ -2137,6 +2449,28 @@ function renderTournamentHistory() {
             <button class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button class="btn-save" id="saveAvatarBtn" onclick="saveImages()">Save</button>
         </div>
+    </div>
+</div>
+        <!-- MODAL: ADD VIDEO CLIP -->
+<div id="addClipModal" class="modal-overlay" style="display:none;" onclick="closeAddClipModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Add Gameplay Clip</h3>
+            <button type="button" onclick="closeAddClipModal()" class="close-x">&times;</button>
+        </div>
+
+        <form onsubmit="handleSaveClip(event)">
+            <p class="section-label">CLIP DETAILS</p>
+            <input type="text" id="clipTitle" class="clip-input" placeholder="Clip Title (e.g. 90th Min Solo Goal vs Bayern)" required>
+            
+            <p class="section-label" style="margin-top: 15px;">VIDEO URL (YouTube, Shorts, or Direct MP4 link)</p>
+            <input type="url" id="clipUrl" class="clip-input" placeholder="https://youtu.be/... or https://youtube.com/shorts/..." required>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAddClipModal()">Cancel</button>
+                <button type="submit" id="saveClipBtn" class="btn-save">Save Clip</button>
+            </div>
+        </form>
     </div>
 </div>
 </body>
