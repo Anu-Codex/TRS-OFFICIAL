@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE RISING STARS | Clan Access Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --bg: #040711;
+            --card-bg: #070d1d;
+            --input-bg: #050a17;
+            --border: #131e36;
+            --border-neon: rgba(0, 243, 255, 0.3);
+            --accent: #00f3ff;
+            --electric: #0077fe;
+            --green: #10b981;
+            --gold: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% -15%, rgba(0, 243, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 100% 40%, rgba(0, 119, 254, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 0% 80%, rgba(0, 243, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 20px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border: 1.5px solid var(--border-neon);
+            border-radius: 24px;
+            padding: 28px 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 243, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Header */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .clan-badge-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 10px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(0, 119, 254, 0.2));
+            border: 1.5px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.35);
+        }
+
+        .auth-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 1.5px;
+            margin: 0;
+            font-weight: 900;
+        }
+
+        .auth-header h2 span {
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+
+        .auth-header p {
+            color: var(--text-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 4px 0 0;
+        }
+
+        /* Mode Switcher Tabs */
+        .auth-tabs {
+            display: flex;
+            background: #040814;
+            padding: 4px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-bottom: 22px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(90deg, #00d2ff, #0077fe);
+            color: #040711;
+            box-shadow: 0 0 18px rgba(0, 210, 255, 0.45);
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #00d2ff 0%, #00f3ff 50%, #0077fe 100%);
+            color: #040711;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.82rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* Divider & Google Auth */
+        .divider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 18px;
+            color: var(--text-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .divider-row::before, .divider-row::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-google:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* OTP Modal Overlay */
+        .otp-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.92);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .otp-card {
+            background: #070d1d;
+            border: 1.5px solid var(--accent);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 380px;
+            padding: 28px 22px;
+            text-align: center;
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.25);
+        }
+
+        .otp-input {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem !important;
+            letter-spacing: 10px;
+            text-align: center;
+            color: var(--accent) !important;
+            font-weight: 900;
+            padding: 12px !important;
+            margin: 15px 0 18px !important;
+            background: #040711;
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .profile-warning-note {
+            color: var(--gold);
+            font-size: 0.65rem;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-header">
+        <div class="clan-badge-icon">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
+        <h2>THE RISING <span>STARS</span></h2>
+        <p>Clan Identity & Roster Portal</p>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="auth-tabs">
+        <button type="button" class="tab-btn active" id="tabSignInBtn" onclick="switchAuthMode('signin')">SIGN IN</button>
+        <button type="button" class="tab-btn" id="tabSignUpBtn" onclick="switchAuthMode('signup')">SIGN UP</button>
+    </div>
+
+    <!-- 1. SIGN IN FORM -->
+    <form id="signInForm" onsubmit="handleSignInRequest(event)">
+        <div class="form-group">
+            <label>Clan Registered Email</label>
+            <input type="email" id="siEmail" placeholder="player@gmail.com" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="siPassword" placeholder="••••••••" required>
+        </div>
+        <button type="submit" id="btnSignInSubmit" class="btn-submit">
+            SIGN IN & VERIFY <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </form>
+
+    <!-- 2. SIGN UP FORM -->
+    <form id="signUpForm" onsubmit="handleSignUpRequest(event)" style="display:none;">
+        <div class="form-group">
+            <label>Select & Claim Player Profile</label>
+            <select id="suPlayerSelect" required>
+                <option value="">Syncing Unclaimed Roster...</option>
+            </select>
+            <div class="profile-warning-note">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Permanent profile claim: This link is one-time and cannot be transferred or edited later.</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Personal Email (Receives Brevo OTP)</label>
+            <input type="email" id="suEmail" placeholder="player@gmail.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Create Security Password (Min 6 chars)</label>
+            <input type="password" id="suPassword" minlength="6" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="btnSignUpSubmit" class="btn-submit" style="background: linear-gradient(90deg, #10b981, #00f3ff);">
+            REQUEST OTP VIA BREVO <i class="fa-solid fa-paper-plane"></i>
+        </button>
+    </form>
+
+    <!-- Google Alternative -->
+    <div class="divider-row">OR USE FIREBASE GOOGLE</div>
+    <button type="button" class="btn-google" onclick="handleGoogleFirebase()">
+        <i class="fa-brands fa-google" style="color: #ea4335;"></i>
+        <span>Continue with Google</span>
+    </button>
+
+    <div style="text-align:center; margin-top:20px; font-size:0.75rem;">
+        <a href="index.html" style="color:var(--text-dim); text-decoration:none;">← Return to Clan Hub</a>
+    </div>
+</div>
+
+<!-- OTP VERIFICATION MODAL -->
+<div id="otpModal" class="otp-modal" style="display: none;">
+    <div class="otp-card">
+        <i class="fa-solid fa-envelope-circle-check fa-2x" style="color:var(--accent); margin-bottom:12px;"></i>
+        <h3 style="font-family:'Orbitron'; margin:0 0 6px; font-size:1.1rem;" id="otpModalTitle">BREVO VERIFICATION</h3>
+        <p style="font-size:0.75rem; color:#94a3b8; margin:0;" id="otpSentNotice">
+            Enter the 6-digit verification code sent to your email.
+        </p>
+
+        <form onsubmit="handleOtpVerification(event)">
+            <input type="text" id="otpCodeInput" class="otp-input" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required autofocus>
+            <button type="submit" id="btnVerifyOtp" class="btn-submit">
+                CONFIRM & ENTER CLAN
+            </button>
+        </form>
+
+        <button type="button" onclick="closeOtpModal()" style="background:none; border:none; color:var(--text-dim); font-size:0.72rem; margin-top:15px; cursor:pointer;">
+            Cancel and Return
+        </button>
+    </div>
+</div>
+
+<script>
+    const API = "https://pes-park-backend.onrender.com";
+    const API_V2 = "https://nexus-database-v2.onrender.com";
+
+    // --- 1. FIREBASE CONFIGURATION ---
+    // Replace with your Firebase Console Project credentials:
+    const firebaseConfig = {
+        apiKey: "YOUR_FIREBASE_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+
+    let currentMode = "signin";
+    let pendingAuthData = {
+        email: "",
+        password: "",
+        playerId: ""
+    };
+
+    // --- 2. SWITCH MODES ---
+    function switchAuthMode(mode) {
+        currentMode = mode;
+        const isSignIn = mode === 'signin';
+
+        document.getElementById('signInForm').style.display = isSignIn ? 'block' : 'none';
+        document.getElementById('signUpForm').style.display = isSignIn ? 'none' : 'block';
+
+        document.getElementById('tabSignInBtn').classList.toggle('active', isSignIn);
+        document.getElementById('tabSignUpBtn').classList.toggle('active', !isSignIn);
+
+        if (!isSignIn) loadUnclaimedPlayers();
+    }
+
+    // --- 3. FETCH UNCLAIMED ROSTER ---
+    async function loadUnclaimedPlayers() {
+        const select = document.getElementById('suPlayerSelect');
+        select.innerHTML = '<option value="">Syncing Unclaimed Players...</option>';
+
+        try {
+            let res = await fetch(`${API_V2}/api/players/unclaimed`).catch(() => null);
+            if (!res || !res.ok) {
+                res = await fetch(`${API}/api/players/unclaimed`).catch(() => null);
+            }
+
+            if (!res || !res.ok) {
+                // Fallback to all players if separate unclaimed route is pending
+                res = await fetch(`${API}/api/players`);
+            }
+
+            const allPlayers = await res.json();
+            const unclaimed = allPlayers.filter(p => !p.isClaimed);
+
+            if (unclaimed.length === 0) {
+                select.innerHTML = '<option value="">All clan profiles are currently claimed</option>';
+            } else {
+                select.innerHTML = '<option value="">-- Choose Your Player Identity --</option>' + 
+                    unclaimed.map(p => `<option value="${p._id}">${p.name} (${p.teamName || 'Free Agent'})</option>`).join('');
+            }
+        } catch (err) {
+            select.innerHTML = '<option value="">⚠️ Server link error. Check backend connection.</option>';
+        }
+    }
+
+    // --- 4. SIGN UP: REQUEST BREVO OTP ---
+    async function handleSignUpRequest(e) {
+        e.preventDefault();
+        const playerId = document.getElementById('suPlayerSelect').value;
+        const email = document.getElementById('suEmail').value.trim();
+        const password = document.getElementById('suPassword').value;
+
+        if (!playerId) return alert("Please select a player profile to claim!");
+
+        const btn = document.getElementById('btnSignUpSubmit');
+        btn.innerText = "DISPATCHING OTP VIA BREVO...";
+        btn.disabled = true;
+
+        try {
+            // Dispatch Brevo OTP from backend
+            const res = await fetch(`${API_V2}/api/auth/brevo/request-signup-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, playerId })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                pendingAuthData = { email, password, playerId };
+                openOtpModal("CLAIM IDENTITY", `A 6-digit Brevo security code was sent to ${email}`);
+            } else {
+                alert("❌ " + (data.error || "Failed to dispatch verification code."));
+            }
+        } catch (err) {
+            alert("Authentication server unreachable.");
+        } finally {
+            btn.innerText = "REQUEST OTP VIA BREVO";
+            btn.disabled = false;
+        }
+    }
+
+    // --- 5. SIGN IN: FIREBASE + 2FA BREVO OTP ---
+    async function handleSignInRequest(e) {
+        e.preventDefault();
+        const email = document.getElementById('siEmail').value.trim();
+        const password = document.getElementById('siPassword').value;
+
+        const btn = document.getElementById('btnSignInSubmit');
+        btn.innerText = "CHECKING FIREBASE...";
+        btn.disabled = true;
+
+        try {
+            // 1. Verify credentials via Firebase Client Auth
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // 2. Request 2FA OTP via Brevo
+            btn.innerText = "DISPATCHING 2FA OTP...";
+            const res = await fetch(`${API_V2}/api/auth/brevo/request-signin-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, uid: user.uid })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                pendingAuthData = { email, password, uid: user.uid };
+                openOtpModal("2FA VERIFICATION", `Enter the 6-digit code sent to ${email}`);
+            } else {
+                alert("❌ " + (data.error || "Account is not linked to a clan player."));
+                await auth.signOut();
+            }
+        } catch (firebaseErr) {
+            alert("❌ " + firebaseErr.message);
+        } finally {
+            btn.innerText = "SIGN IN & VERIFY";
+            btn.disabled = false;
+        }
+    }
+
+    // --- 6. VERIFY BREVO OTP & FINALIZE ---
+    async function handleOtpVerification(e) {
+        e.preventDefault();
+        const otp = document.getElementById('otpCodeInput').value.trim();
+        const btn = document.getElementById('btnVerifyOtp');
+
+        btn.innerText = "VALIDATING OTP...";
+        btn.disabled = true;
+
+        try {
+            if (currentMode === 'signup') {
+                // 1. Verify OTP and claim player in database
+                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signup-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: pendingAuthData.email,
+                        otp,
+                        playerId: pendingAuthData.playerId
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || "Invalid OTP code.");
+                }
+
+                // 2. Register secure credentials in Firebase Auth
+                let userCred;
+                try {
+                    userCred = await auth.createUserWithEmailAndPassword(pendingAuthData.email, pendingAuthData.password);
+                } catch(fErr) {
+                    // In case already created on Firebase
+                    userCred = await auth.signInWithEmailAndPassword(pendingAuthData.email, pendingAuthData.password);
+                }
+
+                // 3. Save Firebase UID to profile
+                await fetch(`${API_V2}/api/players/${pendingAuthData.playerId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ firebaseUid: userCred.user.uid, claimedEmail: pendingAuthData.email })
+                });
+
+                alert("✅ Profile successfully claimed and secured with Firebase!");
+                finalizeSession(data.player);
+
+            } else {
+                // Sign In verification
+                const res = await fetch(`${API_V2}/api/auth/brevo/verify-signin-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: pendingAuthData.email,
+                        otp,
+                        uid: pendingAuthData.uid
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert("✅ Welcome back to The Rising Stars!");
+                    finalizeSession(data.player);
+                } else {
+                    alert("❌ " + (data.error || "Incorrect OTP code."));
+                }
+            }
+        } catch (err) {
+            alert("❌ " + err.message);
+        } finally {
+            btn.innerText = "CONFIRM & ENTER CLAN";
+            btn.disabled = false;
+        }
+    }
+
+    // --- 7. GOOGLE FIREBASE AUTHENTICATION ---
+    async function handleGoogleFirebase() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        try {
+            const result = await auth.signInWithPopup(provider);
+            const user = result.user;
+            const token = await user.getIdToken();
+
+            const res = await fetch(`${API_V2}/api/auth/firebase-google`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: user.email,
+                    uid: user.uid,
+                    displayName: user.displayName,
+                    token
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.isLinked) {
+                finalizeSession(data.player);
+            } else {
+                // First-time Google user needs to claim an identity
+                alert("Google verification successful! Please select an unclaimed player identity to complete registration.");
+                switchAuthMode('signup');
+                document.getElementById('suEmail').value = user.email;
+                document.getElementById('suEmail').readOnly = true;
+                document.getElementById('suPassword').value = "GOOGLE_AUTH_" + user.uid.substring(0, 8);
+                document.getElementById('suPassword').parentElement.style.display = 'none';
+            }
+        } catch (err) {
+            alert("Google Sign-In Error: " + err.message);
+        }
+    }
+
+    function openOtpModal(title, notice) {
+        document.getElementById('otpModalTitle').innerText = title;
+        document.getElementById('otpSentNotice').innerText = notice;
+        document.getElementById('otpCodeInput').value = "";
+        document.getElementById('otpModal').style.display = 'flex';
+    }
+
+    function closeOtpModal() {
+        document.getElementById('otpModal').style.display = 'none';
+    }
+
+    function finalizeSession(player) {
+        localStorage.setItem('nexus_player_user', JSON.stringify(player));
+        window.location.href = "player2.html";
+    }
+
+    window.onload = function() {
+        loadUnclaimedPlayers();
+    };
+</script>
+
+</body>
+</html>
